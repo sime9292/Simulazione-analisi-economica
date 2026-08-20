@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="it">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dabster Test Commessa v18</title></head>
+<body>
+<script>
+fetch('index.html?base=18test&t='+Date.now(),{cache:'no-store'})
+  .then(r=>r.text())
+  .then(html=>{
+    html=html.replaceAll('dimension-v2.css?v=8','dimension-v4.css?v=18test')
+             .replaceAll('app-v4.js?v=8','app-v13.js?v=18test')
+             .replace('· v8','· TEST v18')
+             .replace('</head>','<link rel="stylesheet" href="workload-v1.css?v=18test"><link rel="stylesheet" href="workload-v2.css?v=18test"><link rel="stylesheet" href="workload-v3.css?v=18test"><link rel="stylesheet" href="workload-v4.css?v=18test"><link rel="stylesheet" href="layout-v15.css?v=18test"><link rel="stylesheet" href="kanban-v16.css?v=18test"><link rel="stylesheet" href="test-commessa-v17.css?v=18test"><link rel="stylesheet" href="test-ui-v18.css?v=18test"><link rel="stylesheet" href="test-panel-v18.css?v=18test"></head>')
+             .replace('</body>','<script src="test-commessa-v17.js?v=18test"><\/script><script src="test-patch-v18.js?v=18test"><\/script></body>');
+    document.open();document.write(html);document.close();
+  })
+  .catch(err=>{document.body.innerHTML='<p style="font-family:sans-serif;padding:24px">Errore caricamento test: '+err+'</p>'});
+</script>
+</body>
+</html>

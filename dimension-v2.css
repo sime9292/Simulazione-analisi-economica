@@ -1,0 +1,68 @@
+/* Dimensionamento Opere v2 - compatto e verticale */
+.dimensioning{margin-top:8px;border-left-color:#36a8b8}
+.dimensioning>.section-head{height:30px;background:#eaf7f9;font-size:11.5px;padding:0 9px}
+.dimensioning .section-body{padding:7px 8px 9px}
+.dim-table{border:1px solid #cfd6dc;border-radius:2px;overflow:hidden;background:#fff}
+.dim-row{display:grid;grid-template-columns:minmax(180px,1.5fr) 75px 115px 115px 125px 125px 135px 28px;min-height:28px}
+.dim-row>div{display:flex;align-items:center;min-width:0;border-right:1px solid #dde2e7;border-bottom:1px solid #e5e8eb;padding:0 5px}
+.dim-row>div:last-child{border-right:0;justify-content:center;padding:0}
+.dim-head{min-height:31px;background:#eef3f6;font-size:8.8px;font-weight:700;color:#34414e;line-height:1.05;text-align:center}
+.dim-head>div{justify-content:center;padding:3px 4px}
+.dim-head>div:first-child{justify-content:flex-start;text-align:left}
+.dim-data input{width:100%;height:27px;border:0;background:transparent;outline:none;font-size:10.5px;color:#344050;padding:0 4px}
+.dim-data .dim-mq,.dim-data .dim-mech-rate,.dim-data .dim-elec-rate{text-align:right}
+.dim-read{justify-content:flex-end!important;font-size:10.5px;color:#364250;background:#fafbfc}
+.dim-read.elec{background:#f7fbff}
+.dim-read.total{font-weight:700;background:#f2f6f8}
+.dim-delete{width:24px;height:22px;border:0;background:transparent;color:#a14a4a;font-size:16px;cursor:pointer;line-height:1}
+.dim-total-row{font-weight:700;background:#e8eef3;min-height:29px}
+.dim-total-row>div{border-bottom:0;font-size:10px}
+.dim-total-row>div:first-child{justify-content:flex-end;color:#40505f}
+.dim-addline{display:flex;justify-content:flex-start;margin-top:5px}
+.dim-add{height:25px;border:1px solid #b9c4cc;background:#fff;border-radius:2px;color:#3d5968;font-size:10px;padding:0 9px;cursor:pointer}
+
+/* Totale arrotondato subito sotto la colonna Totale riga */
+.dim-rounded-grid{display:grid;grid-template-columns:minmax(180px,1.5fr) 75px 115px 115px 125px 125px 135px 28px;margin-top:4px}
+.dim-rounded-label{grid-column:1/7;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:9.5px;font-weight:700;color:#4b5662}
+.dim-rounded-control{grid-column:7/8;display:flex;height:28px;border:1px solid #d2b64d;background:#fff5b8}
+.dim-rounded-control input{width:100%;min-width:0;border:0;background:transparent;text-align:right;padding:0 5px;font-size:10.5px;font-weight:700;outline:none}
+.dim-rounded-control span{width:22px;display:flex;align-items:center;justify-content:center;border-left:1px solid #dfcf82;font-size:9px}
+.dim-rounded-reset{grid-column:8/9;width:26px;height:28px;border:1px solid #cfd6dc;border-left:0;background:#f5f7f8;color:#64717d;cursor:pointer;font-size:11px}
+
+/* Riga compenso: slider + importo totale */
+.dim-fee-line{margin-top:8px;display:grid;grid-template-columns:minmax(300px,1fr) 190px 160px;gap:8px;align-items:stretch}
+.dim-fee-slider,.dim-fee-total,.dim-ie-factor{border:1px solid #cfd6dc;border-radius:2px;background:#f8fafb;min-height:42px;padding:5px 7px}
+.dim-fee-slider{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px}
+.dim-fee-slider label{font-size:9px;font-weight:700;color:#3e4b57;white-space:nowrap}
+.dim-fee-slider input[type=range]{width:100%;height:7px;accent-color:#e4731d}
+.dim-fee-slider strong{font-size:12px;color:#d96719;min-width:38px;text-align:right}
+.dim-fee-total{display:flex;flex-direction:column;justify-content:center;background:#e9f2f8}
+.dim-fee-total span:first-child,.dim-ie-factor label{font-size:8.5px;font-weight:700;color:#53606c;margin-bottom:3px}
+.dim-fee-total strong{font-size:13px;color:#213240;text-align:right}
+.dim-ie-factor{display:flex;flex-direction:column;justify-content:center}
+.dim-ie-factor input{height:22px;border:1px solid #d4dade;background:#fff;text-align:right;padding:0 5px;font-size:10px}
+
+/* Fasi una sotto l'altra */
+.dim-phases{margin-top:6px;border:1px solid #cfd6dc;border-radius:2px;overflow:hidden;background:#fff}
+.dim-phase-head,.dim-phase-row{display:grid;grid-template-columns:minmax(180px,1fr) 105px 105px 150px;align-items:center;min-height:28px}
+.dim-phase-head{background:#eef2f5;font-size:8.7px;font-weight:700;color:#44515d}
+.dim-phase-head>div,.dim-phase-row>div{height:100%;display:flex;align-items:center;padding:0 7px;border-right:1px solid #dde2e7;border-bottom:1px solid #e3e7ea}
+.dim-phase-head>div:last-child,.dim-phase-row>div:last-child{border-right:0}
+.dim-phase-head>div:nth-child(n+2){justify-content:flex-end}
+.dim-phase-row{font-size:10px}
+.dim-phase-row:last-child>div{border-bottom:0}
+.dim-phase-name{font-weight:600;color:#344250}
+.dim-phase-row input{width:62px;height:22px;border:1px solid #d7dde2;text-align:right;padding:0 4px;font-size:10px}
+.phase-effective-value{justify-content:flex-end;width:100%;color:#64717d}
+.phase-result-value{font-weight:700;font-size:10.5px}
+.dim-phase-result{justify-content:flex-end!important;background:#f7fafb}
+.dim-phase-footer{margin-top:5px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.phase-total-check{font-size:9px;color:#596673}
+.phase-total-check.invalid{color:#b42318;font-weight:700}
+.dim-transfer-wrap{display:flex;align-items:center;gap:8px}
+.dim-transfer{height:28px;border:1px solid #d56818;background:#ef741b;color:#fff;border-radius:2px;padding:0 11px;font-size:10px;font-weight:700;cursor:pointer}
+.dim-transfer:disabled{opacity:.45;cursor:not-allowed}
+.dim-flash{font-size:9px;color:#16815f;opacity:0;transition:.2s}
+.dim-flash.show{opacity:1}
+
+@media(max-width:1000px){.dimensioning .section-body{overflow-x:auto}.dim-table,.dim-rounded-grid,.dim-fee-line,.dim-phases,.dim-phase-footer{min-width:900px}}

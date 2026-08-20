@@ -1,13 +1,23 @@
-/* v12 overrides: custom activity autocomplete + normalized economic colors */
+/* v13 overrides: custom activity autocomplete + normalized economic colors */
 .activity-autocomplete-wrap{position:relative;min-width:0}
 .activity-autocomplete-wrap>.activity-name{width:100%}
 .activity-suggest-menu{position:absolute;z-index:80;left:0;right:0;top:calc(100% + 4px);padding:4px;background:#fff;border:1px solid #d9e1e6;border-radius:7px;box-shadow:0 8px 24px rgba(35,50,60,.14);max-height:220px;overflow:auto}
 .activity-suggest-menu[hidden]{display:none!important}
 .activity-suggestion{display:block;width:100%;border:0;background:transparent;border-radius:5px;padding:7px 9px;text-align:left;font-size:10px;color:#344653;cursor:pointer}
 .activity-suggestion:hover,.activity-suggestion:focus{background:#eef7f8;color:#245866;outline:none}
-.activity-card .activity-name{border:1px solid #dce3e8!important;border-radius:5px!important;background:#fff!important;padding:0 8px!important}
+.activity-card .activity-name{border:1px solid #cfdde1!important;border-radius:6px!important;background:#fff!important;padding:0 8px!important}
 .activity-card .activity-name:focus{border-color:#62a9b8!important;box-shadow:0 0 0 2px rgba(43,155,173,.10)!important;outline:none}
-.phase-work-card .activities:empty::before{content:'Nessuna attività inserita';display:block;padding:9px 10px;margin-bottom:7px;border:1px dashed #dce3e8;border-radius:6px;background:#fafcfd;color:#7a8790;font-size:9.5px}
+.phase-work-card .activities:empty::before{content:'Nessuna attività inserita';display:block;padding:9px 10px;margin-bottom:7px;border:1px dashed #dce3e8;border-radius:7px;background:#fafcfd;color:#7a8790;font-size:9.5px}
+
+/* Card attività: distinta dalla fase ma coerente con la web app */
+#phaseWorkloadSection .activity-card{border:1px solid #cfe1e5!important;border-radius:9px!important;background:#f8fbfc!important;box-shadow:0 1px 3px rgba(43,87,101,.05)!important;overflow:hidden}
+#phaseWorkloadSection .activity-head{background:linear-gradient(90deg,#edf7f8 0%,#f6fafb 100%)!important;border-left:3px solid #68aeba!important;padding-left:6px!important}
+#phaseWorkloadSection .activity-head-metrics span{background:#e5f1f4!important;color:#54707a!important}
+#phaseWorkloadSection .activity-head-metrics b{color:#315864!important}
+#phaseWorkloadSection .activity-body{background:#fff!important;border-top:1px solid #dce9ec!important}
+#phaseWorkloadSection .activity-card:hover{border-color:#b9d4da!important;box-shadow:0 2px 6px rgba(43,87,101,.07)!important}
+#phaseWorkloadSection .activity-card .soft-btn{background:#f8fbfc!important;border-color:#d3e1e5!important;color:#3e6470!important}
+#phaseWorkloadSection .activity-card .soft-btn:hover{background:#edf7f8!important;border-color:#b8d3d9!important}
 
 /* Stato Analisi Economica: palette neutra, colore solo sull'utile */
 #tab-analisi .economic-table{background:#fff!important;border-color:#dce3e8!important}

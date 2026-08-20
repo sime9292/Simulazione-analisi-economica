@@ -1,0 +1,7 @@
+/* v18: E2E panel can be collapsed */
+.e2e-test-head{display:grid!important;grid-template-columns:1fr auto auto!important;gap:8px!important}
+.e2e-test-toggle{height:23px;border:1px solid #cfd8de;border-radius:6px;background:#fff;color:#52636e;padding:0 7px;font-size:8.5px;font-weight:700;cursor:pointer}
+.e2e-test-toggle:hover{background:#f7fafb;border-color:#b9c6ce}
+.e2e-test-panel.collapsed{width:205px!important;max-height:none!important;overflow:hidden!important}
+.e2e-test-panel.collapsed .e2e-test-body{display:none!important}
+@media(max-width:700px){.e2e-test-panel.collapsed{left:auto!important;right:8px!important;width:205px!important}}

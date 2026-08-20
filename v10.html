@@ -1,14 +1,15 @@
 <!doctype html>
 <html lang="it">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dabster Analisi Economica v10</title></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dabster Analisi Economica v11</title></head>
 <body>
 <script>
-fetch('index.html?base=10&t='+Date.now(),{cache:'no-store'})
+fetch('index.html?base=11&t='+Date.now(),{cache:'no-store'})
   .then(r=>r.text())
   .then(html=>{
     html=html.replaceAll('dimension-v2.css?v=8','dimension-v4.css?v=10')
-             .replaceAll('app-v4.js?v=8','app-v6.js?v=10')
-             .replace('· v8','· v10');
+             .replaceAll('app-v4.js?v=8','app-v7.js?v=11')
+             .replace('· v8','· v11')
+             .replace('</head>','<link rel="stylesheet" href="workload-v1.css?v=11"></head>');
     document.open();document.write(html);document.close();
   })
   .catch(err=>{document.body.innerHTML='<p style="font-family:sans-serif;padding:24px">Errore caricamento anteprima: '+err+'</p>'});

@@ -1,4 +1,4 @@
-/* v23 - revoke Kanban planning when offer leaves Confermata */
+/* v28 - revoke Kanban planning when offer leaves Confermata + optional explicit save mode */
 (function(){
   const nativeAdd=EventTarget.prototype.addEventListener;
   const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
@@ -6,6 +6,14 @@
 
   EventTarget.prototype.addEventListener=function(type,listener,options){
     const source=typeof listener==='function'?String(listener):'';
+
+    /* In explicit-save mode, editing the analysis does not continuously push changes
+       to the commessa. The status change to Confermata still performs the first transfer;
+       later updates are forced by the Salva Analisi button. */
+    const isAutomaticPlanningSync=window.DABSTER_EXPLICIT_SAVE_MODE===true &&
+      ['input','change','click'].includes(type) && source.includes('scheduleSync');
+    if(isAutomaticPlanningSync)return;
+
     const isOfferStatusHandler=!wrappedStatusListener && type==='change' && this instanceof HTMLSelectElement && source.includes('offerConfirmed') && source.includes('syncKanbanFromOffer');
 
     if(isOfferStatusHandler){
@@ -45,7 +53,10 @@
       };
 
       const result=nativeAdd.call(this,type,wrapped,options);
-      EventTarget.prototype.addEventListener=nativeAdd;
+      /* Older versions keep their original behaviour and can restore immediately.
+         Explicit-save mode keeps this interceptor alive long enough to suppress
+         the planning auto-sync listeners registered just afterwards. */
+      if(window.DABSTER_EXPLICIT_SAVE_MODE!==true)EventTarget.prototype.addEventListener=nativeAdd;
       return result;
     }
 
@@ -53,10 +64,10 @@
   };
 
   const core=document.createElement('script');
-  core.src='app-v13.js?v=23';
+  core.src='app-v13.js?v=28';
   core.onload=()=>{
-    /* Safety restore in case the status listener was not discovered. */
-    setTimeout(()=>{EventTarget.prototype.addEventListener=nativeAdd;},2500);
+    /* Safety restore once the application listeners have been installed. */
+    setTimeout(()=>{EventTarget.prototype.addEventListener=nativeAdd;},window.DABSTER_EXPLICIT_SAVE_MODE===true?8000:2500);
   };
   document.head.appendChild(core);
 })();

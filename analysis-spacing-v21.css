@@ -1,0 +1,20 @@
+/* v21 - maggiore separazione tra le sezioni principali di Analisi Economica */
+#tab-analisi{padding-top:4px}
+
+/* Ogni blocco principale deve essere leggibile come sezione autonoma. */
+#tab-analisi > .accordion{margin-top:16px!important}
+#tab-analisi > .accordion + .accordion{margin-top:24px!important}
+
+/* Un po' più di aria tra intestazione e contenuto quando la sezione è aperta. */
+#tab-analisi > .accordion.open > .section-body{padding-top:12px!important;padding-bottom:12px!important}
+
+/* Manteniamo i blocchi compatti ma con una presenza più netta su desktop. */
+#tab-analisi > .accordion > .section-head{min-height:34px}
+
+/* Le sezioni operative inferiori risultano visivamente più separate dallo Stato economico. */
+#tab-analisi #phaseWorkloadSection,
+#tab-analisi #reimbursementsSection,
+#tab-analisi #externalCostsSection{margin-top:24px!important}
+
+/* Nessun aumento artificiale della larghezza o dello scroll orizzontale. */
+#tab-analisi > .accordion{width:100%}

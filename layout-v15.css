@@ -1,0 +1,13 @@
+/* v15 - più respiro tra i blocchi del Dimensionamento Opere */
+.dimensioning .dim-table{margin-bottom:0}
+.dimensioning .dim-table + .dim-addline{margin-top:11px!important}
+.dimensioning .dim-addline + .dim-fee-line{margin-top:13px!important}
+.dimensioning .dim-fee-line + .dim-phases{margin-top:14px!important}
+.dimensioning .dim-phases + .dim-phase-footer{margin-top:9px!important}
+
+/* Separazione visiva leggera, senza effetto Excel/card eccessivo */
+.dimensioning .dim-fee-line{padding-top:1px}
+.dimensioning .dim-phases{box-shadow:0 2px 5px rgba(36,54,66,.055)!important}
+
+/* La tab Analisi Economica è la principale */
+.tabs .tab[data-tab="analisi"]{font-weight:700}

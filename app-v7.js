@@ -6,7 +6,7 @@
   document.head.appendChild(core);
 
   function waitForCore(attempt=0){
-    const ready=document.querySelector('#tab-analisi .economic-table') && document.querySelector('#tab-analisi .dimensioning') && document.getElementById('dimRows');
+    const ready=document.querySelector('#tab-analisi .economic-table') && document.querySelector('#tab-analisi .dimensioning') && document.querySelectorAll('#dimRows .dim-data').length>=3;
     if(ready){setTimeout(initWorkPlanning,80);return;}
     if(attempt<80)setTimeout(()=>waitForCore(attempt+1),50);
   }

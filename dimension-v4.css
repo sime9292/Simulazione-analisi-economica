@@ -1,0 +1,62 @@
+/* Dimensionamento Opere v4 - responsive, resizable, web-app look */
+.dimensioning{margin-top:8px;border-left-color:#2b9bad}
+.dimensioning>.section-head{height:32px;background:linear-gradient(90deg,#eef8fa 0%,#f8fbfc 100%);font-size:11.5px;padding:0 10px;color:#29434b;border-bottom:1px solid #dce9ec}
+.dimensioning .section-body{padding:9px 10px 10px;background:#fbfcfd}
+
+.dim-table{border:1px solid #dbe2e7;border-radius:7px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(36,54,66,.06)}
+.dim-row{display:grid;grid-template-columns:var(--dim-col1,minmax(150px,1.55fr)) var(--dim-col2,minmax(52px,.42fr)) var(--dim-col3,minmax(78px,.68fr)) var(--dim-col4,minmax(78px,.68fr)) var(--dim-col5,minmax(92px,.8fr)) var(--dim-col6,minmax(92px,.8fr)) var(--dim-col7,minmax(100px,.9fr)) 26px;min-height:30px}
+.dim-row>div{position:relative;display:flex;align-items:center;min-width:0;border-right:1px solid #edf0f2;border-bottom:1px solid #edf0f2;padding:0 6px}
+.dim-row>div:last-child{border-right:0;justify-content:center;padding:0}
+.dim-head{min-height:34px;background:#f5f7f9;font-size:8.4px;font-weight:700;color:#45535f;line-height:1.08;text-align:center;letter-spacing:.08px}
+.dim-head>div{justify-content:center;padding:4px 5px}.dim-head>div:first-child{justify-content:flex-start;text-align:left}
+.dim-data{background:#fff;transition:background .12s ease}.dim-data:hover{background:#fafcfd}
+.dim-data input{width:100%;height:27px;border:1px solid transparent;border-radius:4px;background:transparent;outline:none;font-size:10.4px;color:#33424e;padding:0 5px;transition:.12s}
+.dim-data input:hover{background:#f8fafb;border-color:#e4e9ed}.dim-data input:focus{background:#fff;border-color:#65aebe;box-shadow:0 0 0 2px rgba(43,155,173,.10)}
+.dim-data .dim-mq,.dim-data .dim-mech-rate,.dim-data .dim-elec-rate{text-align:right}
+.dim-read{justify-content:flex-end!important;font-size:10.3px;color:#40505c;background:#fbfcfd;font-variant-numeric:tabular-nums}.dim-read.elec{background:#f6fbff;color:#2d627e}.dim-read.total{font-weight:700;background:#f3f8f9;color:#234852}
+.dim-delete{width:22px;height:22px;border:0;border-radius:4px;background:transparent;color:#9b5a5a;font-size:15px;cursor:pointer;line-height:1}.dim-delete:hover{background:#fff1f1;color:#b42318}
+.dim-total-row{font-weight:700;background:#eef4f6;min-height:31px}.dim-total-row>div{border-bottom:0;font-size:9.8px}.dim-total-row>div:first-child{justify-content:flex-end;color:#40505f}
+
+/* draggable column dividers */
+.dim-col-resizer,.phase-col-resizer{position:absolute;z-index:20;top:0;right:-4px;width:8px;height:100%;cursor:col-resize;touch-action:none}
+.dim-col-resizer::after,.phase-col-resizer::after{content:"";position:absolute;top:6px;bottom:6px;left:3px;width:1px;background:#bcc7cf;opacity:.55}
+.dim-col-resizer:hover::after,.dim-col-resizer.dragging::after,.phase-col-resizer:hover::after,.phase-col-resizer.dragging::after{width:2px;background:#e57224;opacity:1}
+
+/* Add + rounded total on one web-app toolbar */
+.dim-addline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:7px;padding:6px 7px;background:#f7f9fa;border:1px solid #e2e7eb;border-radius:7px;min-height:34px}
+.dim-add{height:27px;border:1px solid #bfcbd2;background:#fff;border-radius:5px;color:#315767;font-size:9.8px;font-weight:600;padding:0 10px;cursor:pointer;flex:0 0 auto}.dim-add:hover{border-color:#82aeba;background:#f8fcfd}
+.dim-rounded-grid{display:grid;grid-template-columns:auto 128px 28px;align-items:center;margin:0 0 0 auto;min-width:310px}
+.dim-rounded-label{display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:9.2px;font-weight:700;color:#5a6670;white-space:nowrap}
+.dim-rounded-control{display:flex;height:27px;border:1px solid #d6b66c;border-radius:5px 0 0 5px;background:#fffaf0;overflow:hidden}.dim-rounded-control input{width:100%;min-width:0;border:0;background:transparent;text-align:right;padding:0 6px;font-size:10.5px;font-weight:700;color:#55462b;outline:none}.dim-rounded-control span{width:21px;display:flex;align-items:center;justify-content:center;border-left:1px solid #ead8ae;font-size:9px;color:#7c6840}
+.dim-rounded-reset{width:28px;height:27px;border:1px solid #d9e0e5;border-left:0;border-radius:0 5px 5px 0;background:#fff;color:#68747d;cursor:pointer;font-size:11px}.dim-rounded-reset:hover{background:#f2f5f7}
+
+/* Fee controls as compact cards */
+.dim-fee-line{margin-top:8px;display:grid;grid-template-columns:minmax(260px,1.35fr) minmax(150px,.72fr) minmax(135px,.62fr);gap:7px;align-items:stretch}
+.dim-fee-slider,.dim-fee-total,.dim-ie-factor{border:1px solid #dde4e8;border-radius:7px;background:#fff;min-height:44px;padding:6px 8px;box-shadow:0 1px 2px rgba(36,54,66,.035)}
+.dim-fee-slider{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px}.dim-fee-slider label{font-size:8.7px;font-weight:700;color:#4a5965;white-space:nowrap}.dim-fee-slider input[type=range]{width:100%;height:7px;accent-color:#e77324}.dim-fee-slider strong{font-size:12px;color:#d86318;min-width:38px;text-align:right}
+.dim-fee-total{display:flex;flex-direction:column;justify-content:center;background:#f1f8fa;border-color:#d5e9ed}.dim-fee-total span:first-child,.dim-ie-factor label{font-size:8.2px;font-weight:700;color:#64717b;margin-bottom:3px}.dim-fee-total strong{font-size:12.8px;color:#244b56;text-align:right}
+.dim-ie-factor{display:flex;flex-direction:column;justify-content:center}.dim-ie-factor input{height:23px;border:1px solid #dbe2e7;border-radius:4px;background:#f9fbfc;text-align:right;padding:0 6px;font-size:10px;outline:none}.dim-ie-factor input:focus{border-color:#65aebe;box-shadow:0 0 0 2px rgba(43,155,173,.10)}
+
+/* Phases: compact, no spreadsheet look */
+.dim-phases{margin-top:7px;border:1px solid #dce3e8;border-radius:7px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(36,54,66,.05)}
+.dim-phase-head,.dim-phase-row{display:grid;grid-template-columns:var(--phase-col1,minmax(145px,1.2fr)) var(--phase-col2,minmax(72px,.55fr)) var(--phase-col3,minmax(78px,.6fr)) var(--phase-col4,minmax(95px,.72fr)) var(--phase-col5,minmax(95px,.72fr)) var(--phase-col6,minmax(105px,.82fr));align-items:center;min-height:30px}
+.dim-phase-head{background:#f4f7f8;font-size:8.1px;font-weight:700;color:#56636e;letter-spacing:.05px}
+.dim-phase-head>div,.dim-phase-row>div{position:relative;height:100%;display:flex;align-items:center;padding:0 7px;border-right:1px solid #edf0f2;border-bottom:1px solid #edf0f2;min-width:0}.dim-phase-head>div:last-child,.dim-phase-row>div:last-child{border-right:0}.dim-phase-head>div:nth-child(n+2){justify-content:flex-end;text-align:right}
+.dim-phase-row{font-size:9.8px;background:#fff}.dim-phase-row:hover{background:#fbfcfd}.dim-phase-row:last-child>div{border-bottom:0}.dim-phase-name{font-weight:650;color:#344653}
+.dim-phase-row input{width:52px;height:22px;border:1px solid #dce2e7;border-radius:4px;background:#fafbfc;text-align:right;padding:0 4px;font-size:9.8px;outline:none}.dim-phase-row input:focus{background:#fff;border-color:#65aebe}
+.phase-effective-value{justify-content:flex-end;width:100%;color:#6a7680}.dim-phase-base{justify-content:flex-end!important;font-variant-numeric:tabular-nums;font-size:9.8px}.dim-phase-base.mech{background:#f8fafb;color:#475965}.dim-phase-base.elec{background:#f2f8fc;color:#2b6485;font-weight:700}.phase-result-value{font-weight:750;font-size:10.3px}.dim-phase-result{justify-content:flex-end!important;background:#eef7f8;color:#234852}
+.dim-phase-footer{margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:10px}.phase-total-check{font-size:9px;color:#64717b}.phase-total-check.invalid{color:#b42318;font-weight:700}.dim-transfer-wrap{display:flex;align-items:center;gap:8px}.dim-transfer{height:29px;border:1px solid #d96317;background:#ed741e;color:#fff;border-radius:5px;padding:0 12px;font-size:9.8px;font-weight:700;cursor:pointer;box-shadow:0 1px 2px rgba(160,78,20,.18)}.dim-transfer:hover{background:#dc6718}.dim-transfer:disabled{opacity:.45;cursor:not-allowed}.dim-flash{font-size:9px;color:#16815f;opacity:0;transition:.2s}.dim-flash.show{opacity:1}
+
+/* Softer colours also for the economic-state block */
+.analysis{border-left-color:#e18a35!important}.analysis>.section-head{background:linear-gradient(90deg,#fff6ec,#fffaf6)!important;color:#5f4938!important}
+.economic-table{border-color:#dce2e6!important;border-radius:7px!important;box-shadow:0 1px 3px rgba(36,54,66,.05)!important}
+.economic-head{background:#f5f7f9!important;color:#4c5a65!important}.economic-head .numeric{background:#f0f3f5!important}.cost-head{background:#fff5dc!important;color:#6f5a2d!important}.cost-cell,.cost-cell input{background:#fffaf0!important}.cost-cell span{background:#fff2d2!important;border-left-color:#ead6a5!important}.cost-total{background:#d96b70!important}.total-row{background:#eef3f5!important}.kpi{border-radius:7px!important;border-color:#dce2e6!important;box-shadow:0 1px 2px rgba(36,54,66,.04)}.kpi.mol{background:#f7d77f!important;border-color:#ebca6e!important}.kpi.expenses{background:#f4f6f8!important}.kpi.mon{background:#efbd67!important;border-color:#dda953!important}.kpi.profit{background:#f6e2e5!important;border-color:#e8c8cd!important}
+
+/* Desktop-first: fit without forced horizontal scrolling */
+.dimensioning .section-body{overflow-x:visible}
+@media(max-width:1050px){
+  .dim-row{grid-template-columns:var(--dim-col1,minmax(135px,1.4fr)) var(--dim-col2,minmax(48px,.4fr)) var(--dim-col3,minmax(68px,.62fr)) var(--dim-col4,minmax(68px,.62fr)) var(--dim-col5,minmax(80px,.72fr)) var(--dim-col6,minmax(80px,.72fr)) var(--dim-col7,minmax(90px,.82fr)) 24px}
+  .dim-phase-head,.dim-phase-row{grid-template-columns:var(--phase-col1,minmax(130px,1.05fr)) var(--phase-col2,minmax(66px,.52fr)) var(--phase-col3,minmax(70px,.55fr)) var(--phase-col4,minmax(84px,.65fr)) var(--phase-col5,minmax(84px,.65fr)) var(--phase-col6,minmax(94px,.72fr))}
+  .dim-fee-line{grid-template-columns:minmax(235px,1.25fr) minmax(140px,.7fr) minmax(125px,.6fr)}
+}
+@media(max-width:780px){.dimensioning .section-body{overflow-x:auto}.dim-table,.dim-addline,.dim-fee-line,.dim-phases,.dim-phase-footer{min-width:720px}}

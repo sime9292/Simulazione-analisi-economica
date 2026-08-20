@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="it">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dabster Analisi Economica v9</title></head>
+<body>
+<script>
+fetch('index.html?base=8&t='+Date.now(),{cache:'no-store'})
+  .then(r=>r.text())
+  .then(html=>{
+    html=html.replaceAll('dimension-v2.css?v=8','dimension-v3.css?v=9')
+             .replaceAll('app-v4.js?v=8','app-v5.js?v=9')
+             .replace('· v8','· v9');
+    document.open();document.write(html);document.close();
+  })
+  .catch(err=>{document.body.innerHTML='<p style="font-family:sans-serif;padding:24px">Errore caricamento anteprima: '+err+'</p>'});
+</script>
+</body>
+</html>

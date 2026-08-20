@@ -3,10 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dabster | Dettaglio Offerta</title>
+  <title>Dabster | Dettaglio Offerta · v6</title>
   <meta name="description" content="Prototipo desktop della schermata Dati Offerta e Analisi Economica del gestionale Dabster" />
-  <link rel="stylesheet" href="styles-v2.css" />
-  <link rel="stylesheet" href="analysis-v5.css" />
+  <link rel="stylesheet" href="styles-v2.css?v=6" />
+  <link rel="stylesheet" href="analysis-v5.css?v=6" />
+  <style>
+    /* v6: override incorporato per evitare cache CSS. KPI obbligatoriamente verticali */
+    #tab-analisi .analysis-layout{
+      display:grid !important;
+      grid-template-columns:minmax(690px,1fr) 155px !important;
+      gap:7px !important;
+      align-items:start !important;
+      min-width:852px !important;
+    }
+    #tab-analisi .economic-kpis{
+      display:flex !important;
+      flex-direction:column !important;
+      gap:4px !important;
+      width:155px !important;
+      min-width:155px !important;
+      height:auto !important;
+    }
+    #tab-analisi .economic-kpis .kpi{
+      display:grid !important;
+      grid-template-columns:1fr !important;
+      min-height:43px !important;
+      height:43px !important;
+      padding:4px 6px !important;
+      align-content:center !important;
+    }
+    #tab-analisi .economic-kpis .kpi-label{
+      font-size:7.8px !important;
+      line-height:1.02 !important;
+      margin-bottom:3px !important;
+      white-space:normal !important;
+    }
+    #tab-analisi .economic-kpis .kpi-value{
+      font-size:11px !important;
+      line-height:1 !important;
+      text-align:right !important;
+      white-space:nowrap !important;
+    }
+  </style>
 </head>
 <body>
   <header class="topbar">
@@ -74,7 +112,7 @@
                 </div>
               </div>
 
-              <div class="economic-kpis">
+              <div class="economic-kpis" style="display:flex;flex-direction:column;width:155px;min-width:155px;gap:4px">
                 <div class="kpi mol"><div class="kpi-label">MARGINE OPERATIVO LORDO</div><div class="kpi-value"><span id="aeMol">0,00</span> € <span class="kpi-sub" id="aeMolPct">0,00%</span></div></div>
                 <div class="kpi expenses"><div class="kpi-label">SPESE GENERALI ORE INT. · 35%</div><div class="kpi-value"><span id="aeGeneralExpenses">0,00</span> €</div></div>
                 <div class="kpi mon"><div class="kpi-label">MARGINE OPERATIVO NETTO</div><div class="kpi-value"><span id="aeMon">0,00</span> €</div></div>
@@ -86,6 +124,6 @@
       </div>
     </section>
   </main>
-  <script src="app-v3.js"></script>
+  <script src="app-v3.js?v=6"></script>
 </body>
 </html>

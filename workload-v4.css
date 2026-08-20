@@ -1,0 +1,56 @@
+/* v14: reimbursements + supplier cost editor */
+.reimbursements{margin-top:8px;border-left-color:#7b8ea1}
+.reimbursements>.section-head{height:31px;background:linear-gradient(90deg,#f3f6f8,#fafbfc);color:#425566;font-size:11px;padding:0 10px}
+.reimbursements-body,.extcosts-body{padding:9px 10px!important;background:#fbfcfd}
+
+.reimb-intro,.supplier-intro{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px}
+.reimb-intro>div,.supplier-intro>div{display:flex;flex-direction:column;gap:2px}
+.reimb-intro strong,.supplier-intro strong{font-size:10.5px;color:#344653}
+.reimb-intro span,.supplier-intro span{font-size:8.8px;color:#73818b}
+.formula-chip{flex:0 0 auto;padding:4px 7px;border:1px solid #dce4e8;border-radius:999px;background:#f6f9fa;color:#61717b!important;font-size:8px!important;font-weight:700}
+
+.reimb-table,.supplier-table{border:1px solid #dce4e8;border-radius:7px;overflow:visible;background:#fff;box-shadow:0 1px 3px rgba(35,50,60,.04)}
+.reimb-head,.reimb-row{display:grid;grid-template-columns:minmax(170px,1.45fr) minmax(125px,.85fr) minmax(90px,.58fr) minmax(105px,.7fr) minmax(95px,.64fr) minmax(115px,.78fr);align-items:center}
+.reimb-head{min-height:30px;background:#f4f7f9;color:#56636e;font-size:8px;font-weight:700;letter-spacing:.04px}
+.reimb-head>span,.reimb-row>div,.reimb-row>label,.reimb-row>strong{min-width:0;padding:0 7px;border-right:1px solid #edf0f2}
+.reimb-head>span:last-child,.reimb-row>*:last-child{border-right:0}
+.reimb-head>span:nth-child(n+2){text-align:right}
+.reimb-row{min-height:36px;border-top:1px solid #edf0f2;font-size:9.7px;background:#fff}
+.reimb-row:hover{background:#fbfcfd}
+.reimb-name{display:flex;flex-direction:column;gap:1px}
+.reimb-name strong{font-size:9.8px;color:#3d4f5c}.reimb-name span{font-size:8px;color:#87929a}
+.unit-input,.compact-number,.money-input,.percent-input{display:flex;align-items:center;height:26px;border:1px solid #dce3e8;border-radius:5px;background:#fff;overflow:hidden;margin:4px 0}
+.unit-input input,.compact-number input,.money-input input,.percent-input input{width:100%;min-width:0;height:24px;border:0;background:transparent;outline:none;text-align:right;padding:0 6px;font-size:9.8px;color:#344653}
+.unit-input span,.compact-number span,.money-input span,.percent-input span{height:24px;display:flex;align-items:center;justify-content:center;padding:0 6px;border-left:1px solid #e5eaed;background:#f7f9fa;color:#71808a;font-size:8px;white-space:nowrap}
+.unit-input:focus-within,.compact-number:focus-within,.money-input:focus-within,.percent-input:focus-within{border-color:#6aa8b5;box-shadow:0 0 0 2px rgba(43,155,173,.08)}
+.compact-number.disabled{background:#f5f7f8;border-color:#e6eaed;opacity:.58}.compact-number.disabled input{background:#f5f7f8}
+.reimb-total{display:flex;justify-content:flex-end;color:#294c57;font-size:10px;font-variant-numeric:tabular-nums}
+.reimb-footer,.supplier-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:6px;padding:6px 8px;border:1px solid #e1e7ea;border-radius:6px;background:#f7f9fa;color:#64727c;font-size:8.8px}
+.reimb-footer strong,.supplier-footer strong{color:#354957;font-size:9.8px}
+
+.extcosts{border-left-color:#7b8ea1!important}.extcosts>.section-head{background:linear-gradient(90deg,#f3f6f8,#fafbfc)!important;color:#425566!important}
+.supplier-intro .soft-btn{flex:0 0 auto}
+.supplier-head,.supplier-row{display:grid;grid-template-columns:minmax(210px,1.5fr) minmax(120px,.75fr) minmax(95px,.55fr) minmax(130px,.8fr) 30px;align-items:center}
+.supplier-head{min-height:30px;background:#f4f7f9;color:#56636e;font-size:8px;font-weight:700}
+.supplier-head>span{padding:0 7px;border-right:1px solid #edf0f2}.supplier-head>span:last-child{border-right:0}.supplier-head>span:nth-child(n+2){text-align:right}
+.supplier-row{min-height:38px;border-top:1px solid #edf0f2;background:#fff}
+.supplier-row:hover{background:#fbfcfd}
+.supplier-row>*{margin-left:7px;margin-right:7px}.supplier-row>*:last-child{margin-left:0;margin-right:3px}
+.supplier-picker{position:relative;display:grid;grid-template-columns:1fr 26px;height:27px;border:1px solid #dce3e8;border-radius:5px;background:#fff;margin-top:4px;margin-bottom:4px}
+.supplier-picker:focus-within{border-color:#6aa8b5;box-shadow:0 0 0 2px rgba(43,155,173,.08)}
+.supplier-name{width:100%;min-width:0;border:0;background:transparent;outline:none;padding:0 7px;font-size:9.8px;color:#344653}
+.supplier-name.invalid{color:#a12838;background:#fff6f6}
+.supplier-open{border:0;border-left:1px solid #e4e9ec;background:#f7f9fa;color:#687781;cursor:pointer;font-size:10px}
+.supplier-menu{position:absolute;z-index:95;left:-1px;right:-1px;top:31px;padding:4px;border:1px solid #d9e1e6;border-radius:7px;background:#fff;box-shadow:0 8px 24px rgba(35,50,60,.14);max-height:160px;overflow:auto}
+.supplier-menu[hidden]{display:none!important}.supplier-menu button{display:block;width:100%;border:0;background:transparent;border-radius:5px;padding:7px 8px;text-align:left;font-size:9.5px;color:#344653;cursor:pointer}.supplier-menu button:hover{background:#eef7f8}.supplier-empty{display:block;padding:7px 8px;font-size:8.7px;color:#87939b}
+.supplier-sale{display:flex;justify-content:flex-end;color:#284d59;font-size:10.2px;font-variant-numeric:tabular-nums}
+
+/* Economic table: keep special rows neutral and clearly computed */
+#tab-analisi .supplier-economic-row>div:first-child,#tab-analisi .external-row[data-special-cost="reimbursements"]>div:first-child{background:#f8fafb!important;font-weight:650;color:#455762!important}
+#tab-analisi .supplier-economic-row .money-cell input,#tab-analisi .external-row[data-special-cost="reimbursements"] .money-cell input{background:#f8fafb!important;color:#42535f!important;font-weight:650}
+
+@media(max-width:900px){
+  .reimb-table,.supplier-table{overflow-x:auto}
+  .reimb-head,.reimb-row{min-width:760px}
+  .supplier-head,.supplier-row{min-width:650px}
+}

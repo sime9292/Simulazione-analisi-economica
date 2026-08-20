@@ -1,0 +1,13 @@
+/* v22 - più respiro nei blocchi del Dimensionamento Opere */
+#tab-analisi .dimensioning .dim-addline{
+  margin-bottom:16px!important;
+}
+
+#tab-analisi .dimensioning .dim-fee-line{
+  margin-top:0!important;
+  margin-bottom:17px!important;
+}
+
+#tab-analisi .dimensioning .dim-phases{
+  margin-top:0!important;
+}

@@ -1,0 +1,68 @@
+/* v26 - Analisi Economica discipline subtabs */
+.analysis-subtabs{
+  display:flex;
+  align-items:flex-end;
+  gap:4px;
+  min-height:43px;
+  margin:12px 4px 0;
+  padding:0 8px;
+  border-bottom:1px solid #dce3e7;
+  background:#fff;
+}
+.analysis-subtab{
+  position:relative;
+  height:42px;
+  min-width:155px;
+  padding:0 18px;
+  border:0;
+  border-bottom:3px solid transparent;
+  background:transparent;
+  color:#687681;
+  font-size:11.5px;
+  font-weight:650;
+  cursor:pointer;
+  transition:background .12s,color .12s,border-color .12s;
+}
+.analysis-subtab:hover{background:#f7fafb;color:#3f5661}
+.analysis-subtab.active{
+  border-bottom-color:#2b9bad;
+  background:#f1f8f9;
+  color:#285965;
+  font-weight:750;
+}
+.analysis-subtab-panels{background:#fff}
+.analysis-subtab-panel{padding:14px 4px 5px}
+.analysis-subtab-panel[hidden]{display:none!important}
+
+/* Dimensionamento is the workspace itself, not another accordion inside the tab. */
+#analysisSubtabDimensionamento{padding-top:17px}
+#analysisSubtabDimensionamento .subtab-primary-workspace{
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#analysisSubtabDimensionamento .subtab-primary-workspace>.section-head{display:none!important}
+#analysisSubtabDimensionamento .subtab-primary-workspace>.section-body{
+  display:block!important;
+  padding:16px 13px 20px!important;
+  border:1px solid #dce6e9;
+  border-radius:8px;
+  background:#fbfcfd!important;
+  box-shadow:0 1px 3px rgba(36,54,66,.045);
+}
+
+/* More breathing room is possible now that Impianti has its own page. */
+#analysisSubtabImpianti{padding-top:14px;padding-bottom:10px}
+#analysisSubtabImpianti>.accordion{margin-top:19px!important}
+#analysisSubtabImpianti>.accordion:first-child{margin-top:0!important}
+#analysisSubtabImpianti>.accordion.open>.section-body{padding-top:16px!important;padding-bottom:17px!important}
+
+/* Future disciplines (e.g. VVF) can be added as further tabs without changing the layout. */
+@media(max-width:780px){
+  .analysis-subtabs{overflow-x:auto;align-items:stretch;scrollbar-width:thin}
+  .analysis-subtab{flex:0 0 auto;min-width:150px}
+  .analysis-subtab-panel{padding-left:0;padding-right:0}
+}

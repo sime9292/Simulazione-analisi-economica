@@ -1,0 +1,85 @@
+/* v20 - desktop typography + fee alignment */
+
+/* Keep the analysis compact, but closer to the 12-13px desktop scale of the base app. */
+.dimensioning>.section-head,
+.workload>.section-head,
+.extcosts>.section-head,
+.reimbursements>.section-head{font-size:13px!important}
+
+.dim-head{font-size:9.5px!important}
+.dim-data input{font-size:11.5px!important}
+.dim-read{font-size:11.2px!important}
+.dim-total-row>div{font-size:10.8px!important}
+.dim-add{font-size:10.8px!important}
+.dim-rounded-label{font-size:10.5px!important}
+.dim-rounded-control input{font-size:11.5px!important}
+.dim-fee-slider label{font-size:9.8px!important}
+.dim-fee-slider strong{font-size:12.5px!important}
+.dim-ie-factor label{font-size:9.5px!important}
+.dim-ie-factor input{font-size:11px!important}
+.dim-phase-head{font-size:9.2px!important}
+.dim-phase-row{font-size:10.8px!important}
+.dim-phase-row input{font-size:10.8px!important}
+.dim-phase-name{font-size:11px!important}
+.dim-phase-base,.phase-effective-value{font-size:10.5px!important}
+.phase-result-value{font-size:11.3px!important}
+.phase-total-check{font-size:10px!important}
+.dim-transfer{font-size:10.5px!important}
+
+.workload-toolbar strong{font-size:12px!important}
+.workload-toolbar span{font-size:10px!important}
+.phase-card-title{font-size:12px!important}
+.phase-card-sub{font-size:9.3px!important}
+.phase-type-field,.weeks-field{font-size:9.3px!important}
+.phase-type-field select,.phase-weeks{font-size:10.5px!important}
+.phase-card-metrics span{font-size:9.3px!important}
+.phase-card-metrics b{font-size:10.8px!important}
+.activity-name{font-size:11.5px!important}
+.activity-head-metrics span{font-size:9.2px!important}
+.activity-head-metrics b{font-size:10.2px!important}
+.assignment-head{font-size:8.8px!important}
+.assignment-row,.assignment-row select,.assignment-row input{font-size:10.5px!important}
+.assignment-cost{font-size:10.8px!important}
+.soft-btn{font-size:10.5px!important}
+
+/* Economic state: same readable desktop scale. */
+#tab-analisi .economic-head{font-size:10.5px!important}
+#tab-analisi .phase-row>div:first-child{font-size:11.5px!important}
+#tab-analisi .money-cell input,
+#tab-analisi .computed-cell,
+#tab-analisi .total-value{font-size:11.2px!important}
+#tab-analisi .economic-kpis .kpi-label{font-size:9px!important;line-height:1.08!important}
+#tab-analisi .economic-kpis .kpi-value{font-size:12px!important}
+
+/* COMPENSO TOTALE INDICATIVO: same visual language as Totale opere arrotondato.
+   The old broad span:first-child rule also hit #dimProposalTotal, making € and number differ. */
+.dimensioning .dim-fee-total > span:first-child{
+  color:#5a6670!important;
+  font-size:10.5px!important;
+  font-weight:700!important;
+  line-height:1.1!important;
+}
+.dimensioning .dim-fee-total strong{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:4px!important;
+  min-height:28px!important;
+  margin-top:3px!important;
+  padding:0 7px!important;
+  border:1px solid #d6b66c!important;
+  border-radius:5px!important;
+  background:#fffaf0!important;
+  color:#55462b!important;
+  font-size:11.5px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  font-variant-numeric:tabular-nums;
+}
+.dimensioning #dimProposalTotal{
+  color:inherit!important;
+  font:inherit!important;
+  line-height:1!important;
+  margin:0!important;
+  padding:0!important;
+}

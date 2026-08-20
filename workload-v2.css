@@ -1,0 +1,28 @@
+/* v12 overrides: custom activity autocomplete + normalized economic colors */
+.activity-autocomplete-wrap{position:relative;min-width:0}
+.activity-autocomplete-wrap>.activity-name{width:100%}
+.activity-suggest-menu{position:absolute;z-index:80;left:0;right:0;top:calc(100% + 4px);padding:4px;background:#fff;border:1px solid #d9e1e6;border-radius:7px;box-shadow:0 8px 24px rgba(35,50,60,.14);max-height:220px;overflow:auto}
+.activity-suggest-menu[hidden]{display:none!important}
+.activity-suggestion{display:block;width:100%;border:0;background:transparent;border-radius:5px;padding:7px 9px;text-align:left;font-size:10px;color:#344653;cursor:pointer}
+.activity-suggestion:hover,.activity-suggestion:focus{background:#eef7f8;color:#245866;outline:none}
+.activity-card .activity-name{border:1px solid #dce3e8!important;border-radius:5px!important;background:#fff!important;padding:0 8px!important}
+.activity-card .activity-name:focus{border-color:#62a9b8!important;box-shadow:0 0 0 2px rgba(43,155,173,.10)!important;outline:none}
+.phase-work-card .activities:empty::before{content:'Nessuna attività inserita';display:block;padding:9px 10px;margin-bottom:7px;border:1px dashed #dce3e8;border-radius:6px;background:#fafcfd;color:#7a8790;font-size:9.5px}
+
+/* Stato Analisi Economica: palette neutra, colore solo sull'utile */
+#tab-analisi .economic-table{background:#fff!important;border-color:#dce3e8!important}
+#tab-analisi .economic-head{background:#f4f7f9!important;color:#4b5964!important}
+#tab-analisi .economic-head .numeric,#tab-analisi .trade-head,#tab-analisi .cost-head{background:#f4f7f9!important;color:#4b5964!important}
+#tab-analisi .phase-row>div,#tab-analisi .phase-row>div:first-child,#tab-analisi .external-row>div:first-child{background:#fff!important;color:#394956!important}
+#tab-analisi .cost-cell,#tab-analisi .cost-cell input,#tab-analisi .cost-cell span{background:#f8fafb!important;color:#465660!important;border-color:#e4e9ed!important}
+#tab-analisi .computed-cell{background:#fbfcfd!important;color:#44535f!important}
+#tab-analisi .total-row{background:#eef3f5!important;color:#33434e!important}
+#tab-analisi .cost-total{background:#e9eff2!important;color:#33434e!important}
+#tab-analisi .kpi{background:#f6f8f9!important;border-color:#dce3e8!important;color:#33434e!important}
+#tab-analisi .kpi .kpi-label,#tab-analisi .kpi .kpi-value{color:#33434e!important}
+#tab-analisi .kpi.mol,#tab-analisi .kpi.expenses,#tab-analisi .kpi.mon{background:#f6f8f9!important;border-color:#dce3e8!important}
+#tab-analisi .kpi.profit{transition:background .16s ease,border-color .16s ease,color .16s ease}
+#tab-analisi .kpi.profit.profit-low{background:#fff0f1!important;border-color:#e5b8be!important}
+#tab-analisi .kpi.profit.profit-low .kpi-label,#tab-analisi .kpi.profit.profit-low .kpi-value{color:#a12838!important}
+#tab-analisi .kpi.profit.profit-good{background:#edf8f1!important;border-color:#b7dbc4!important}
+#tab-analisi .kpi.profit.profit-good .kpi-label,#tab-analisi .kpi.profit.profit-good .kpi-value{color:#21733d!important}

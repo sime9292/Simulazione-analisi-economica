@@ -1,4 +1,4 @@
-/* v27 - manual Precompila/Svuota controls. Nothing is seeded automatically. */
+/* v28 - manual Precompila/Svuota/Salva controls. Nothing is seeded automatically. */
 (function(){
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
@@ -61,17 +61,43 @@
     return [...root.querySelectorAll('.dim-data')].slice(0,3);
   }
 
+  /* Force a sync against an empty confirmed offer. This removes generated cards
+     still in Programmazione even when the offer is already on In lavorazione.
+     Cards already moved to Lavorazione/Chiuse remain protected by the Kanban core. */
+  async function purgeGeneratedProgramming(){
+    const st=statusSelect();
+    if(!st)return;
+    const confirmed=[...st.options].find(o=>norm(o.value||o.textContent)==='confermata');
+    if(!confirmed)return;
+
+    const original=st.value;
+    const activityNames=[...document.querySelectorAll('#phaseWorkloadSection .activity-name')].map(input=>({input,value:input.value}));
+    activityNames.forEach(x=>{x.input.value='';});
+
+    st.value=confirmed.value;
+    fire(st,'change');
+    await sleep(120);
+
+    st.value=original;
+    fire(st,'change');
+    await sleep(100);
+
+    activityNames.forEach(x=>{x.input.value=x.value;});
+  }
+
   async function clearData(silent=false){
     if(busy&&!silent)return;
     if(!silent)setBusy(true,'Svuotamento…');
     try{
       if(!await waitReady())throw new Error('Interfaccia non pronta');
 
-      /* Leaving Confermata revokes only commessa cards still in Programmazione. */
+      /* Always clean generated Programmazione cards first, regardless of current offer status. */
+      await purgeGeneratedProgramming();
+
       const st=statusSelect();
       if(st){
         const nonConfirmed=[...st.options].find(o=>norm(o.value||o.textContent)==='in lavorazione') || [...st.options].find(o=>norm(o.value||o.textContent)!=='confermata');
-        if(nonConfirmed){st.value=nonConfirmed.value;fire(st,'change');await sleep(120);}
+        if(nonConfirmed){st.value=nonConfirmed.value;fire(st,'change');await sleep(100);}
       }
 
       const cs=commessaSelect();
@@ -116,7 +142,7 @@
       document.querySelectorAll('.activity-suggest-menu').forEach(menu=>{menu.hidden=true;menu.innerHTML='';});
       window.dabsterAnalysisSubtabs?.activate('dimensionamento');
       document.body.dataset.demoSeeded='0';
-      if(!silent)setStatus('Dati svuotati · pronto per una nuova prova');
+      if(!silent)setStatus('Dati svuotati · attività in programmazione rimosse');
     }catch(err){
       if(!silent)setStatus('Errore: '+(err.message||err));
     }finally{
@@ -202,7 +228,31 @@
       document.querySelectorAll('.phase-work-card').forEach(card=>card.classList.add('collapsed'));
       window.dabsterAnalysisSubtabs?.activate('dimensionamento');
       document.body.dataset.demoSeeded='1';
-      setStatus('Dati demo caricati · puoi modificarli liberamente');
+      setStatus('Dati demo caricati e trasferiti · puoi modificarli');
+    }catch(err){
+      setStatus('Errore: '+(err.message||err));
+    }finally{
+      setBusy(false);
+    }
+  }
+
+  async function saveAnalysis(){
+    if(busy)return;
+    setBusy(true,'Salvataggio…');
+    try{
+      if(!await waitReady())throw new Error('Interfaccia non pronta');
+      const st=statusSelect();
+      const confirmed=st && norm(st.value)==='confermata';
+
+      if(confirmed){
+        /* Re-dispatching the confirmed status invokes the same protected sync used
+           by the first confirmation, now with the latest activities/hours. */
+        fire(st,'change');
+        await sleep(180);
+        setStatus('Analisi salvata · attività commessa sincronizzate');
+      }else{
+        setStatus('Analisi salvata · nessun trasferimento perché offerta non confermata');
+      }
     }catch(err){
       setStatus('Errore: '+(err.message||err));
     }finally{
@@ -218,10 +268,26 @@
     const bar=document.createElement('div');
     bar.id='analysisDemoToolbar';
     bar.className='analysis-demo-toolbar';
-    bar.innerHTML=`<span class="analysis-demo-status">Pagina pronta · nessun dato demo caricato automaticamente</span><button type="button" class="analysis-demo-btn primary" id="prefillDemoData">Precompila dati</button><button type="button" class="analysis-demo-btn clear" id="clearDemoData">Svuota</button>`;
+    bar.innerHTML=`<span class="analysis-demo-status">Pagina pronta · nessun dato demo caricato automaticamente</span><button type="button" class="analysis-demo-btn prefill" id="prefillDemoData">Precompila dati</button><button type="button" class="analysis-demo-btn clear" id="clearDemoData">Svuota</button><button type="button" class="analysis-demo-btn save" id="saveAnalysisData">Salva Analisi</button>`;
     tab.insertBefore(bar,nav);
     document.getElementById('prefillDemoData').addEventListener('click',prefill);
     document.getElementById('clearDemoData').addEventListener('click',()=>clearData(false));
+    document.getElementById('saveAnalysisData').addEventListener('click',saveAnalysis);
+
+    /* In explicit-save mode, tell the user when confirmed-offer activity data changed. */
+    const planning=document.getElementById('phaseWorkloadSection');
+    if(planning){
+      const dirty=()=>{
+        if(busy)return;
+        const st=statusSelect();
+        if(st && norm(st.value)==='confermata')setStatus('Modifiche attività da salvare');
+      };
+      planning.addEventListener('input',dirty,true);
+      planning.addEventListener('change',dirty,true);
+      planning.addEventListener('click',e=>{
+        if(e.target.closest('.add-activity,.activity-delete,.assignment-delete,.add-assignment,.phase-delete,#addEconomicPhase'))setTimeout(dirty,30);
+      },true);
+    }
   }
 
   window.addEventListener('load',()=>setTimeout(install,350),{once:true});

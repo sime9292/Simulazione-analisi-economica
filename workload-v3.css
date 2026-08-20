@@ -1,0 +1,70 @@
+/* v13: activity cards more distinct + scrollable suggestions + collapsed initial state */
+
+/* Activity cards: nested, clearly distinct from phase cards */
+.activity-card{
+  border:1px solid #c9dce1!important;
+  border-left:3px solid #6da8b3!important;
+  border-radius:8px!important;
+  background:#f4f9fa!important;
+  box-shadow:0 1px 2px rgba(43,78,88,.045)!important;
+}
+.activity-head{
+  background:#edf6f7!important;
+  border-bottom-color:#d9e8eb!important;
+}
+.activity-body{
+  background:#f9fcfc!important;
+  border-top:1px solid #dce9ec!important;
+}
+.activity-card:hover{
+  border-color:#b8d2d8!important;
+  border-left-color:#4f95a2!important;
+}
+.activity-card .activity-name{
+  background:#fff!important;
+  border-color:#d1e0e4!important;
+  color:#354d55!important;
+}
+.activity-card .activity-head-metrics span{
+  background:#e4f0f2!important;
+  color:#5b7077!important;
+}
+.activity-card .activity-head-metrics b{color:#315965!important}
+.activity-card .add-assignment{background:#fff!important}
+
+/* Autocomplete: browse as well as search */
+.activity-suggest-menu{
+  max-height:155px!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  padding:4px!important;
+}
+.activity-suggest-menu::before{
+  content:'ATTIVITÀ DISPONIBILI · scorri o continua a scrivere';
+  display:block;
+  position:sticky;
+  top:-4px;
+  z-index:2;
+  margin:-4px -4px 3px;
+  padding:6px 9px;
+  background:#f4f8f9;
+  border-bottom:1px solid #e0e8eb;
+  color:#72818a;
+  font-size:7.8px;
+  font-weight:700;
+  letter-spacing:.08px;
+}
+.activity-suggestion{padding:7px 9px!important}
+.activity-suggestion:hover,.activity-suggestion:focus{background:#e8f3f5!important;color:#285965!important}
+
+/* Empty phase body should remain visually light */
+.phase-work-card .activities:empty::before{
+  background:#f8fafb!important;
+  border-color:#d8e2e6!important;
+  color:#78868e!important;
+}
+
+/* Make collapsed state visually obvious */
+#tab-analisi .accordion:not(.open)>.section-head{border-radius:7px}
+.phase-work-card.collapsed .phase-card-head{background:#f7fafb!important}

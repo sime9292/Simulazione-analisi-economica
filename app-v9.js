@@ -27,10 +27,10 @@
   }
 
   function initV13(){
-    /* Everything in Analisi Economica starts collapsed */
-    document.querySelectorAll('#tab-analisi .accordion').forEach(section=>section.classList.remove('open'));
-    document.querySelectorAll('#tab-analisi .phase-work-card').forEach(card=>card.classList.add('collapsed'));
-    document.querySelectorAll('#tab-analisi .activity-card').forEach(card=>card.classList.add('collapsed'));
+    /* Whole page starts compact. */
+    document.querySelectorAll('.accordion').forEach(section=>section.classList.remove('open'));
+    document.querySelectorAll('.phase-work-card').forEach(card=>card.classList.add('collapsed'));
+    document.querySelectorAll('.activity-card').forEach(card=>card.classList.add('collapsed'));
 
     function prepareActivity(activity){
       if(!activity || activity.dataset.v13Browse==='1')return;
@@ -38,6 +38,8 @@
       const input=activity.querySelector('.activity-name');
       const menu=activity.querySelector('.activity-suggest-menu');
       if(!input||!menu)return;
+
+      input.placeholder='Scrivi oppure scorri le attività…';
 
       function renderFull(){
         const q=norm(input.value);
@@ -49,6 +51,7 @@
         if(!matches.length){menu.hidden=true;menu.innerHTML='';return;}
         menu.innerHTML=matches.map(item=>`<button type="button" class="activity-suggestion">${esc(item)}</button>`).join('');
         menu.hidden=false;
+        menu.scrollTop=0;
         menu.querySelectorAll('.activity-suggestion').forEach((btn,index)=>{
           btn.addEventListener('pointerdown',e=>{
             e.preventDefault();
@@ -60,8 +63,9 @@
         });
       }
 
-      /* Run after v12 handler, replacing its limited list with the full scrollable list */
+      /* v12 still handles free text. These handlers replace the short list with the full browsable one. */
       input.addEventListener('focus',()=>setTimeout(renderFull,0));
+      input.addEventListener('click',()=>setTimeout(renderFull,0));
       input.addEventListener('input',()=>setTimeout(renderFull,0));
     }
 
@@ -72,6 +76,7 @@
       new MutationObserver(mutations=>{
         mutations.forEach(m=>m.addedNodes.forEach(node=>{
           if(!(node instanceof HTMLElement))return;
+          /* New phase/activity opens because the user has just created it. */
           if(node.matches('.phase-work-card'))node.classList.remove('collapsed');
           if(node.matches('.activity-card'))prepareActivity(node);
           node.querySelectorAll?.('.activity-card').forEach(prepareActivity);

@@ -1,76 +1,97 @@
-/* v14: activity cards distinct but visually consistent with Dabster web-app */
+/* v13: activities visually distinct from phases + scrollable activity browser */
 
-/* Activity cards: soft teal, nested under phase cards */
-.activity-card{
-  border:1px solid #c6dde2!important;
-  border-left:4px solid #4f98a6!important;
+/* Phase cards stay in the cool/blue family. */
+.phase-work-card{
+  border-color:#d5e3e7!important;
+  background:#fff!important;
+}
+.phase-card-head{
+  background:linear-gradient(90deg,#eef7f9 0%,#f8fbfc 100%)!important;
+}
+.phase-work-card.collapsed .phase-card-head{background:#f3f8fa!important}
+
+/* Activities use a warm Dabster accent so hierarchy is immediately visible. */
+#phaseWorkloadSection .activity-card{
+  border:1px solid #ead8c7!important;
+  border-left:4px solid #e7863d!important;
   border-radius:9px!important;
-  background:#f4fafb!important;
-  box-shadow:0 1px 3px rgba(42,79,90,.055)!important;
+  background:#fff9f4!important;
+  box-shadow:0 1px 3px rgba(100,63,35,.055)!important;
+  overflow:visible!important;
 }
-.activity-head{
-  background:linear-gradient(90deg,#eaf5f7 0%,#f4fafb 100%)!important;
-  border-bottom-color:#d7e8eb!important;
+#phaseWorkloadSection .activity-head{
+  background:linear-gradient(90deg,#fff2e7 0%,#fff9f4 100%)!important;
+  border-bottom-color:#f0dfd0!important;
 }
-.activity-body{
+#phaseWorkloadSection .activity-body{
   background:#fff!important;
-  border-top:1px solid #dbe9ec!important;
+  border-top:1px solid #f0e3d8!important;
 }
-.activity-card:hover{
-  border-color:#acd0d7!important;
-  border-left-color:#387f8d!important;
-  box-shadow:0 2px 7px rgba(42,79,90,.075)!important;
+#phaseWorkloadSection .activity-card:hover{
+  border-color:#dfc3aa!important;
+  border-left-color:#d96f24!important;
+  box-shadow:0 2px 7px rgba(100,63,35,.08)!important;
 }
-.activity-card .activity-name{
+#phaseWorkloadSection .activity-card .activity-name{
   background:#fff!important;
-  border-color:#cbdde1!important;
-  color:#304a52!important;
+  border-color:#e5cdb9!important;
+  color:#4e4035!important;
 }
-.activity-card .activity-name:focus{
-  border-color:#4f98a6!important;
-  box-shadow:0 0 0 2px rgba(79,152,166,.12)!important;
+#phaseWorkloadSection .activity-card .activity-name:focus{
+  border-color:#e7863d!important;
+  box-shadow:0 0 0 2px rgba(231,134,61,.12)!important;
 }
-.activity-card .activity-head-metrics span{
-  background:#dfeef1!important;
-  color:#536f77!important;
+#phaseWorkloadSection .activity-head-metrics span{
+  background:#f7e5d6!important;
+  color:#735b48!important;
 }
-.activity-card .activity-head-metrics b{color:#285663!important}
-.activity-card .add-assignment{background:#f8fbfc!important;border-color:#cfe0e4!important;color:#3c6671!important}
-.activity-card .add-assignment:hover{background:#eaf5f7!important;border-color:#b8d4da!important}
+#phaseWorkloadSection .activity-head-metrics b{color:#5d4532!important}
+#phaseWorkloadSection .activity-card .soft-btn{
+  background:#fffaf6!important;
+  border-color:#ead8c7!important;
+  color:#76523a!important;
+}
+#phaseWorkloadSection .activity-card .soft-btn:hover{
+  background:#fff1e5!important;
+  border-color:#debfa4!important;
+}
 
-/* Autocomplete: browse as well as search */
+/* Autocomplete can be browsed with touch/mouse wheel as well as searched by typing. */
+.activity-autocomplete-wrap{position:relative;min-width:0}
 .activity-suggest-menu{
-  max-height:155px!important;
+  max-height:180px!important;
   overflow-y:auto!important;
+  overflow-x:hidden!important;
   overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
   scrollbar-width:thin;
   padding:4px!important;
+  z-index:120!important;
 }
 .activity-suggest-menu::before{
-  content:'ATTIVITÀ DISPONIBILI · scorri o continua a scrivere';
+  content:'ATTIVITÀ DISPONIBILI · scorri oppure scrivi per filtrare';
   display:block;
   position:sticky;
   top:-4px;
   z-index:2;
   margin:-4px -4px 3px;
   padding:6px 9px;
-  background:#f4f8f9;
-  border-bottom:1px solid #e0e8eb;
-  color:#72818a;
+  background:#fff8f2;
+  border-bottom:1px solid #efe0d3;
+  color:#846c59;
   font-size:7.8px;
   font-weight:700;
   letter-spacing:.08px;
 }
 .activity-suggestion{padding:7px 9px!important}
-.activity-suggestion:hover,.activity-suggestion:focus{background:#e8f3f5!important;color:#285965!important}
+.activity-suggestion:hover,.activity-suggestion:focus{background:#fff0e3!important;color:#684a34!important}
 
-/* Empty phase body should remain visually light */
+/* Empty phase remains neutral until an activity is explicitly added. */
 .phase-work-card .activities:empty::before{
   background:#f8fafb!important;
   border-color:#d8e2e6!important;
   color:#78868e!important;
 }
 
-/* Make collapsed state visually obvious */
-#tab-analisi .accordion:not(.open)>.section-head{border-radius:7px}
-.phase-work-card.collapsed .phase-card-head{background:#f7fafb!important}
+/* Closed sections should look intentionally compact. */
+.accordion:not(.open)>.section-head{border-radius:7px}

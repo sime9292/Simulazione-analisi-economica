@@ -1,0 +1,89 @@
+/* v29 - Dimensionamento Opere: clearer visual rhythm without separating rounded total from the first table */
+
+/* Give the workspace a little more breathing room. */
+#tab-analisi .subtab-primary-workspace .section-body{
+  padding:15px 14px 18px!important;
+}
+
+/* Main works table: slightly taller rows and clearer hierarchy. */
+#tab-analisi .dimensioning .dim-table{
+  box-shadow:0 1px 4px rgba(36,54,66,.065)!important;
+}
+#tab-analisi .dimensioning .dim-head{
+  min-height:38px!important;
+  line-height:1.18!important;
+}
+#tab-analisi .dimensioning .dim-data{
+  min-height:34px!important;
+}
+#tab-analisi .dimensioning .dim-data input{
+  height:30px!important;
+}
+#tab-analisi .dimensioning .dim-total-row{
+  min-height:35px!important;
+  border-top:1px solid #d9e2e7!important;
+}
+
+/* Rounded total belongs to the first table: keep this toolbar close to it. */
+#tab-analisi .dimensioning .dim-addline{
+  margin-top:7px!important;
+  margin-bottom:24px!important;
+  min-height:38px!important;
+  padding:6px 8px!important;
+  background:#f8fafb!important;
+}
+#tab-analisi .dimensioning .dim-rounded-label{
+  font-weight:700!important;
+}
+#tab-analisi .dimensioning .dim-rounded-control,
+#tab-analisi .dimensioning .dim-rounded-reset{
+  height:29px!important;
+}
+
+/* Compensation is a separate logical block, with more whitespace around it. */
+#tab-analisi .dimensioning .dim-fee-line{
+  margin-top:0!important;
+  margin-bottom:28px!important;
+  gap:10px!important;
+}
+#tab-analisi .dimensioning .dim-fee-slider,
+#tab-analisi .dimensioning .dim-fee-total,
+#tab-analisi .dimensioning .dim-ie-factor{
+  min-height:51px!important;
+  padding:8px 10px!important;
+}
+
+/* Phase table: more readable rows, but still compact desktop UI. */
+#tab-analisi .dimensioning .dim-phases{
+  margin-top:0!important;
+  box-shadow:0 1px 4px rgba(36,54,66,.06)!important;
+}
+#tab-analisi .dimensioning .dim-phase-head{
+  min-height:36px!important;
+  line-height:1.15!important;
+}
+#tab-analisi .dimensioning .dim-phase-row{
+  min-height:35px!important;
+}
+#tab-analisi .dimensioning .dim-phase-head>div,
+#tab-analisi .dimensioning .dim-phase-row>div{
+  padding-left:9px!important;
+  padding-right:9px!important;
+}
+#tab-analisi .dimensioning .dim-phase-row input{
+  height:25px!important;
+}
+
+/* Footer clearly detached from the phase table. */
+#tab-analisi .dimensioning .dim-phase-footer{
+  margin-top:16px!important;
+  padding-top:12px!important;
+  border-top:1px solid #e3e8eb!important;
+}
+
+/* Keep visual density sensible on narrower screens. */
+@media(max-width:900px){
+  #tab-analisi .subtab-primary-workspace .section-body{padding:12px 10px 15px!important}
+  #tab-analisi .dimensioning .dim-addline{margin-bottom:19px!important}
+  #tab-analisi .dimensioning .dim-fee-line{margin-bottom:22px!important}
+}

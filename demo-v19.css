@@ -1,0 +1,35 @@
+/* v19 stable interactive demo */
+.dimensioning .dim-fee-total{
+  background:#fffaf0!important;
+  border-color:#d6b66c!important;
+  box-shadow:none!important;
+}
+.dimensioning .dim-fee-total span:first-child{
+  color:#5a6670!important;
+  font-size:9.2px!important;
+  font-weight:700!important;
+}
+.dimensioning .dim-fee-total strong{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  min-height:27px!important;
+  margin-top:2px!important;
+  padding:0 7px!important;
+  border:1px solid #d6b66c!important;
+  border-radius:5px!important;
+  background:#fffaf0!important;
+  color:#55462b!important;
+  font-size:10.5px!important;
+  font-weight:700!important;
+  font-variant-numeric:tabular-nums;
+}
+.demo-ready-badge{
+  position:fixed;z-index:400;right:16px;bottom:16px;
+  padding:8px 11px;border-radius:7px;background:#315f4a;color:#fff;
+  box-shadow:0 8px 22px rgba(0,0,0,.16);font-size:9.5px;font-weight:700;
+  opacity:0;transform:translateY(8px);pointer-events:none;transition:.18s;
+}
+.demo-ready-badge.show{opacity:1;transform:translateY(0)}
+/* Closed overlays must never intercept clicks. */
+.app-sidebar-overlay:not(.open){pointer-events:none!important}

@@ -22,7 +22,8 @@
       const proposal=num(row.querySelector('.ae-proposal')?.value);
       const cost=num(row.querySelector('.ae-cost')?.value);
       const rawNegotiated=proposal*(1-tradePct/100);
-      const negotiated=roundUp100(rawNegotiated);
+      /* At 0% the proposal must remain unchanged; rounding starts only when a negotiation is applied. */
+      const negotiated=tradePct===0?proposal:roundUp100(rawNegotiated);
 
       gross+=proposal;
       negotiatedTotal+=negotiated;
@@ -32,7 +33,7 @@
       const out=row.querySelector('.ae-discount');
       if(out){
         out.textContent=money(negotiated);
-        out.title='Valore dopo trattativa, arrotondato per eccesso ai 100 € successivi';
+        out.title=tradePct===0?'Nessuna trattativa applicata':'Valore dopo trattativa, arrotondato per eccesso ai 100 € successivi';
       }
     });
 

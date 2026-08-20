@@ -1,0 +1,20 @@
+/* v27 - manual demo controls, no automatic seeding */
+.analysis-demo-toolbar{
+  display:flex;align-items:center;justify-content:flex-end;gap:7px;
+  margin:10px 0 8px;padding:0 2px;
+}
+.analysis-demo-btn{
+  height:30px;padding:0 11px;border:1px solid #cfd8de;border-radius:6px;
+  background:#fff;color:#4c5c67;font-size:10.5px;font-weight:650;cursor:pointer;
+}
+.analysis-demo-btn:hover{background:#f6f8f9;border-color:#b8c5cc}
+.analysis-demo-btn.primary{background:#eef7f1;border-color:#c7dccd;color:#356346}
+.analysis-demo-btn.primary:hover{background:#e4f1e8;border-color:#b4d0bd}
+.analysis-demo-btn.clear{background:#fff6f6;border-color:#ead0d2;color:#8a444a}
+.analysis-demo-btn.clear:hover{background:#ffeded;border-color:#dfbfc2}
+.analysis-demo-status{margin-right:auto;color:#7b8891;font-size:9.5px}
+.analysis-demo-status.busy{color:#4e7180}
+@media(max-width:700px){
+  .analysis-demo-toolbar{overflow-x:auto;justify-content:flex-start;white-space:nowrap}
+  .analysis-demo-status{display:none}
+}

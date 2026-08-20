@@ -6,7 +6,7 @@
   <title>Dabster | Dettaglio Offerta</title>
   <meta name="description" content="Prototipo desktop della schermata Dati Offerta e Analisi Economica del gestionale Dabster" />
   <link rel="stylesheet" href="styles-v2.css" />
-  <link rel="stylesheet" href="analysis-v3.css" />
+  <link rel="stylesheet" href="analysis-v4.css" />
 </head>
 <body>
   <header class="topbar">
@@ -60,9 +60,9 @@
               <div class="economic-table-wrap">
                 <div class="economic-table">
                   <div class="economic-row economic-head">
-                    <div>PROPOSTA ECONOMICA DA ANALISI FOGLIO PE</div>
-                    <div class="numeric">TOT</div>
-                    <div class="trade-head"><div>TRATTATIVA <strong id="tradePctLabel">0%</strong></div><input id="tradePct" type="range" min="0" max="30" step="1" value="0" /></div>
+                    <div>PROPOSTA ECONOMICA DA ANALISI<span class="col-resizer" data-col="1" title="Trascina per ridimensionare"></span></div>
+                    <div class="numeric">TOT<span class="col-resizer" data-col="2" title="Trascina per ridimensionare"></span></div>
+                    <div class="trade-head"><div class="trade-inline"><span>TRATTATIVA</span><input id="tradePct" type="range" min="0" max="30" step="1" value="0" /><strong id="tradePctLabel">0%</strong></div><span class="col-resizer" data-col="3" title="Trascina per ridimensionare"></span></div>
                     <div class="cost-head">RIEPILOGO COSTI</div>
                   </div>
                   <div class="economic-row phase-row"><div>Fase Preliminare</div><div class="money-cell"><input class="ae-proposal" value="0,00"><span>€</span></div><div class="computed-cell"><span class="ae-discount">0,00</span><b>€</b></div><div class="money-cell cost-cell"><input class="ae-cost" value="0,00"><span>€</span></div></div>
@@ -72,21 +72,20 @@
                   <div class="economic-row phase-row external-row"><div>Rimborso Spese + Esterni</div><div class="money-cell"><input class="ae-proposal" value="0,00"><span>€</span></div><div class="computed-cell"><span class="ae-discount">0,00</span><b>€</b></div><div class="money-cell cost-cell"><input class="ae-cost" value="0,00"><span>€</span></div></div>
                   <div class="economic-row total-row"><div>COMPENSO PROGETTO PROPOSTA</div><div class="total-value"><span id="aeGross">0,00</span><b>€</b></div><div class="total-value"><span id="aeDiscountTotal">0,00</span><b>€</b></div><div class="total-value cost-total"><span id="aeCosts">0,00</span><b>€</b></div></div>
                 </div>
-                <div class="post-trade-line"><span>Importo dopo trattativa</span><strong><span id="aeNetRevenue">0,00</span> €</strong></div>
               </div>
-              <aside class="economic-status">
-                <div class="status-block mol"><div class="status-title">MARGINE OPERATIVO LORDO</div><div class="status-value"><span id="aeMol">0,00</span> €</div><div class="status-percent" id="aeMolPct">0,00%</div></div>
-                <div class="status-line"><div><strong>SPESE GENERALI SU VENDITA ORE INT.</strong><span>35%</span></div><div><span id="aeGeneralExpenses">0,00</span> €</div></div>
-                <div class="status-block mon"><div class="status-title">MARGINE OPERATIVO NETTO</div><div class="status-value"><span id="aeMon">0,00</span> €</div></div>
-                <div class="status-block profit"><div class="status-title">UTILE COMMESSA</div><div class="status-value" id="aeProfitPct">0,00%</div></div>
-                <div class="status-note">Le spese generali verranno alimentate dalla sezione ore interne che aggiungeremo sotto.</div>
-              </aside>
+
+              <div class="economic-kpis">
+                <div class="kpi mol"><div class="kpi-label">MARGINE OPERATIVO LORDO</div><div class="kpi-value"><span id="aeMol">0,00</span> € <span class="kpi-sub" id="aeMolPct">0,00%</span></div></div>
+                <div class="kpi expenses"><div class="kpi-label">SPESE GENERALI ORE INT. · 35%</div><div class="kpi-value"><span id="aeGeneralExpenses">0,00</span> €</div></div>
+                <div class="kpi mon"><div class="kpi-label">MARGINE OPERATIVO NETTO</div><div class="kpi-value"><span id="aeMon">0,00</span> €</div></div>
+                <div class="kpi profit"><div class="kpi-label">UTILE COMMESSA</div><div class="kpi-value" id="aeProfitPct">0,00%</div></div>
+              </div>
             </div>
           </div>
         </section>
       </div>
     </section>
   </main>
-  <script src="app-v2.js"></script>
+  <script src="app-v3.js"></script>
 </body>
 </html>

@@ -1,0 +1,53 @@
+/* Analisi Economica v5 - ultra compatta, KPI verticali a destra, colonne ridimensionabili */
+.analysis{margin-top:7px;border-left-color:#d99418}
+.analysis>.section-head{height:29px;background:#fff7e5;font-size:11.5px;padding:0 9px}
+.analysis-body{padding:6px 8px 8px;overflow-x:auto}
+.analysis-layout{display:grid;grid-template-columns:minmax(690px,1fr) 168px;gap:7px;align-items:start;min-width:865px}
+.economic-table-wrap{min-width:0}
+.economic-table{border:1px solid #cbd2d9;border-radius:2px;overflow:hidden;background:#fff;box-shadow:none}
+.economic-row{display:grid;grid-template-columns:var(--ae-col1,minmax(205px,1.45fr)) var(--ae-col2,minmax(105px,.68fr)) var(--ae-col3,minmax(135px,.78fr)) var(--ae-col4,minmax(125px,.76fr));min-height:27px}
+.economic-row>div{position:relative;border-right:1px solid #d6dce2;border-bottom:1px solid #e0e4e8;display:flex;align-items:center;padding:2px 6px;min-width:0}
+.economic-row>div:last-child{border-right:0}
+.economic-head{min-height:29px;background:#eef2f5;color:#263442;font-size:9.5px;font-weight:700;letter-spacing:.12px}
+.economic-head>div{border-bottom-color:#c6cdd4;white-space:nowrap}
+.economic-head .numeric{justify-content:center;background:#e8edf1}
+.trade-head{padding:2px 5px!important;background:#f7f8fa!important}
+.trade-inline{width:100%;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:5px}
+.trade-inline>span{font-size:9px;font-weight:700}
+.trade-inline strong{font-size:9px;color:#d96518;min-width:24px;text-align:right}
+.trade-inline input[type=range]{width:100%;height:6px;margin:0;accent-color:#e56d1d;cursor:pointer}
+.cost-head{background:#fff1a8!important;color:#655711;justify-content:center;text-align:center}
+.phase-row>div:first-child{font-size:10.5px;font-weight:500;color:#364250;background:#fbfcfd}
+.external-row>div:first-child{background:#f2f4f6}
+.money-cell{padding:0!important}
+.money-cell input{width:100%;height:26px;border:0;background:#fff;text-align:right;padding:0 5px;font:inherit;font-size:10.5px;color:#344050;outline:none}
+.money-cell input:focus{box-shadow:inset 0 0 0 2px rgba(45,142,201,.18)}
+.money-cell span{width:21px;height:26px;display:flex;align-items:center;justify-content:center;background:#eef1f3;border-left:1px solid #dce1e5;color:#65707a;font-size:9.5px}
+.cost-cell{background:#fff8cc!important}
+.cost-cell input{background:#fff8cc}
+.cost-cell span{background:#fff1a8;border-left-color:#e7d66b;color:#665b17}
+.computed-cell{justify-content:flex-end;gap:3px;font-size:10.5px;background:#fff;color:#344050}
+.computed-cell b{font-size:9.5px;font-weight:500;color:#697480}
+.total-row{min-height:29px;background:#e7edf2;color:#243140;font-weight:700}
+.total-row>div{border-bottom:0}
+.total-row>div:first-child{font-size:9.7px;letter-spacing:.15px}
+.total-value{justify-content:flex-end;gap:3px;font-size:10.5px}
+.total-value b{font-size:9.5px}
+.cost-total{background:#d95258!important;color:#fff}
+.col-resizer{position:absolute;z-index:10;top:0;right:-4px;width:8px;height:100%;cursor:col-resize;touch-action:none}
+.col-resizer::after{content:"";position:absolute;top:5px;bottom:5px;left:3px;width:1px;background:#aeb8c2;opacity:.45}
+.col-resizer:hover::after,.col-resizer.dragging::after{width:2px;background:#df6b1c;opacity:1}
+
+/* KPI verticali: una colonna stretta a destra della tabella */
+.economic-kpis{display:grid;grid-template-columns:1fr;grid-template-rows:repeat(4,1fr);gap:4px;min-width:0;height:193px}
+.kpi{min-height:0;border:1px solid #cbd2d9;border-radius:2px;display:grid;grid-template-columns:1fr;align-content:center;padding:4px 6px;overflow:hidden}
+.kpi-label{font-size:8px;font-weight:700;letter-spacing:.08px;line-height:1.05;color:#3b4652;margin-bottom:3px;white-space:normal}
+.kpi-value{font-size:11.5px;font-weight:750;line-height:1.05;color:#25313d;white-space:nowrap;text-align:right}
+.kpi-sub{font-size:8.5px;font-weight:700;margin-left:3px;opacity:.76}
+.kpi.mol{background:#f3bd3e;border-color:#dcae35}
+.kpi.expenses{background:#eef2f5;border-color:#cbd2d9}
+.kpi.mon{background:#f1ad32;border-color:#d99a2b}
+.kpi.profit{background:#f3d5d9;border-color:#dfb8bd}
+.kpi.profit .kpi-label,.kpi.profit .kpi-value{color:#922937}
+
+@media(max-width:980px){.analysis-layout{grid-template-columns:690px 168px;min-width:865px}}

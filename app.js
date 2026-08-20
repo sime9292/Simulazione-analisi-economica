@@ -72,9 +72,6 @@ function recalcEconomic(){
 
   const discount=gross*pct/100;
   const netRevenue=gross-discount;
-
-  // In questa prima parte le spese generali restano a zero:
-  // verranno calcolate dalla futura sezione ore interne.
   const generalExpenses=0;
   const mol=netRevenue-costs;
   const mon=mol-generalExpenses;
@@ -102,3 +99,15 @@ function recalcEconomic(){
 });
 tradePct?.addEventListener('input',recalcEconomic);
 recalcEconomic();
+
+/* Link diretto alla scheda Analisi Economica */
+if(location.hash==='#analisi'){
+  const tab=document.querySelector('.tab[data-tab="analisi"]');
+  const panel=document.getElementById('tab-analisi');
+  if(tab&&panel){
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+    tab.classList.add('active');
+    panel.classList.add('active');
+  }
+}

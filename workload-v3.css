@@ -1,59 +1,62 @@
-/* v13: activities visually distinct from phases + scrollable activity browser */
+/* v14: neutral activities, clearer separation between phases, scrollable activity browser */
 
-/* Phase cards stay in the cool/blue family. */
+/* Phase cards stay in the cool/blue family and are spaced more clearly. */
+.phase-work-cards{gap:13px!important}
 .phase-work-card{
   border-color:#d5e3e7!important;
   background:#fff!important;
+  box-shadow:0 1px 4px rgba(38,61,72,.05)!important;
 }
 .phase-card-head{
   background:linear-gradient(90deg,#eef7f9 0%,#f8fbfc 100%)!important;
 }
 .phase-work-card.collapsed .phase-card-head{background:#f3f8fa!important}
+.phase-work-card+.phase-work-card{margin-top:2px!important}
 
-/* Activities use a warm Dabster accent so hierarchy is immediately visible. */
+/* Activities are deliberately neutral: light graphite surface + subtle teal hierarchy marker. */
 #phaseWorkloadSection .activity-card{
-  border:1px solid #ead8c7!important;
-  border-left:4px solid #e7863d!important;
+  border:1px solid #d8dfe4!important;
+  border-left:4px solid #879da6!important;
   border-radius:9px!important;
-  background:#fff9f4!important;
-  box-shadow:0 1px 3px rgba(100,63,35,.055)!important;
+  background:#f7f9fa!important;
+  box-shadow:0 1px 3px rgba(43,56,64,.045)!important;
   overflow:visible!important;
 }
 #phaseWorkloadSection .activity-head{
-  background:linear-gradient(90deg,#fff2e7 0%,#fff9f4 100%)!important;
-  border-bottom-color:#f0dfd0!important;
+  background:linear-gradient(90deg,#eef1f3 0%,#f7f9fa 100%)!important;
+  border-bottom-color:#dfe5e8!important;
 }
 #phaseWorkloadSection .activity-body{
   background:#fff!important;
-  border-top:1px solid #f0e3d8!important;
+  border-top:1px solid #e4e9ec!important;
 }
 #phaseWorkloadSection .activity-card:hover{
-  border-color:#dfc3aa!important;
-  border-left-color:#d96f24!important;
-  box-shadow:0 2px 7px rgba(100,63,35,.08)!important;
+  border-color:#c6d0d5!important;
+  border-left-color:#667f89!important;
+  box-shadow:0 2px 7px rgba(43,56,64,.065)!important;
 }
 #phaseWorkloadSection .activity-card .activity-name{
   background:#fff!important;
-  border-color:#e5cdb9!important;
-  color:#4e4035!important;
+  border-color:#d4dde1!important;
+  color:#394952!important;
 }
 #phaseWorkloadSection .activity-card .activity-name:focus{
-  border-color:#e7863d!important;
-  box-shadow:0 0 0 2px rgba(231,134,61,.12)!important;
+  border-color:#718e99!important;
+  box-shadow:0 0 0 2px rgba(113,142,153,.11)!important;
 }
 #phaseWorkloadSection .activity-head-metrics span{
-  background:#f7e5d6!important;
-  color:#735b48!important;
+  background:#e5eaed!important;
+  color:#596a72!important;
 }
-#phaseWorkloadSection .activity-head-metrics b{color:#5d4532!important}
+#phaseWorkloadSection .activity-head-metrics b{color:#344a53!important}
 #phaseWorkloadSection .activity-card .soft-btn{
-  background:#fffaf6!important;
-  border-color:#ead8c7!important;
-  color:#76523a!important;
+  background:#fff!important;
+  border-color:#d8e0e4!important;
+  color:#52656e!important;
 }
 #phaseWorkloadSection .activity-card .soft-btn:hover{
-  background:#fff1e5!important;
-  border-color:#debfa4!important;
+  background:#eef3f5!important;
+  border-color:#c5d0d5!important;
 }
 
 /* Autocomplete can be browsed with touch/mouse wheel as well as searched by typing. */
@@ -76,15 +79,15 @@
   z-index:2;
   margin:-4px -4px 3px;
   padding:6px 9px;
-  background:#fff8f2;
-  border-bottom:1px solid #efe0d3;
-  color:#846c59;
+  background:#f3f6f7;
+  border-bottom:1px solid #e0e6e9;
+  color:#718087;
   font-size:7.8px;
   font-weight:700;
   letter-spacing:.08px;
 }
 .activity-suggestion{padding:7px 9px!important}
-.activity-suggestion:hover,.activity-suggestion:focus{background:#fff0e3!important;color:#684a34!important}
+.activity-suggestion:hover,.activity-suggestion:focus{background:#eaf0f2!important;color:#3b5661!important}
 
 /* Empty phase remains neutral until an activity is explicitly added. */
 .phase-work-card .activities:empty::before{

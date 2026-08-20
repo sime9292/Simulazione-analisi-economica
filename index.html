@@ -3,47 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dabster | Dettaglio Offerta · v6</title>
+  <title>Dabster | Dettaglio Offerta · v8</title>
   <meta name="description" content="Prototipo desktop della schermata Dati Offerta e Analisi Economica del gestionale Dabster" />
-  <link rel="stylesheet" href="styles-v2.css?v=6" />
-  <link rel="stylesheet" href="analysis-v5.css?v=6" />
+  <link rel="stylesheet" href="styles-v2.css?v=8" />
+  <link rel="stylesheet" href="analysis-v5.css?v=8" />
+  <link rel="stylesheet" href="dimension-v2.css?v=8" />
   <style>
-    /* v6: override incorporato per evitare cache CSS. KPI obbligatoriamente verticali */
-    #tab-analisi .analysis-layout{
-      display:grid !important;
-      grid-template-columns:minmax(690px,1fr) 155px !important;
-      gap:7px !important;
-      align-items:start !important;
-      min-width:852px !important;
-    }
-    #tab-analisi .economic-kpis{
-      display:flex !important;
-      flex-direction:column !important;
-      gap:4px !important;
-      width:155px !important;
-      min-width:155px !important;
-      height:auto !important;
-    }
-    #tab-analisi .economic-kpis .kpi{
-      display:grid !important;
-      grid-template-columns:1fr !important;
-      min-height:43px !important;
-      height:43px !important;
-      padding:4px 6px !important;
-      align-content:center !important;
-    }
-    #tab-analisi .economic-kpis .kpi-label{
-      font-size:7.8px !important;
-      line-height:1.02 !important;
-      margin-bottom:3px !important;
-      white-space:normal !important;
-    }
-    #tab-analisi .economic-kpis .kpi-value{
-      font-size:11px !important;
-      line-height:1 !important;
-      text-align:right !important;
-      white-space:nowrap !important;
-    }
+    #tab-analisi .analysis-layout{display:grid!important;grid-template-columns:minmax(690px,1fr) 155px!important;gap:7px!important;align-items:start!important;min-width:852px!important}
+    #tab-analisi .economic-kpis{display:flex!important;flex-direction:column!important;gap:4px!important;width:155px!important;min-width:155px!important;height:auto!important}
+    #tab-analisi .economic-kpis .kpi{display:grid!important;grid-template-columns:1fr!important;min-height:43px!important;height:43px!important;padding:4px 6px!important;align-content:center!important}
+    #tab-analisi .economic-kpis .kpi-label{font-size:7.8px!important;line-height:1.02!important;margin-bottom:3px!important;white-space:normal!important}
+    #tab-analisi .economic-kpis .kpi-value{font-size:11px!important;line-height:1!important;text-align:right!important;white-space:nowrap!important}
   </style>
 </head>
 <body>
@@ -91,6 +61,98 @@
       <div id="tab-risorse" class="tab-panel empty-panel"><div>Nessuna risorsa esterna associata.</div></div>
 
       <div id="tab-analisi" class="tab-panel active">
+
+        <section class="accordion dimensioning open">
+          <button class="section-head" type="button"><span>▦&nbsp;&nbsp;Dimensionamento Opere</span><span class="chevron">⌄</span></button>
+          <div class="section-body">
+            <div class="dim-table">
+              <div class="dim-row dim-head">
+                <div>DESCRIZIONE / ELEMENTO</div>
+                <div>MQ</div>
+                <div>IMP. MECCANICI<br>€/MQ</div>
+                <div>IMP. ELETTRICI<br>€/MQ</div>
+                <div>TOT. IMPIANTI<br>MECCANICI</div>
+                <div>TOT. IMPIANTI<br>ELETTRICI</div>
+                <div>TOTALE RIGA</div>
+                <div></div>
+              </div>
+              <div id="dimRows"></div>
+              <div class="dim-row dim-total-row">
+                <div>TOTALE</div>
+                <div><span id="dimMqTotal">0,00</span></div>
+                <div></div><div></div>
+                <div class="dim-read"><span id="dimMechGrand">0,00</span>&nbsp;€</div>
+                <div class="dim-read elec"><span id="dimElecGrand">0,00</span>&nbsp;€</div>
+                <div class="dim-read total"><span id="dimCalcGrand">0,00</span>&nbsp;€</div>
+                <div></div>
+              </div>
+            </div>
+
+            <div class="dim-addline"><button id="dimAdd" class="dim-add" type="button">＋ Aggiungi elemento</button></div>
+
+            <div class="dim-rounded-grid">
+              <div class="dim-rounded-label">Totale opere arrotondato</div>
+              <div class="dim-rounded-control"><input id="dimRounded" value="0,00" inputmode="decimal"><span>€</span></div>
+              <button id="dimRoundedReset" class="dim-rounded-reset" type="button" title="Ripristina totale calcolato">↺</button>
+            </div>
+
+            <div class="dim-fee-line">
+              <div class="dim-fee-slider">
+                <label>COMPENSO COMPLESSIVO</label>
+                <input id="dimFeePct" type="range" min="0" max="15" step="0.1" value="7">
+                <strong id="dimFeePctLabel">7,0%</strong>
+              </div>
+              <div class="dim-fee-total">
+                <span>COMPENSO TOTALE INDICATIVO</span>
+                <strong><span id="dimProposalTotal">0,00</span> €</strong>
+              </div>
+              <div class="dim-ie-factor">
+                <label>FATTORE COMPLESSITÀ IE</label>
+                <input id="dimIeFactor" value="1,00" inputmode="decimal">
+              </div>
+            </div>
+
+            <div class="dim-phases">
+              <div class="dim-phase-head">
+                <div>FASE</div><div>RIPARTIZIONE</div><div>% EFFETTIVA</div><div>IMPORTO INDICATIVO</div>
+              </div>
+              <div class="dim-phase-row">
+                <div class="dim-phase-name">Fase Preliminare (PP)</div>
+                <div><input class="phase-pct" type="number" min="0" max="100" step="0.5" value="10">&nbsp;%</div>
+                <div><span class="phase-effective-value">0,70%</span></div>
+                <div class="dim-phase-result"><span class="phase-result-value">0,00</span>&nbsp;€</div>
+              </div>
+              <div class="dim-phase-row">
+                <div class="dim-phase-name">Fase Definitiva (PD)</div>
+                <div><input class="phase-pct" type="number" min="0" max="100" step="0.5" value="35">&nbsp;%</div>
+                <div><span class="phase-effective-value">2,45%</span></div>
+                <div class="dim-phase-result"><span class="phase-result-value">0,00</span>&nbsp;€</div>
+              </div>
+              <div class="dim-phase-row">
+                <div class="dim-phase-name">Fase Esecutiva (PE)</div>
+                <div><input class="phase-pct" type="number" min="0" max="100" step="0.5" value="25">&nbsp;%</div>
+                <div><span class="phase-effective-value">1,75%</span></div>
+                <div class="dim-phase-result"><span class="phase-result-value">0,00</span>&nbsp;€</div>
+              </div>
+              <div class="dim-phase-row">
+                <div class="dim-phase-name">Direzione Lavori (DL)</div>
+                <div><input class="phase-pct" type="number" min="0" max="100" step="0.5" value="30">&nbsp;%</div>
+                <div><span class="phase-effective-value">2,10%</span></div>
+                <div class="dim-phase-result"><span class="phase-result-value">0,00</span>&nbsp;€</div>
+              </div>
+            </div>
+
+            <div class="dim-phase-footer">
+              <div id="phaseTotalCheck" class="phase-total-check">Totale ripartizione fasi: <strong id="phaseTotalPct">100%</strong></div>
+              <div class="dim-transfer-wrap">
+                <span id="dimFlash" class="dim-flash">Valori trasferiti ✓</span>
+                <button id="dimTransfer" class="dim-transfer" type="button">Usa come proposta economica ↓</button>
+              </div>
+            </div>
+            <span id="dimCalcBox" style="display:none">0,00</span>
+          </div>
+        </section>
+
         <section class="accordion analysis open">
           <button class="section-head" type="button"><span>€&nbsp;&nbsp;Stato Analisi Economica</span><span class="chevron">⌄</span></button>
           <div class="section-body analysis-body">
@@ -124,6 +186,6 @@
       </div>
     </section>
   </main>
-  <script src="app-v3.js?v=6"></script>
+  <script src="app-v4.js?v=8"></script>
 </body>
 </html>

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dabster | Analisi Economica</title>
+  <link rel="stylesheet" href="styles.css?v=20260820-1930" />
+</head>
+<body>
+  <header class="topbar">
+    <button class="top-icon" aria-label="Menu">☰</button>
+    <div class="logo-wrap">
+      <div class="logo">dabster</div>
+      <div class="logo-sub">human crafted engineering</div>
+    </div>
+    <button class="top-icon" aria-label="Altre opzioni">⋮</button>
+  </header>
+
+  <main class="page-shell">
+    <div class="page-title">Offerta</div>
+    <div class="breadcrumb"><span>⌂</span><span>›</span><span>Offerte</span><span>›</span><span>Dettaglio</span><span>›</span><strong>Analisi Economica</strong></div>
+
+    <section class="main-card">
+      <div class="tabs">
+        <a class="tab" href="index.html" style="display:flex;align-items:center;text-decoration:none">▣&nbsp;&nbsp;Dati Offerta</a>
+        <a class="tab" href="index.html" style="display:flex;align-items:center;text-decoration:none">♧&nbsp;&nbsp;Risorse Esterne <span class="badge">0</span></a>
+        <a class="tab active" href="analisi.html" style="display:flex;align-items:center;text-decoration:none">€&nbsp;&nbsp;Analisi Economica</a>
+      </div>
+
+      <div class="tab-panel active">
+        <section class="accordion analysis open">
+          <button class="section-head" type="button">
+            <span>€&nbsp;&nbsp;Stato Analisi Economica</span><span class="chevron">⌄</span>
+          </button>
+
+          <div class="section-body analysis-body">
+            <div class="analysis-layout">
+              <div class="economic-table-wrap">
+                <div class="economic-table">
+                  <div class="economic-row economic-head">
+                    <div>PROPOSTA ECONOMICA DA ANALISI FOGLIO PE</div>
+                    <div class="numeric">TOT</div>
+                    <div class="trade-head">
+                      <div>TRATTATIVA <strong id="tradePctLabel">0%</strong></div>
+                      <input id="tradePct" type="range" min="0" max="30" step="1" value="0" />
+                    </div>
+                    <div class="cost-head">RIEPILOGO COSTI</div>
+                  </div>
+
+                  <div class="economic-row phase-row">
+                    <div>Fase Preliminare</div>
+                    <div class="money-cell"><input class="ae-proposal" value="0,00"><span>€</span></div>
+                    <div class="computed-cell"><span class="ae-discount">0,00</span><b>€</b></div>
+                    <div class="money-cell cost-cell"><input class="ae-cost" value="0,00"><span>€</span></div>
+                  </div>
+                  <div class="economic-row phase-row">
+                    <div>Fase Definitiva</div>
+                    <div class="money-cell"><input class="ae-proposal" value="0,00"><span>€</span></div>
+                    <div class="computed-cell"><span class="ae-discount">0,00</span><b>€</b></div>
+                    <div class="money-cell cost-cell"><input class="ae-cost" value="0,00"><span>€</span></div>
+                  </div>
+                  <div class="economic-row phase-row">
+                    <div>Fase Esecutiva</div>
+                    <div class="money-cell"><input class="ae-proposal" value="0,00"><span>€</span></div>
+                    <div class="computed-cell"><span class="ae-discount">0,00</span><b>€</b></div>
+                    <div class="money-cell cost-cell"><input class="ae-cost" value="0,00"><span>€</span></div>
+                  </div>
+                  <div class="economic-row phase-row">
+                    <div>Direzione Lavori</div>
+                    <div class="money-cell"><input class="ae-proposal" value="0,00"><span>€</span></div>
+                    <div class="computed-cell"><span class="ae-discount">0,00</span><b>€</b></div>
+                    <div class="money-cell cost-cell"><input class="ae-cost" value="0,00"><span>€</span></div>
+                  </div>
+                  <div class="economic-row phase-row external-row">
+                    <div>Rimborso Spese + Esterni</div>
+                    <div class="money-cell"><input class="ae-proposal" value="0,00"><span>€</span></div>
+                    <div class="computed-cell"><span class="ae-discount">0,00</span><b>€</b></div>
+                    <div class="money-cell cost-cell"><input class="ae-cost" value="0,00"><span>€</span></div>
+                  </div>
+
+                  <div class="economic-row total-row">
+                    <div>COMPENSO PROGETTO PROPOSTA</div>
+                    <div class="total-value"><span id="aeGross">0,00</span><b>€</b></div>
+                    <div class="total-value"><span id="aeDiscountTotal">0,00</span><b>€</b></div>
+                    <div class="total-value cost-total"><span id="aeCosts">0,00</span><b>€</b></div>
+                  </div>
+                </div>
+
+                <div class="post-trade-line">
+                  <span>Importo dopo trattativa</span>
+                  <strong><span id="aeNetRevenue">0,00</span> €</strong>
+                </div>
+              </div>
+
+              <aside class="economic-status">
+                <div class="status-block mol">
+                  <div class="status-title">MARGINE OPERATIVO LORDO</div>
+                  <div class="status-value"><span id="aeMol">0,00</span> €</div>
+                  <div class="status-percent" id="aeMolPct">0,00%</div>
+                </div>
+                <div class="status-line">
+                  <div><strong>SPESE GENERALI SU VENDITA ORE INT.</strong><span>35%</span></div>
+                  <div><span id="aeGeneralExpenses">0,00</span> €</div>
+                </div>
+                <div class="status-block mon">
+                  <div class="status-title">MARGINE OPERATIVO NETTO</div>
+                  <div class="status-value"><span id="aeMon">0,00</span> €</div>
+                </div>
+                <div class="status-block profit">
+                  <div class="status-title">UTILE COMMESSA</div>
+                  <div class="status-value" id="aeProfitPct">0,00%</div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js?v=20260820-1930"></script>
+</body>
+</html>

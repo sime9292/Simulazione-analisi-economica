@@ -1,4 +1,4 @@
-/* v27 - manual demo controls, no automatic seeding */
+/* v28 - manual demo controls, no automatic seeding */
 .analysis-demo-toolbar{
   display:flex;align-items:center;justify-content:flex-end;gap:7px;
   margin:10px 0 8px;padding:0 2px;
@@ -8,10 +8,13 @@
   background:#fff;color:#4c5c67;font-size:10.5px;font-weight:650;cursor:pointer;
 }
 .analysis-demo-btn:hover{background:#f6f8f9;border-color:#b8c5cc}
-.analysis-demo-btn.primary{background:#eef7f1;border-color:#c7dccd;color:#356346}
-.analysis-demo-btn.primary:hover{background:#e4f1e8;border-color:#b4d0bd}
+.analysis-demo-btn:disabled{opacity:.55;cursor:wait}
+.analysis-demo-btn.prefill{background:#eef7f1;border-color:#c7dccd;color:#356346}
+.analysis-demo-btn.prefill:hover{background:#e4f1e8;border-color:#b4d0bd}
 .analysis-demo-btn.clear{background:#fff6f6;border-color:#ead0d2;color:#8a444a}
 .analysis-demo-btn.clear:hover{background:#ffeded;border-color:#dfbfc2}
+.analysis-demo-btn.save{background:#eaf4fb;border-color:#bdd4e4;color:#2f607c;font-weight:750}
+.analysis-demo-btn.save:hover{background:#deedf7;border-color:#a8c6da}
 .analysis-demo-status{margin-right:auto;color:#7b8891;font-size:9.5px}
 .analysis-demo-status.busy{color:#4e7180}
 @media(max-width:700px){

@@ -1,0 +1,48 @@
+/* v24 - cleaner activity picker + subtle professional economic column palette */
+
+/* Activity field: dropdown is a control, not a persistent strip. */
+.activity-autocomplete-wrap{position:relative!important}
+.activity-autocomplete-wrap>.activity-name{padding-right:31px!important}
+.activity-dropdown-toggle{
+  position:absolute;z-index:4;right:3px;top:50%;transform:translateY(-50%);
+  width:25px;height:24px;border:0;border-left:1px solid #dce3e7;border-radius:0 5px 5px 0;
+  background:#f7f9fa;color:#64757d;font-size:13px;line-height:1;cursor:pointer;
+}
+.activity-dropdown-toggle:hover{background:#eef3f5;color:#405760}
+.activity-suggest-menu[hidden]{display:none!important}
+.activity-suggest-menu::before{display:none!important;content:none!important}
+.activity-suggest-menu{top:calc(100% + 3px)!important;max-height:185px!important;padding:4px!important}
+.activity-suggestion{font-size:10.5px!important;padding:7px 9px!important}
+
+/* Stato Analisi Economica: distinguish columns without dashboard-like saturation. */
+#tab-analisi .economic-table .economic-row>div:nth-child(1){background:#fbfcfd!important}
+#tab-analisi .economic-table .economic-row>div:nth-child(2){background:#f5f9fc!important}
+#tab-analisi .economic-table .economic-row>div:nth-child(3){background:#fff9f2!important}
+#tab-analisi .economic-table .economic-row>div:nth-child(4){background:#f5f8f6!important}
+
+#tab-analisi .economic-table .economic-head>div:nth-child(1){background:#f1f4f6!important;color:#485660!important}
+#tab-analisi .economic-table .economic-head>div:nth-child(2){background:#edf5fa!important;color:#3f596b!important}
+#tab-analisi .economic-table .economic-head>div:nth-child(3){background:#fbf1e6!important;color:#6b5947!important}
+#tab-analisi .economic-table .economic-head>div:nth-child(4){background:#edf3ef!important;color:#4e6255!important}
+
+/* Inputs inherit the column tint rather than painting a second box. */
+#tab-analisi .economic-table .phase-row .money-cell input,
+#tab-analisi .economic-table .external-row .money-cell input{background:transparent!important}
+#tab-analisi .economic-table .money-cell span{background:rgba(255,255,255,.48)!important}
+#tab-analisi .economic-table .computed-cell{background:#fff9f2!important}
+
+/* Cost column should be readable but not visually dominant. */
+#tab-analisi .economic-table .phase-row>div:nth-child(4),
+#tab-analisi .economic-table .phase-row>div:nth-child(4) *,
+#tab-analisi .economic-table .external-row>div:nth-child(4),
+#tab-analisi .economic-table .external-row>div:nth-child(4) *,
+#tab-analisi .economic-table .total-row>div:nth-child(4),
+#tab-analisi .economic-table .total-row>div:nth-child(4) *{
+  font-weight:400!important;
+}
+
+/* Keep totals distinct, while preserving the column identity. */
+#tab-analisi .economic-table .total-row>div:nth-child(1){background:#edf1f3!important}
+#tab-analisi .economic-table .total-row>div:nth-child(2){background:#eaf2f7!important}
+#tab-analisi .economic-table .total-row>div:nth-child(3){background:#f8eee2!important}
+#tab-analisi .economic-table .total-row>div:nth-child(4){background:#eaf0ec!important;color:#405247!important}

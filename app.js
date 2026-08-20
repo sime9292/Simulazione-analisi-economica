@@ -1,1 +1,104 @@
-document.querySelectorAll('.section-head').forEach(btn=>{btn.addEventListener('click',()=>btn.closest('.accordion').classList.toggle('open'))});document.querySelectorAll('.tab').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById('tab-'+btn.dataset.tab).classList.add('active')})});const star=document.getElementById('star');star?.addEventListener('click',()=>{star.classList.toggle('active');star.setAttribute('aria-pressed',star.classList.contains('active')?'true':'false')});function parseItalianNumber(v){return Number(v.replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,''))||0}function formatItalianNumber(n){return n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})}const money=[...document.querySelectorAll('.money')];const total=document.getElementById('totaleOfferta');function recalc(){const sum=money.reduce((s,i)=>s+parseItalianNumber(i.value),0);if(total)total.value=formatItalianNumber(sum)}money.forEach(input=>{input.addEventListener('focus',()=>input.select());input.addEventListener('blur',()=>{input.value=formatItalianNumber(parseItalianNumber(input.value));recalc()});input.addEventListener('input',recalc)});
+document.querySelectorAll('.section-head').forEach(btn=>{
+  btn.addEventListener('click',()=>btn.closest('.accordion').classList.toggle('open'))
+});
+
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  })
+});
+
+const star=document.getElementById('star');
+star?.addEventListener('click',()=>{
+  star.classList.toggle('active');
+  star.setAttribute('aria-pressed',star.classList.contains('active')?'true':'false');
+});
+
+function parseItalianNumber(v){
+  return Number(String(v).replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,''))||0;
+}
+function formatItalianNumber(n){
+  return Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function formatPct(n){
+  return Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+}
+
+/* Dati Offerta */
+const money=[...document.querySelectorAll('.money')];
+const total=document.getElementById('totaleOfferta');
+function recalcOffer(){
+  const sum=money.reduce((s,i)=>s+parseItalianNumber(i.value),0);
+  if(total) total.value=formatItalianNumber(sum);
+}
+money.forEach(input=>{
+  input.addEventListener('focus',()=>input.select());
+  input.addEventListener('blur',()=>{
+    input.value=formatItalianNumber(parseItalianNumber(input.value));
+    recalcOffer();
+  });
+  input.addEventListener('input',recalcOffer);
+});
+
+/* Analisi Economica */
+const aeProposal=[...document.querySelectorAll('.ae-proposal')];
+const aeCosts=[...document.querySelectorAll('.ae-cost')];
+const aeDiscounts=[...document.querySelectorAll('.ae-discount')];
+const tradePct=document.getElementById('tradePct');
+const tradePctLabel=document.getElementById('tradePctLabel');
+
+function setText(id,value){
+  const el=document.getElementById(id);
+  if(el) el.textContent=value;
+}
+
+function recalcEconomic(){
+  const pct=Number(tradePct?.value||0);
+  if(tradePctLabel) tradePctLabel.textContent=pct+'%';
+
+  let gross=0;
+  let costs=0;
+  aeProposal.forEach((input,index)=>{
+    const phaseValue=parseItalianNumber(input.value);
+    gross+=phaseValue;
+    if(aeDiscounts[index]){
+      aeDiscounts[index].textContent=formatItalianNumber(phaseValue*pct/100);
+    }
+  });
+  aeCosts.forEach(input=>costs+=parseItalianNumber(input.value));
+
+  const discount=gross*pct/100;
+  const netRevenue=gross-discount;
+
+  // In questa prima parte le spese generali restano a zero:
+  // verranno calcolate dalla futura sezione ore interne.
+  const generalExpenses=0;
+  const mol=netRevenue-costs;
+  const mon=mol-generalExpenses;
+  const molPct=netRevenue!==0 ? mol/netRevenue*100 : 0;
+  const profitPct=netRevenue!==0 ? mon/netRevenue*100 : 0;
+
+  setText('aeGross',formatItalianNumber(gross));
+  setText('aeDiscountTotal',formatItalianNumber(discount));
+  setText('aeCosts',formatItalianNumber(costs));
+  setText('aeNetRevenue',formatItalianNumber(netRevenue));
+  setText('aeMol',formatItalianNumber(mol));
+  setText('aeMolPct',formatPct(molPct));
+  setText('aeGeneralExpenses',formatItalianNumber(generalExpenses));
+  setText('aeMon',formatItalianNumber(mon));
+  setText('aeProfitPct',formatPct(profitPct));
+}
+
+[...aeProposal,...aeCosts].forEach(input=>{
+  input.addEventListener('focus',()=>input.select());
+  input.addEventListener('input',recalcEconomic);
+  input.addEventListener('blur',()=>{
+    input.value=formatItalianNumber(parseItalianNumber(input.value));
+    recalcEconomic();
+  });
+});
+tradePct?.addEventListener('input',recalcEconomic);
+recalcEconomic();

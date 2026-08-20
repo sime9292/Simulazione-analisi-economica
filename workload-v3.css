@@ -1,36 +1,42 @@
-/* v13: activity cards more distinct + scrollable suggestions + collapsed initial state */
+/* v14: activity cards distinct but visually consistent with Dabster web-app */
 
-/* Activity cards: nested, clearly distinct from phase cards */
+/* Activity cards: soft teal, nested under phase cards */
 .activity-card{
-  border:1px solid #c9dce1!important;
-  border-left:3px solid #6da8b3!important;
-  border-radius:8px!important;
-  background:#f4f9fa!important;
-  box-shadow:0 1px 2px rgba(43,78,88,.045)!important;
+  border:1px solid #c6dde2!important;
+  border-left:4px solid #4f98a6!important;
+  border-radius:9px!important;
+  background:#f4fafb!important;
+  box-shadow:0 1px 3px rgba(42,79,90,.055)!important;
 }
 .activity-head{
-  background:#edf6f7!important;
-  border-bottom-color:#d9e8eb!important;
+  background:linear-gradient(90deg,#eaf5f7 0%,#f4fafb 100%)!important;
+  border-bottom-color:#d7e8eb!important;
 }
 .activity-body{
-  background:#f9fcfc!important;
-  border-top:1px solid #dce9ec!important;
+  background:#fff!important;
+  border-top:1px solid #dbe9ec!important;
 }
 .activity-card:hover{
-  border-color:#b8d2d8!important;
-  border-left-color:#4f95a2!important;
+  border-color:#acd0d7!important;
+  border-left-color:#387f8d!important;
+  box-shadow:0 2px 7px rgba(42,79,90,.075)!important;
 }
 .activity-card .activity-name{
   background:#fff!important;
-  border-color:#d1e0e4!important;
-  color:#354d55!important;
+  border-color:#cbdde1!important;
+  color:#304a52!important;
+}
+.activity-card .activity-name:focus{
+  border-color:#4f98a6!important;
+  box-shadow:0 0 0 2px rgba(79,152,166,.12)!important;
 }
 .activity-card .activity-head-metrics span{
-  background:#e4f0f2!important;
-  color:#5b7077!important;
+  background:#dfeef1!important;
+  color:#536f77!important;
 }
-.activity-card .activity-head-metrics b{color:#315965!important}
-.activity-card .add-assignment{background:#fff!important}
+.activity-card .activity-head-metrics b{color:#285663!important}
+.activity-card .add-assignment{background:#f8fbfc!important;border-color:#cfe0e4!important;color:#3c6671!important}
+.activity-card .add-assignment:hover{background:#eaf5f7!important;border-color:#b8d4da!important}
 
 /* Autocomplete: browse as well as search */
 .activity-suggest-menu{

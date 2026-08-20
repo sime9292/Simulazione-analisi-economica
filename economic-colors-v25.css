@@ -1,0 +1,32 @@
+/* v25 - economic columns: proposal/trade greens, costs soft red */
+
+/* Description stays neutral. */
+#tab-analisi .economic-table .economic-row>div:nth-child(1){background:#fbfcfd!important}
+#tab-analisi .economic-table .economic-head>div:nth-child(1){background:#f1f4f6!important;color:#485660!important}
+
+/* Proposal: light professional green. */
+#tab-analisi .economic-table .economic-row>div:nth-child(2){background:#f2f8f3!important}
+#tab-analisi .economic-table .economic-head>div:nth-child(2){background:#e7f2e9!important;color:#405b47!important}
+#tab-analisi .economic-table .total-row>div:nth-child(2){background:#e3efe5!important;color:#395142!important}
+
+/* Trattativa: slightly stronger green than proposal. */
+#tab-analisi .economic-table .economic-row>div:nth-child(3),
+#tab-analisi .economic-table .computed-cell{background:#eaf4ec!important}
+#tab-analisi .economic-table .economic-head>div:nth-child(3){background:#dbeadd!important;color:#395341!important}
+#tab-analisi .economic-table .total-row>div:nth-child(3){background:#d5e6d8!important;color:#334b3a!important}
+
+/* Costs: soft red, clearly distinct but not alarming. */
+#tab-analisi .economic-table .economic-row>div:nth-child(4){background:#fff3f3!important}
+#tab-analisi .economic-table .economic-head>div:nth-child(4){background:#f8e4e5!important;color:#704a4d!important}
+#tab-analisi .economic-table .total-row>div:nth-child(4){background:#f3dfe1!important;color:#68464a!important}
+
+/* Preserve clean inputs and normal-weight costs. */
+#tab-analisi .economic-table .phase-row .money-cell input,
+#tab-analisi .economic-table .external-row .money-cell input{background:transparent!important}
+#tab-analisi .economic-table .money-cell span{background:rgba(255,255,255,.48)!important}
+#tab-analisi .economic-table .phase-row>div:nth-child(4),
+#tab-analisi .economic-table .phase-row>div:nth-child(4) *,
+#tab-analisi .economic-table .external-row>div:nth-child(4),
+#tab-analisi .economic-table .external-row>div:nth-child(4) *,
+#tab-analisi .economic-table .total-row>div:nth-child(4),
+#tab-analisi .economic-table .total-row>div:nth-child(4) *{font-weight:400!important}

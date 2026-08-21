@@ -1,4 +1,4 @@
-/* v40 - Trattativa as markup; economic KPIs calculated from TOT column */
+/* v43 - Trattativa as markup; definitive economic KPIs from TOT, robust for all manual cost edits */
 (function(){
   const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   const pct=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
@@ -41,7 +41,7 @@
       }
     });
 
-    /* KPI basati sulla colonna TOT, non sulla Trattativa. */
+    /* KPI definitivi: tutti basati sulla colonna TOT, non sulla Trattativa. */
     const mol=gross-directCosts;
     const generalExpenses=internalSalesBase*0.35;
     const mon=mol-generalExpenses;
@@ -66,9 +66,9 @@
     }
   }
 
-  function schedule(){
+  function schedule(delay=25){
     clearTimeout(timer);
-    timer=setTimeout(recalcRoundedTrade,25);
+    timer=setTimeout(recalcRoundedTrade,delay);
   }
 
   function install(attempt=0){
@@ -76,18 +76,35 @@
     const trade=document.getElementById('tradePct');
     if(!table||!trade){if(attempt<160)setTimeout(()=>install(attempt+1),60);return;}
 
-    trade.addEventListener('input',schedule);
-    trade.addEventListener('change',schedule);
-    table.addEventListener('input',schedule,true);
-    table.addEventListener('change',schedule,true);
-    document.getElementById('phaseWorkloadSection')?.addEventListener('input',schedule,true);
-    document.getElementById('phaseWorkloadSection')?.addEventListener('change',schedule,true);
-    document.getElementById('dimTransfer')?.addEventListener('click',()=>setTimeout(recalcRoundedTrade,80));
+    trade.addEventListener('input',()=>schedule());
+    trade.addEventListener('change',()=>schedule());
+    table.addEventListener('input',()=>schedule(),true);
+    table.addEventListener('change',()=>schedule(),true);
+    document.getElementById('phaseWorkloadSection')?.addEventListener('input',()=>schedule(),true);
+    document.getElementById('phaseWorkloadSection')?.addEventListener('change',()=>schedule(),true);
+    document.getElementById('dimTransfer')?.addEventListener('click',()=>schedule(90));
 
+    /* Delegated listeners also cover sections created asynchronously by app-v10.
+       This guarantees the definitive formulas after reimbursements/supplier recalculations. */
+    document.addEventListener('input',e=>{
+      if(e.target?.closest?.('#reimbursementsSection,#externalCostsSection'))schedule(40);
+    },true);
+    document.addEventListener('change',e=>{
+      if(e.target?.closest?.('#reimbursementsSection,#externalCostsSection'))schedule(40);
+    },true);
+    document.addEventListener('click',e=>{
+      if(e.target?.closest?.('#addSupplierCost,.supplier-delete,.addExternalCost,.phase-delete,#addEconomicPhase'))schedule(100);
+    },true);
+
+    /* Recalculate when economic rows are added OR removed. Text-only updates are ignored,
+       avoiding observer loops while still covering dynamic phase/supplier rows. */
     new MutationObserver(mutations=>{
-      if(mutations.some(m=>[...m.addedNodes].some(n=>n.nodeType===1)))schedule();
+      const structuralChange=mutations.some(m=>m.type==='childList' &&
+        [...m.addedNodes,...m.removedNodes].some(n=>n.nodeType===1));
+      if(structuralChange)schedule(40);
     }).observe(table,{childList:true,subtree:true});
 
+    window.dabsterRecalcEconomic=recalcRoundedTrade;
     recalcRoundedTrade();
     setTimeout(recalcRoundedTrade,500);
     setTimeout(recalcRoundedTrade,1800);

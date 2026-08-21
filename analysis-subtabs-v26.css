@@ -125,6 +125,27 @@ html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-value{
   font-size:10.2px!important;
 }
 
+/* v41 - KPI column spans the full economic table height with four equal cards. */
+html body #tab-analisi #analysisSubtabImpianti .analysis-layout{
+  align-items:stretch!important;
+}
+html body #tab-analisi #analysisSubtabImpianti .economic-kpis{
+  display:grid!important;
+  grid-template-rows:repeat(4,minmax(0,1fr))!important;
+  align-self:stretch!important;
+  align-content:stretch!important;
+  height:auto!important;
+  min-height:100%!important;
+  gap:4px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi{
+  height:auto!important;
+  min-height:0!important;
+  width:100%!important;
+  align-content:center!important;
+  margin:0!important;
+}
+
 /* Future disciplines (e.g. VVF) can be added as further tabs without changing the layout. */
 @media(max-width:780px){
   .analysis-subtabs{overflow-x:auto;align-items:stretch;scrollbar-width:thin}

@@ -52,7 +52,7 @@
 /* Compact planning workspace: same hierarchy, less unused vertical space. */
 #phaseWorkloadSection .workload-body{padding:6px 8px 7px!important}
 #phaseWorkloadSection .workload-toolbar{margin-bottom:5px!important}
-#phaseWorkloadSection .phase-work-cards{gap:8px!important}
+#phaseWorkloadSection .phase-work-cards{gap:11px!important}
 #phaseWorkloadSection .phase-card-head{
   min-height:40px!important;
   padding:4px 7px!important;
@@ -67,10 +67,11 @@
 #phaseWorkloadSection .phase-weeks{height:24px!important;width:48px!important}
 #phaseWorkloadSection .phase-card-metrics{gap:4px!important;min-width:150px!important;justify-self:end!important}
 #phaseWorkloadSection .phase-card-metrics span{height:24px!important;padding:0 7px!important}
-#phaseWorkloadSection .phase-card-body{padding:5px 7px 6px!important}
-#phaseWorkloadSection .activities{gap:4px!important;margin-bottom:4px!important}
+#phaseWorkloadSection .phase-card-body{padding:8px 7px 7px!important}
+#phaseWorkloadSection .activities{gap:7px!important;margin-bottom:7px!important}
 
 #phaseWorkloadSection .activity-card{border-radius:7px!important}
+#phaseWorkloadSection .activity-card+.activity-card{margin-top:1px!important}
 #phaseWorkloadSection .activity-head{
   grid-template-columns:minmax(240px,1fr) auto 24px!important;
   min-height:32px!important;

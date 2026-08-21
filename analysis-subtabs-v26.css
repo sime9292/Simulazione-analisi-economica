@@ -94,33 +94,35 @@
   box-shadow:0 5px 16px rgba(35,50,60,.12)!important;
 }
 #analysisSubtabImpianti>.analysis>.section-head{
-  height:30px!important;
-  padding:0 10px!important;
-  font-size:11.5px!important;
+  height:28px!important;
+  padding:0 9px!important;
+  font-size:11px!important;
 }
 #analysisSubtabImpianti>.analysis.open>.section-body{
-  padding:6px 8px 7px!important;
+  padding:5px 7px 6px!important;
   background:#fff!important;
 }
 
-/* Compress the sticky economic summary just enough to leave more room for phases. */
-#analysisSubtabImpianti .economic-row{min-height:34px!important}
-#analysisSubtabImpianti .economic-head{min-height:38px!important;font-size:9.5px!important}
-#analysisSubtabImpianti .economic-row>div{padding-top:4px!important;padding-bottom:4px!important}
+/* Tighter sticky economic summary: preserve readability, gain vertical workspace. */
+#analysisSubtabImpianti .economic-row{min-height:31px!important}
+#analysisSubtabImpianti .economic-head{min-height:34px!important;font-size:9.2px!important}
+#analysisSubtabImpianti .economic-row>div{padding-top:2px!important;padding-bottom:2px!important}
+#analysisSubtabImpianti .phase-row>div:first-child{font-size:10.5px!important}
 #analysisSubtabImpianti .money-cell input,
-#analysisSubtabImpianti .money-cell span{height:33px!important}
-#analysisSubtabImpianti .total-row{min-height:36px!important}
+#analysisSubtabImpianti .money-cell span{height:30px!important}
+#analysisSubtabImpianti .computed-cell{min-height:30px!important}
+#analysisSubtabImpianti .total-row{min-height:32px!important}
 html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi{
-  min-height:36px!important;
-  height:36px!important;
-  padding:3px 6px!important;
+  min-height:33px!important;
+  height:33px!important;
+  padding:2px 5px!important;
 }
 html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-label{
-  margin-bottom:2px!important;
-  font-size:7.3px!important;
+  margin-bottom:1px!important;
+  font-size:7px!important;
 }
 html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-value{
-  font-size:10.5px!important;
+  font-size:10.2px!important;
 }
 
 /* Future disciplines (e.g. VVF) can be added as further tabs without changing the layout. */

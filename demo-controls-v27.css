@@ -17,6 +17,21 @@
 .analysis-demo-btn.save:hover{background:#deedf7;border-color:#a8c6da}
 .analysis-demo-status{margin-right:auto;color:#7b8891;font-size:9.5px}
 .analysis-demo-status.busy{color:#4e7180}
+
+/* v39 - toolbar occupies only one compact utility row. */
+.analysis-demo-toolbar{
+  min-height:27px!important;
+  margin:3px 0 2px!important;
+  gap:5px!important;
+}
+.analysis-demo-btn{
+  height:26px!important;
+  padding:0 9px!important;
+  border-radius:5px!important;
+  font-size:9.7px!important;
+}
+.analysis-demo-status{font-size:8.8px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 @media(max-width:700px){
   .analysis-demo-toolbar{overflow-x:auto;justify-content:flex-start;white-space:nowrap}
   .analysis-demo-status{display:none}

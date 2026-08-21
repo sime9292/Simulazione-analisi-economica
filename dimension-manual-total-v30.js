@@ -1,4 +1,4 @@
-/* v30 - Totale opere arrotondato usable as standalone calculation base */
+/* v34 - Totale opere arrotondato usable as standalone base + IM/IE compensation follows fee slider */
 (function(){
   function install(attempt=0){
     if(typeof recalcDimensioning!=='function' || typeof dimRows==='undefined' || !dimRows){
@@ -58,16 +58,17 @@
 
         let phaseTotal=0;
         if(hasDetailedSplit){
-          const phaseMechBase=mechRounded*share/100;
-          const phaseElecBase=elecRounded*share/100*ieFactor;
-          if(phaseMechEls[index])phaseMechEls[index].textContent=formatItalianNumber(phaseMechBase);
-          if(phaseElecEls[index])phaseElecEls[index].textContent=formatItalianNumber(phaseElecBase);
-          phaseTotal=(phaseMechBase+phaseElecBase)*feePct/100;
+          /* These columns are compensation amounts, not raw works shares.
+             Therefore they must react immediately to the overall fee slider. */
+          const phaseMechComp=mechRounded*effectivePct/100;
+          const phaseElecComp=elecRounded*effectivePct/100*ieFactor;
+          if(phaseMechEls[index])phaseMechEls[index].textContent=formatItalianNumber(phaseMechComp);
+          if(phaseElecEls[index])phaseElecEls[index].textContent=formatItalianNumber(phaseElecComp);
+          phaseTotal=phaseMechComp+phaseElecComp;
         }else{
           if(phaseMechEls[index])phaseMechEls[index].textContent='—';
           if(phaseElecEls[index])phaseElecEls[index].textContent='—';
-          const phaseBase=rounded*share/100;
-          phaseTotal=phaseBase*feePct/100;
+          phaseTotal=rounded*effectivePct/100;
         }
 
         if(phaseResultEls[index])phaseResultEls[index].textContent=formatItalianNumber(phaseTotal);
@@ -80,7 +81,7 @@
 
     recalcDimensioning=recalcFromRoundedTotal;
 
-    /* Some old listeners stored the previous function object directly: add a final v30 pass. */
+    /* Existing listeners may retain older function references, so this final pass wins. */
     dimFeePct?.addEventListener('input',recalcFromRoundedTotal);
     dimIeFactor?.addEventListener('input',recalcFromRoundedTotal);
     phasePctInputs.forEach(i=>i.addEventListener('input',recalcFromRoundedTotal));

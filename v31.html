@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="it">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dabster Analisi Economica v31</title></head>
+<body>
+<script>
+window.DABSTER_EXPLICIT_SAVE_MODE=true;
+fetch('index.html?base=31&t='+Date.now(),{cache:'no-store'})
+  .then(r=>r.text())
+  .then(html=>{
+    html=html.replaceAll('dimension-v2.css?v=8','dimension-v4.css?v=31')
+             .replaceAll('app-v4.js?v=8','app-v14.js?v=31')
+             .replace('· v8','· v31')
+             .replace('</head>','<link rel="stylesheet" href="workload-v1.css?v=31"><link rel="stylesheet" href="workload-v2.css?v=31"><link rel="stylesheet" href="workload-v3.css?v=31"><link rel="stylesheet" href="workload-v4.css?v=31"><link rel="stylesheet" href="layout-v15.css?v=31"><link rel="stylesheet" href="kanban-v16.css?v=31"><link rel="stylesheet" href="demo-v19.css?v=31"><link rel="stylesheet" href="desktop-v20.css?v=31"><link rel="stylesheet" href="analysis-spacing-v21.css?v=31"><link rel="stylesheet" href="dimension-spacing-v22.css?v=31"><link rel="stylesheet" href="economic-colors-v24.css?v=31"><link rel="stylesheet" href="economic-colors-v25.css?v=31"><link rel="stylesheet" href="analysis-subtabs-v26.css?v=31"><link rel="stylesheet" href="demo-controls-v27.css?v=31"><link rel="stylesheet" href="dimension-readability-v29.css?v=31"></head>')
+             .replace('</body>','<script src="trade-rounding-v20.js?v=31"><\/script><script src="activity-ui-v24.js?v=31"><\/script><script src="analysis-subtabs-v26.js?v=31"><\/script><script src="demo-controls-v27.js?v=31"><\/script><script src="dimension-manual-total-v30.js?v=31"><\/script></body>');
+    document.open();document.write(html);document.close();
+  })
+  .catch(err=>{document.body.innerHTML='<p style="font-family:sans-serif;padding:24px">Errore caricamento: '+err+'</p>'});
+</script>
+</body>
+</html>

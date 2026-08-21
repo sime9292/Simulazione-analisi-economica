@@ -1,18 +1,47 @@
 /* Activity picker - native browser select for maximum reliability */
 (function(){
-  const ACTIVITIES=[
-    'Analisi documentale e sopralluoghi',
-    'Progettazione preliminare impianti',
-    'Progettazione definitiva impianti',
-    'Progettazione esecutiva impianti',
-    'Direzione lavori impianti',
-    'Valutazione progetto antincendio',
-    'Progetto prevenzione incendi',
-    'Assistenza iter autorizzativo',
-    'SCIA e assistenza al collaudo'
+  const ACTIVITY_GROUPS=[
+    {
+      label:'Impianti',
+      items:[
+        'Analisi documentale e sopralluoghi',
+        'Progetto preliminare impianti',
+        'Progettazione preliminare impianti',
+        'Progettazione preliminare impianto FV',
+        'Progettazione definitiva impianti',
+        'Progettazione definitiva impianto FV',
+        'Progetto esecutivo impianti',
+        'Progettazione esecutiva impianti',
+        'Direzione lavori impianti'
+      ]
+    },
+    {
+      label:'VVF / Antincendio',
+      items:[
+        'Valutazione progetto antincendio',
+        'Progetto antincendio',
+        'Progetto prevenzione incendi',
+        'Progetto di prevenzione incendi',
+        'Assistenza iter autorizzativo',
+        'SCIA antincendio e assistenza',
+        'SCIA e assistenza al collaudo'
+      ]
+    }
   ];
 
   const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const allActivities=()=>ACTIVITY_GROUPS.flatMap(g=>g.items);
+
+  function optionsMarkup(current){
+    const known=allActivities();
+    const custom=current && !known.includes(current)
+      ? `<optgroup label="Attività già inserita"><option value="${esc(current)}">${esc(current)}</option></optgroup>`
+      : '';
+    const groups=ACTIVITY_GROUPS.map(group=>
+      `<optgroup label="${esc(group.label)}">${group.items.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')}</optgroup>`
+    ).join('');
+    return `<option value="">Seleziona attività…</option>${custom}${groups}`;
+  }
 
   function prepare(activity){
     if(!activity || activity.dataset.nativeActivitySelect==='1')return;
@@ -24,10 +53,7 @@
     select.className=old.className || 'activity-name';
     select.classList.add('activity-name','activity-native-select');
     select.setAttribute('aria-label','Attività');
-
-    const values=[...ACTIVITIES];
-    if(current && !values.includes(current))values.unshift(current);
-    select.innerHTML=`<option value="">Seleziona attività…</option>${values.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')}`;
+    select.innerHTML=optionsMarkup(current);
     select.value=current;
 
     old.replaceWith(select);
@@ -59,8 +85,8 @@
       #phaseWorkloadSection .activity-native-select{
         width:100%!important;
         min-width:0!important;
-        height:28px!important;
-        padding:0 28px 0 8px!important;
+        height:30px!important;
+        padding:0 30px 0 8px!important;
         border:1px solid #d4dde1!important;
         border-radius:6px!important;
         background:#fff!important;

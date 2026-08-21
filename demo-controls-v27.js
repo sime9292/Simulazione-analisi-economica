@@ -1,4 +1,4 @@
-/* v36 - manual Precompila/Svuota/Salva controls aligned with the Dabster activity registry. */
+/* v37 - manual Precompila/Svuota/Salva controls aligned with the Dabster activity registry. */
 (function(){
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
@@ -204,11 +204,12 @@
       fire(document.getElementById('dimIeFactor'),'blur');
 
       const phases=[...document.querySelectorAll('.phase-work-card')].slice(0,4);
+      /* Demo calibrated for a realistic ~33% net project profit at 0% trade uplift. */
       const scenario=[
-        {type:'preliminare',title:'Progetto Preliminare IE',assign:[{role:'RS_IE',hours:12},{role:'UT_IE_S',hours:12}]},
-        {type:'definitivo',title:'Progetto IM',assign:[{role:'RS_IM',hours:18},{role:'UT_IM_S',hours:36}]},
-        {type:'esecutivo',title:'Calcoli Illuminotecnici',assign:[{role:'RS_IE',hours:12},{role:'UT_IE_S',hours:48}]},
-        {type:'dl',title:'Direzione Lavori Generica IM',assign:[{role:'PM',hours:8},{role:'RS_IM',hours:24}]}
+        {type:'preliminare',title:'Progetto Preliminare IE',assign:[{role:'RS_IE',hours:36},{role:'UT_IE_S',hours:36}]},
+        {type:'definitivo',title:'Progetto IM',assign:[{role:'RS_IM',hours:60},{role:'UT_IM_S',hours:110}]},
+        {type:'esecutivo',title:'Calcoli Illuminotecnici',assign:[{role:'RS_IE',hours:40},{role:'UT_IE_S',hours:150}]},
+        {type:'dl',title:'Direzione Lavori Generica IM',assign:[{role:'PM',hours:30},{role:'RS_IM',hours:60}]}
       ];
       for(let i=0;i<scenario.length;i++)await addActivity(phases[i],scenario[i].type,scenario[i].title,scenario[i].assign);
 
@@ -226,7 +227,7 @@
       document.querySelectorAll('.phase-work-card').forEach(card=>card.classList.add('collapsed'));
       window.dabsterAnalysisSubtabs?.activate('dimensionamento');
       document.body.dataset.demoSeeded='1';
-      setStatus('Dati demo caricati · attività allineate all’anagrafica Dabster');
+      setStatus('Dati demo caricati · costi calibrati per utile ~33%');
     }catch(err){
       setStatus('Errore: '+(err.message||err));
     }finally{

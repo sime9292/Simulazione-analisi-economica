@@ -112,20 +112,8 @@
 #analysisSubtabImpianti .money-cell span{height:30px!important}
 #analysisSubtabImpianti .computed-cell{min-height:30px!important}
 #analysisSubtabImpianti .total-row{min-height:32px!important}
-html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi{
-  min-height:33px!important;
-  height:33px!important;
-  padding:2px 5px!important;
-}
-html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-label{
-  margin-bottom:1px!important;
-  font-size:7px!important;
-}
-html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-value{
-  font-size:10.2px!important;
-}
 
-/* v41 - KPI column spans the full economic table height with four equal cards. */
+/* v42 - four KPI cards: exact table height, equal size and consistent typography/alignment. */
 html body #tab-analisi #analysisSubtabImpianti .analysis-layout{
   align-items:stretch!important;
 }
@@ -135,15 +123,48 @@ html body #tab-analisi #analysisSubtabImpianti .economic-kpis{
   align-self:stretch!important;
   align-content:stretch!important;
   height:auto!important;
-  min-height:100%!important;
+  min-height:0!important;
   gap:4px!important;
+  overflow:hidden!important;
 }
 html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi{
+  display:grid!important;
+  grid-template-rows:auto 1fr!important;
+  width:100%!important;
   height:auto!important;
   min-height:0!important;
-  width:100%!important;
-  align-content:center!important;
   margin:0!important;
+  padding:6px 7px!important;
+  align-content:stretch!important;
+  overflow:hidden!important;
+}
+html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-label{
+  align-self:start!important;
+  justify-self:start!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:7.2px!important;
+  line-height:1.12!important;
+  font-weight:700!important;
+  text-align:left!important;
+  white-space:normal!important;
+}
+html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-value{
+  align-self:end!important;
+  justify-self:end!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:10.5px!important;
+  line-height:1!important;
+  font-weight:700!important;
+  text-align:right!important;
+  white-space:nowrap!important;
+}
+html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-sub{
+  font-size:7.8px!important;
+  line-height:1!important;
+  font-weight:600!important;
+  margin-left:3px!important;
 }
 
 /* Future disciplines (e.g. VVF) can be added as further tabs without changing the layout. */

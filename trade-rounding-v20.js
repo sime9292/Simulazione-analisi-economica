@@ -1,4 +1,4 @@
-/* v36 - Trattativa: percentage increase, rounded upward to the next €100 per row */
+/* v40 - Trattativa as markup; economic KPIs calculated from TOT column */
 (function(){
   const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   const pct=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
@@ -13,22 +13,24 @@
     const tradeLabel=document.getElementById('tradePctLabel');
     if(tradeLabel)tradeLabel.textContent=tradePct===0?'0%':'+'+tradePct+'%';
 
-    let gross=0;
-    let negotiatedTotal=0;
-    let directCosts=0;
-    let internalCosts=0;
+    let gross=0;                 // totale colonna TOT
+    let negotiatedTotal=0;       // totale colonna Trattativa
+    let directCosts=0;           // totale Riepilogo Costi
+    let phaseTotBase=0;          // TOT sole fasi, senza rimborsi/costi esterni
 
     table.querySelectorAll('.phase-row').forEach(row=>{
       const proposal=num(row.querySelector('.ae-proposal')?.value);
       const cost=num(row.querySelector('.ae-cost')?.value);
       const rawNegotiated=proposal*(1+tradePct/100);
-      /* At 0% the proposal remains unchanged; rounding starts only when a markup is applied. */
       const negotiated=tradePct===0?proposal:roundUp100(rawNegotiated);
 
       gross+=proposal;
       negotiatedTotal+=negotiated;
       directCosts+=cost;
-      if(row.dataset.phaseManaged==='1')internalCosts+=cost;
+
+      /* Le spese generali sono il 35% del TOT delle sole fasi operative.
+         Rimborsi spese e costi esterni non hanno data-phase-managed="1" e sono esclusi. */
+      if(row.dataset.phaseManaged==='1')phaseTotBase+=proposal;
 
       const out=row.querySelector('.ae-discount');
       if(out){
@@ -39,19 +41,26 @@
       }
     });
 
-    const generalExpenses=internalCosts*0.35;
-    const mol=negotiatedTotal-directCosts;
+    /* KPI richiesti: tutti basati sulla colonna TOT, non sulla Trattativa. */
+    const mol=gross-directCosts;
+    const generalExpenses=phaseTotBase*0.35;
     const mon=mol-generalExpenses;
+    const profitPct=gross?mon/gross*100:0;
+    const molPct=gross?mol/gross*100:0;
+
     const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
 
     set('aeGross',money(gross));
     set('aeDiscountTotal',money(negotiatedTotal));
     set('aeCosts',money(directCosts));
     set('aeMol',money(mol));
-    set('aeMolPct',pct(negotiatedTotal?mol/negotiatedTotal*100:0));
+    set('aeMolPct',pct(molPct));
     set('aeGeneralExpenses',money(generalExpenses));
     set('aeMon',money(mon));
-    set('aeProfitPct',pct(negotiatedTotal?mon/negotiatedTotal*100:0));
+    set('aeProfitPct',pct(profitPct));
+
+    const expensesLabel=document.querySelector('#tab-analisi .kpi.expenses .kpi-label');
+    if(expensesLabel)expensesLabel.textContent='SPESE GENERALI · 35% TOT FASI';
   }
 
   function schedule(){

@@ -1,4 +1,4 @@
-/* v28 - manual Precompila/Svuota/Salva controls. Nothing is seeded automatically. */
+/* v36 - manual Precompila/Svuota/Salva controls aligned with the Dabster activity registry. */
 (function(){
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
@@ -61,9 +61,6 @@
     return [...root.querySelectorAll('.dim-data')].slice(0,3);
   }
 
-  /* Force a sync against an empty confirmed offer. This removes generated cards
-     still in Programmazione even when the offer is already on In lavorazione.
-     Cards already moved to Lavorazione/Chiuse remain protected by the Kanban core. */
   async function purgeGeneratedProgramming(){
     const st=statusSelect();
     if(!st)return;
@@ -90,8 +87,6 @@
     if(!silent)setBusy(true,'Svuotamento…');
     try{
       if(!await waitReady())throw new Error('Interfaccia non pronta');
-
-      /* Always clean generated Programmazione cards first, regardless of current offer status. */
       await purgeGeneratedProgramming();
 
       const st=statusSelect();
@@ -139,7 +134,6 @@
       });
       document.querySelectorAll('#supplierCostRows .supplier-delete').forEach(btn=>btn.click());
 
-      document.querySelectorAll('.activity-suggest-menu').forEach(menu=>{menu.hidden=true;menu.innerHTML='';});
       window.dabsterAnalysisSubtabs?.activate('dimensionamento');
       document.body.dataset.demoSeeded='0';
       if(!silent)setStatus('Dati svuotati · attività in programmazione rimosse');
@@ -154,10 +148,14 @@
     setValue(phase.querySelector('.phase-type-select'),type,'change');
     phase.classList.remove('collapsed');
     phase.querySelector('.add-activity')?.click();
-    await sleep(75);
+    await sleep(100);
     const activity=phase.querySelector('.activities .activity-card:last-child');
     if(!activity)return;
-    setValue(activity.querySelector('.activity-name'),title);
+
+    const activityField=activity.querySelector('.activity-name');
+    setValue(activityField,title,'change');
+    await sleep(20);
+
     const rows=activity.querySelector('.assignment-rows');
     if(rows)rows.innerHTML='';
     for(const a of assignments){
@@ -207,10 +205,10 @@
 
       const phases=[...document.querySelectorAll('.phase-work-card')].slice(0,4);
       const scenario=[
-        {type:'preliminare',title:'Analisi documentale e sopralluoghi',assign:[{role:'PM',hours:4},{role:'RS_IE',hours:12}]},
-        {type:'definitivo',title:'Progettazione definitiva impianti',assign:[{role:'RS_IE',hours:18},{role:'UT_IE_S',hours:36}]},
-        {type:'esecutivo',title:'Progettazione esecutiva impianti',assign:[{role:'RS_IE',hours:12},{role:'UT_IE_S',hours:48},{role:'UT_IM_S',hours:32}]},
-        {type:'dl',title:'Direzione lavori impianti',assign:[{role:'PM',hours:8},{role:'RS_IE',hours:24}]}
+        {type:'preliminare',title:'Progetto Preliminare IE',assign:[{role:'RS_IE',hours:12},{role:'UT_IE_S',hours:12}]},
+        {type:'definitivo',title:'Progetto IM',assign:[{role:'RS_IM',hours:18},{role:'UT_IM_S',hours:36}]},
+        {type:'esecutivo',title:'Calcoli Illuminotecnici',assign:[{role:'RS_IE',hours:12},{role:'UT_IE_S',hours:48}]},
+        {type:'dl',title:'Direzione Lavori Generica IM',assign:[{role:'PM',hours:8},{role:'RS_IM',hours:24}]}
       ];
       for(let i=0;i<scenario.length;i++)await addActivity(phases[i],scenario[i].type,scenario[i].title,scenario[i].assign);
 
@@ -228,7 +226,7 @@
       document.querySelectorAll('.phase-work-card').forEach(card=>card.classList.add('collapsed'));
       window.dabsterAnalysisSubtabs?.activate('dimensionamento');
       document.body.dataset.demoSeeded='1';
-      setStatus('Dati demo caricati e trasferiti · puoi modificarli');
+      setStatus('Dati demo caricati · attività allineate all’anagrafica Dabster');
     }catch(err){
       setStatus('Errore: '+(err.message||err));
     }finally{
@@ -245,8 +243,6 @@
       const confirmed=st && norm(st.value)==='confermata';
 
       if(confirmed){
-        /* Re-dispatching the confirmed status invokes the same protected sync used
-           by the first confirmation, now with the latest activities/hours. */
         fire(st,'change');
         await sleep(180);
         setStatus('Analisi salvata · attività commessa sincronizzate');
@@ -274,7 +270,6 @@
     document.getElementById('clearDemoData').addEventListener('click',()=>clearData(false));
     document.getElementById('saveAnalysisData').addEventListener('click',saveAnalysis);
 
-    /* In explicit-save mode, tell the user when confirmed-offer activity data changed. */
     const planning=document.getElementById('phaseWorkloadSection');
     if(planning){
       const dirty=()=>{

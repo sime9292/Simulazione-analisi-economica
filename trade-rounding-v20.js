@@ -1,4 +1,4 @@
-/* v20 - Trattativa: round each negotiated row upward to the next €100 */
+/* v36 - Trattativa: percentage increase, rounded upward to the next €100 per row */
 (function(){
   const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   const pct=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
@@ -11,7 +11,7 @@
     if(!table)return;
     const tradePct=Number(document.getElementById('tradePct')?.value||0);
     const tradeLabel=document.getElementById('tradePctLabel');
-    if(tradeLabel)tradeLabel.textContent=tradePct+'%';
+    if(tradeLabel)tradeLabel.textContent=tradePct===0?'0%':'+'+tradePct+'%';
 
     let gross=0;
     let negotiatedTotal=0;
@@ -21,8 +21,8 @@
     table.querySelectorAll('.phase-row').forEach(row=>{
       const proposal=num(row.querySelector('.ae-proposal')?.value);
       const cost=num(row.querySelector('.ae-cost')?.value);
-      const rawNegotiated=proposal*(1-tradePct/100);
-      /* At 0% the proposal must remain unchanged; rounding starts only when a negotiation is applied. */
+      const rawNegotiated=proposal*(1+tradePct/100);
+      /* At 0% the proposal remains unchanged; rounding starts only when a markup is applied. */
       const negotiated=tradePct===0?proposal:roundUp100(rawNegotiated);
 
       gross+=proposal;
@@ -33,7 +33,9 @@
       const out=row.querySelector('.ae-discount');
       if(out){
         out.textContent=money(negotiated);
-        out.title=tradePct===0?'Nessuna trattativa applicata':'Valore dopo trattativa, arrotondato per eccesso ai 100 € successivi';
+        out.title=tradePct===0
+          ?'Nessuna maggiorazione di trattativa applicata'
+          :`Valore con maggiorazione del ${tradePct}%, arrotondato per eccesso ai 100 € successivi`;
       }
     });
 
@@ -54,7 +56,6 @@
 
   function schedule(){
     clearTimeout(timer);
-    /* Existing calculation may schedule its own 0ms pass; run after it. */
     timer=setTimeout(recalcRoundedTrade,25);
   }
 
@@ -71,7 +72,6 @@
     document.getElementById('phaseWorkloadSection')?.addEventListener('change',schedule,true);
     document.getElementById('dimTransfer')?.addEventListener('click',()=>setTimeout(recalcRoundedTrade,80));
 
-    /* Re-run after demo seeding and after dynamic row changes. */
     new MutationObserver(mutations=>{
       if(mutations.some(m=>[...m.addedNodes].some(n=>n.nodeType===1)))schedule();
     }).observe(table,{childList:true,subtree:true});

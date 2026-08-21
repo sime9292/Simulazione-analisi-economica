@@ -49,6 +49,53 @@
 #tab-analisi .supplier-economic-row>div:first-child,#tab-analisi .external-row[data-special-cost="reimbursements"]>div:first-child{background:#f8fafb!important;font-weight:650;color:#455762!important}
 #tab-analisi .supplier-economic-row .money-cell input,#tab-analisi .external-row[data-special-cost="reimbursements"] .money-cell input{background:#f8fafb!important;color:#42535f!important;font-weight:650}
 
+/* Compact planning workspace: same hierarchy, less unused vertical space. */
+#phaseWorkloadSection .workload-body{padding:6px 8px 7px!important}
+#phaseWorkloadSection .workload-toolbar{margin-bottom:5px!important}
+#phaseWorkloadSection .phase-work-cards{gap:8px!important}
+#phaseWorkloadSection .phase-card-head{
+  min-height:38px!important;
+  padding:3px 7px!important;
+  grid-template-columns:27px minmax(170px,1fr) 112px auto!important;
+  gap:6px!important;
+}
+#phaseWorkloadSection .phase-collapse{width:23px!important;height:23px!important}
+#phaseWorkloadSection .phase-weeks{height:23px!important;width:48px!important}
+#phaseWorkloadSection .phase-card-metrics{gap:4px!important}
+#phaseWorkloadSection .phase-card-metrics span{height:23px!important;padding:0 7px!important}
+#phaseWorkloadSection .phase-card-body{padding:5px 7px 6px!important}
+#phaseWorkloadSection .activities{gap:4px!important;margin-bottom:4px!important}
+
+#phaseWorkloadSection .activity-card{border-radius:7px!important}
+#phaseWorkloadSection .activity-head{
+  grid-template-columns:minmax(240px,1fr) auto 24px!important;
+  min-height:31px!important;
+  gap:4px!important;
+  padding:2px 4px!important;
+}
+#phaseWorkloadSection .activity-name{height:25px!important;font-size:10.2px!important}
+#phaseWorkloadSection .activity-head-metrics{gap:3px!important}
+#phaseWorkloadSection .activity-head-metrics span{height:22px!important;padding:0 6px!important}
+
+/* Figures are part of the activity's working data: always keep them visible. */
+#phaseWorkloadSection .activity-toggle{display:none!important}
+#phaseWorkloadSection .activity-body,
+#phaseWorkloadSection .activity-card.collapsed .activity-body{
+  display:block!important;
+  padding:3px 5px 5px!important;
+}
+#phaseWorkloadSection .assignment-head,
+#phaseWorkloadSection .assignment-row{
+  min-height:25px!important;
+  gap:4px!important;
+  grid-template-columns:minmax(135px,1fr) 68px 76px 96px 24px!important;
+}
+#phaseWorkloadSection .assignment-row select,
+#phaseWorkloadSection .assignment-row input{height:23px!important}
+#phaseWorkloadSection .assignment-cost{font-size:9.7px!important}
+#phaseWorkloadSection .add-assignment{height:23px!important;margin-top:2px!important;padding:0 8px!important}
+#phaseWorkloadSection .add-activity{height:25px!important}
+
 @media(max-width:900px){
   .reimb-table,.supplier-table{overflow-x:auto}
   .reimb-head,.reimb-row{min-width:760px}

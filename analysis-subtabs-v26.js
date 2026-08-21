@@ -48,6 +48,9 @@
     /* Impianti keeps the existing operational sections and their accordion behaviour. */
     [sections.economic,sections.workload,sections.reimbursements,sections.external].forEach(section=>impPanel.appendChild(section));
 
+    /* Stato Analisi Economica is the first summary users need when entering Impianti. */
+    sections.economic.classList.add('open');
+
     function activate(name){
       nav.querySelectorAll('.analysis-subtab').forEach(btn=>{
         const active=btn.dataset.analysisSubtab===name;
@@ -59,6 +62,8 @@
         panel.classList.toggle('active',active);
         panel.hidden=!active;
       });
+      /* Re-entering Impianti always starts with the economic status visible. */
+      if(name==='impianti')sections.economic.classList.add('open');
     }
 
     nav.addEventListener('click',e=>{

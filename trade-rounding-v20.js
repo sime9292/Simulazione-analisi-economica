@@ -16,7 +16,7 @@
     let gross=0;                 // totale colonna TOT
     let negotiatedTotal=0;       // totale colonna Trattativa
     let directCosts=0;           // totale Riepilogo Costi
-    let phaseTotBase=0;          // TOT sole fasi, senza rimborsi/costi esterni
+    let internalSalesBase=0;     // vendita ore interne: TOT fasi, esclusi rimborsi ed esterni
 
     table.querySelectorAll('.phase-row').forEach(row=>{
       const proposal=num(row.querySelector('.ae-proposal')?.value);
@@ -28,9 +28,9 @@
       negotiatedTotal+=negotiated;
       directCosts+=cost;
 
-      /* Le spese generali sono il 35% del TOT delle sole fasi operative.
-         Rimborsi spese e costi esterni non hanno data-phase-managed="1" e sono esclusi. */
-      if(row.dataset.phaseManaged==='1')phaseTotBase+=proposal;
+      /* Modello Excel: SPESE GENERALI SU VENDITA ORE INT. = 35%.
+         La base è il TOT delle sole fasi operative: Rimborsi Spese e Costi Esterni sono esclusi. */
+      if(row.dataset.phaseManaged==='1')internalSalesBase+=proposal;
 
       const out=row.querySelector('.ae-discount');
       if(out){
@@ -41,9 +41,9 @@
       }
     });
 
-    /* KPI richiesti: tutti basati sulla colonna TOT, non sulla Trattativa. */
+    /* KPI basati sulla colonna TOT, non sulla Trattativa. */
     const mol=gross-directCosts;
-    const generalExpenses=phaseTotBase*0.35;
+    const generalExpenses=internalSalesBase*0.35;
     const mon=mol-generalExpenses;
     const profitPct=gross?mon/gross*100:0;
     const molPct=gross?mol/gross*100:0;
@@ -60,7 +60,10 @@
     set('aeProfitPct',pct(profitPct));
 
     const expensesLabel=document.querySelector('#tab-analisi .kpi.expenses .kpi-label');
-    if(expensesLabel)expensesLabel.textContent='SPESE GENERALI · 35% TOT FASI';
+    if(expensesLabel){
+      expensesLabel.textContent='SPESE GENERALI SU VENDITA ORE INT. · 35%';
+      expensesLabel.title='35% del TOT delle fasi operative, esclusi Rimborsi Spese e Costi Esterni';
+    }
   }
 
   function schedule(){

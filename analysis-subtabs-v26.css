@@ -113,26 +113,26 @@
 #analysisSubtabImpianti .computed-cell{min-height:30px!important}
 #analysisSubtabImpianti .total-row{min-height:32px!important}
 
-/* v42 - four KPI cards: exact table height, equal size and consistent typography/alignment. */
+/* v43 - KPI cards no longer depend on table height: four fixed equal cards. */
 html body #tab-analisi #analysisSubtabImpianti .analysis-layout{
-  align-items:stretch!important;
+  align-items:start!important;
 }
 html body #tab-analisi #analysisSubtabImpianti .economic-kpis{
-  display:grid!important;
-  grid-template-rows:repeat(4,minmax(0,1fr))!important;
-  align-self:stretch!important;
-  align-content:stretch!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-self:start!important;
   height:auto!important;
   min-height:0!important;
   gap:4px!important;
-  overflow:hidden!important;
+  overflow:visible!important;
 }
 html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi{
   display:grid!important;
   grid-template-rows:auto 1fr!important;
   width:100%!important;
-  height:auto!important;
-  min-height:0!important;
+  height:56px!important;
+  min-height:56px!important;
+  max-height:56px!important;
   margin:0!important;
   padding:6px 7px!important;
   align-content:stretch!important;

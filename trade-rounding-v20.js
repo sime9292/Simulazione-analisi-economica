@@ -1,10 +1,22 @@
-/* v47 - Trattativa markup + definitive KPIs, excluding inactive dynamic phase rows */
+/* v48 - Trattativa markup + 100€ upward rounding + definitive KPIs + hide empty special rows */
 (function(){
   const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   const pct=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
   const num=v=>Number(String(v??'').replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,''))||0;
   const roundUp100=n=>n>0?Math.ceil((n-1e-9)/100)*100:0;
   let timer=null;
+
+  function isSpecialRow(row){
+    return row.dataset.specialCost==='reimbursements' || row.dataset.specialCost==='suppliers';
+  }
+
+  function syncSpecialRowVisibility(row,proposal,cost){
+    if(!isSpecialRow(row))return;
+    const visible=Math.abs(proposal)>0.000001 || Math.abs(cost)>0.000001;
+    row.hidden=!visible;
+    if(visible)row.style.removeProperty('display');
+    else row.style.setProperty('display','none','important');
+  }
 
   function recalcRoundedTrade(){
     const table=document.querySelector('#tab-analisi .economic-table');
@@ -19,16 +31,22 @@
     let internalSalesBase=0;
 
     table.querySelectorAll('.phase-row').forEach(row=>{
-      /* Managed phase rows stay in the DOM as technical containers, but only active phases
-         are visible and economically countable. Special rows (rimborsi/esterni) are always handled. */
+      const proposal=num(row.querySelector('.ae-proposal')?.value);
+      const cost=num(row.querySelector('.ae-cost')?.value);
+
+      /* Rimborsi Spese e Costi Esterni compaiono nella sintesi solo quando hanno un valore. */
+      syncSpecialRowVisibility(row,proposal,cost);
+
+      /* Le fasi tecniche restano nel DOM, ma se non sono attive non partecipano a nessun totale. */
       const isManagedDynamicPhase=!!row.dataset.economicPhase;
       if(isManagedDynamicPhase&&row.dataset.economicActive!=='1'){
         const out=row.querySelector('.ae-discount');if(out)out.textContent=money(0);
         return;
       }
 
-      const proposal=num(row.querySelector('.ae-proposal')?.value);
-      const cost=num(row.querySelector('.ae-cost')?.value);
+      /* TRATTATIVA = maggiorazione percentuale sulla singola riga.
+         Con percentuale > 0, il risultato viene sempre arrotondato per eccesso ai 100 €.
+         Il totale Trattativa è la somma dei valori di riga già arrotondati. */
       const rawNegotiated=proposal*(1+tradePct/100);
       const negotiated=tradePct===0?proposal:roundUp100(rawNegotiated);
 
@@ -36,18 +54,21 @@
       negotiatedTotal+=negotiated;
       directCosts+=cost;
 
-      /* SPESE GENERALI SU VENDITA ORE INT. = 35% del TOT delle sole fasi operative attive. */
-      if(row.dataset.phaseManaged==='1')internalSalesBase+=proposal;
+      /* SPESE GENERALI = 35% del TOT/proposta delle sole fasi operative attive.
+         Sono esclusi in modo esplicito Rimborsi Spese e Costi Esterni. */
+      const isActiveOperatingPhase=row.dataset.phaseManaged==='1' && !isSpecialRow(row);
+      if(isActiveOperatingPhase)internalSalesBase+=proposal;
 
       const out=row.querySelector('.ae-discount');
       if(out){
         out.textContent=money(negotiated);
         out.title=tradePct===0
           ?'Nessuna maggiorazione di trattativa applicata'
-          :`Valore con maggiorazione del ${tradePct}%, arrotondato per eccesso ai 100 € successivi`;
+          :`Valore +${tradePct}%, arrotondato per eccesso ai 100 €`;
       }
     });
 
+    /* I KPI restano basati sul TOT/proposta, non sulla colonna Trattativa. */
     const mol=gross-directCosts;
     const generalExpenses=internalSalesBase*0.35;
     const mon=mol-generalExpenses;
@@ -66,8 +87,8 @@
 
     const expensesLabel=document.querySelector('#tab-analisi .kpi.expenses .kpi-label');
     if(expensesLabel){
-      expensesLabel.textContent='SPESE GENERALI SU VENDITA ORE INT. · 35%';
-      expensesLabel.title='35% del TOT delle fasi operative attive, esclusi Rimborsi Spese e Costi Esterni';
+      expensesLabel.textContent='SPESE GENERALI · 35%';
+      expensesLabel.title='35% del TOT delle sole fasi operative attive; Rimborsi Spese e Costi Esterni sono esclusi';
     }
   }
 

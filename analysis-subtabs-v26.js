@@ -1,4 +1,4 @@
-/* v47 - Flat Impianti workspace + dynamic economic phases from Dimensionamento / activities */
+/* v48 - Flat Impianti workspace + dynamic locked economic phases */
 (function(){
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
@@ -84,9 +84,6 @@
     }
     bindStickyOffset();
 
-    /* Economic phase rows are system-controlled. A phase is active when:
-       1) it was explicitly transferred from Dimensionamento, OR
-       2) it contains at least one activity in the planning board. */
     const PHASES=[
       {id:'preliminare',label:'Progetto Preliminare',dimIndex:0},
       {id:'definitivo',label:'Progetto Definitivo',dimIndex:1},
@@ -121,12 +118,20 @@
       row.dataset.economicPhase=def.id;
       row.classList.add('economic-managed-phase');
       const nameCell=row.children[0];
-      if(nameCell&&!nameCell.querySelector('.economic-phase-label')){
-        const label=document.createElement('span');
-        label.className='economic-phase-label';label.textContent=def.label;
+      const editor=nameCell?.querySelector('.phase-name-editor');
+      if(editor)editor.style.setProperty('display','none','important');
+      row.querySelector('.phase-delete')?.style.setProperty('display','none','important');
+      let label=nameCell?.querySelector('.economic-phase-label');
+      if(nameCell&&!label){
+        label=document.createElement('span');
+        label.className='economic-phase-label';
         nameCell.appendChild(label);
-      }else{
-        const label=nameCell?.querySelector('.economic-phase-label');if(label)label.textContent=def.label;
+      }
+      if(label){
+        label.textContent=def.label;
+        label.style.fontWeight='650';
+        label.style.color='#3f515d';
+        label.style.whiteSpace='nowrap';
       }
       const input=row.querySelector('.ae-proposal');
       if(input&&input.dataset.phaseProposalBound!=='1'){
@@ -171,10 +176,15 @@
         row.dataset.economicActive=active?'1':'0';
         row.classList.toggle('economic-phase-inactive',!active);
         row.hidden=!active;
+        if(active)row.style.removeProperty('display');
+        else row.style.setProperty('display','none','important');
       });
 
       const actions=sections.economic.querySelector('.phase-summary-actions');
-      if(actions)actions.classList.add('system-phase-actions');
+      if(actions){
+        actions.classList.add('system-phase-actions');
+        actions.style.setProperty('display','none','important');
+      }
 
       manualBeforeTransfer.clear();
       window.dabsterRecalcEconomic?.();

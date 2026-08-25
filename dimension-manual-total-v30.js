@@ -1,4 +1,4 @@
-/* v48 - Totale opere standalone + selectable phases for economic analysis */
+/* v49 - Totale opere standalone + selectable phases + simplified managerial phase table */
 (function(){
   function install(attempt=0){
     if(typeof recalcDimensioning!=='function' || typeof dimRows==='undefined' || !dimRows){
@@ -18,6 +18,27 @@
         .dim-phase-include input{width:13px;height:13px;margin:0;cursor:pointer;accent-color:#2b9bad}
       `;
       document.head.appendChild(style);
+    }
+
+    function simplifyPhaseTable(){
+      const head=document.querySelector('.dim-phase-head');
+      if(!head)return;
+      const headCells=[...head.children];
+      let effectiveIndex=headCells.findIndex(cell=>String(cell.textContent||'').toLowerCase().includes('effettiva'));
+      if(effectiveIndex<0){
+        const sample=document.querySelector('.dim-phase-row .phase-effective-value');
+        if(sample)effectiveIndex=[...sample.closest('.dim-phase-row').children].indexOf(sample.closest('div'));
+      }
+      if(effectiveIndex>=0){
+        head.children[effectiveIndex]?.remove();
+        document.querySelectorAll('.dim-phase-row').forEach(row=>row.children[effectiveIndex]?.remove());
+      }
+      const labels=[...head.children];
+      if(labels[1])labels[1].textContent='RIPARTIZIONE';
+      if(labels[2])labels[2].textContent='QUOTA IM';
+      if(labels[3])labels[3].textContent='QUOTA IE';
+      if(labels[4])labels[4].textContent='COMPENSO FASE';
+      document.querySelector('.dim-phases')?.classList.add('managerial-phase-table');
     }
 
     function ensurePhaseSelectors(){
@@ -63,7 +84,8 @@
       const feePct=Number(dimFeePct?.value||7);
       if(dimFeePctLabel)dimFeePctLabel.textContent=Number(feePct).toLocaleString('it-IT',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
 
-      const ieFactor=Math.max(0,parseItalianNumber(dimIeFactor?.value)||1);
+      const parsedIeFactor=parseItalianNumber(dimIeFactor?.value);
+      const ieFactor=Math.max(0,Number.isFinite(parsedIeFactor)?parsedIeFactor:1);
       if(dimIeFactor){
         dimIeFactor.disabled=!hasDetailedSplit;
         dimIeFactor.title=hasDetailedSplit?'Fattore applicato alla quota impianti elettrici':'Disponibile quando è presente una ripartizione IM / IE';
@@ -76,14 +98,11 @@
       check?.classList.toggle('invalid',Math.abs(shareTotal-100)>0.01);
 
       const phaseResultEls=[...document.querySelectorAll('.phase-result-value')];
-      const phaseEffEls=[...document.querySelectorAll('.phase-effective-value')];
       const phaseMechEls=[...document.querySelectorAll('.phase-mech-value')];
       const phaseElecEls=[...document.querySelectorAll('.phase-elec-value')];
 
       phaseValues=shares.map((share,index)=>{
         const effectivePct=feePct*share/100;
-        if(phaseEffEls[index])phaseEffEls[index].textContent=Number(effectivePct).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
-
         let phaseTotal=0;
         if(hasDetailedSplit){
           const phaseMechComp=mechRounded*effectivePct/100;
@@ -107,6 +126,7 @@
     }
 
     installSelectorStyles();
+    simplifyPhaseTable();
     ensurePhaseSelectors();
     recalcDimensioning=recalcFromRoundedTotal;
 
@@ -124,7 +144,6 @@
       setTimeout(()=>window.dabsterRecalcEconomic?.(),110);
     });
 
-    /* Demo controls must not leave transferred phase state behind. */
     document.addEventListener('click',e=>{
       if(e.target.closest('#clearDemoData')){
         window.DABSTER_DIM_SELECTED_PHASES=[];

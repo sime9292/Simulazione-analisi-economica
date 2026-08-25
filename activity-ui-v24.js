@@ -1,4 +1,4 @@
-/* v44 - Planning UI aligned with Attivita Commessa: phase tabs + available/prevented activity cards */
+/* v45 - Planning UI aligned with Attività Commessa: phase tabs + available/prevented activity cards */
 (function(){
   const RAW_ACTIVITIES=`
 ATT001|L10 Analisi Energetica|Pratiche|IM
@@ -45,8 +45,8 @@ ATT041|SCIA VVF|Direzione Lavori|VVF
 ATT042|Relazione Collaudo VVF|Direzione Lavori|VVF
 ATT043|Collaudo Acustico|Direzione Lavori|AC
 ATT044|Attestato Prestazione Energetica|Direzione Lavori|IM
-ATT045|Verifica Contabilita IE|Direzione Lavori|IE
-ATT046|Verifica Contabilita IM|Direzione Lavori|IM
+ATT045|Verifica Contabilità IE|Direzione Lavori|IE
+ATT046|Verifica Contabilità IM|Direzione Lavori|IM
 ATT047|Validazione IM|Consulenze Varie|IM
 ATT048|Validazione IE|Consulenze Varie|IE
 ATT049|Due Diligence IM|Consulenze Varie|IM
@@ -69,7 +69,7 @@ ATT067|Progetto IM|Progetto Definitivo|IM
 ATT068|Progetto IE|Progetto Definitivo|IE
 ATT069|marketing|Consulenze Varie|ED
 ATT070|pratica ENEA|Consulenze Varie|IM
-ATT071|Fattibilita energetica|Pratiche|IM
+ATT071|Fattibilità energetica|Pratiche|IM
 ATT072|documenti Gara IM|Consulenze Varie|IM
 ATT073|documenti Gara IE|Consulenze Varie|IE
 ATT074|ASSISTENZA PM|Consulenze Varie|IM
@@ -125,7 +125,7 @@ ATT319|Elaborati grafici VVF|Progetto Preliminare|VVF
 ATT417|Pratica antiabbagliamento da fotovoltaico|Consulenze Varie|IE
 ATT475|RELAZIONE FABBITILITA' COLONNINE RICARICA VEICOLI|Consulenze Varie|IE
 ATT478|PRATICA STMG TERNA|Pratiche|IE
-ATT485|Attivita di supporto e consulenza al progetto|Progetto Esecutivo|VVF
+ATT485|Attività di supporto e consulenza al progetto|Progetto Esecutivo|VVF
 ATT486|Integrazioni SCIA VVF|Direzione Lavori|VVF
 ATT494|Direzione lavori antincendio|Direzione Lavori|VVF
 ATT498|Relazione prevenzione incendi|Progetto Definitivo|VVF
@@ -168,7 +168,6 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
   function phaseCards(){return root?[...root.querySelectorAll(':scope > .phase-work-card')]:[];}
   function cardPhase(card){return card?.querySelector('.phase-type-select')?.value||card?.dataset.planningPhase||'';}
   function findPhaseCard(id){return phaseCards().find(card=>cardPhase(card)===id)||null;}
-
   function activityField(activity){return activity?.querySelector('.activity-name')||null;}
 
   function resolveMeta(activity){
@@ -176,7 +175,6 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
     if(!field)return null;
     const existing=ACTIVITIES.find(x=>x.code===field.dataset.activityCode);
     if(existing && norm(existing.name)===norm(field.value))return existing;
-
     const phase=phaseDef(cardPhase(activity.closest('.phase-work-card')));
     const byPhase=ACTIVITIES.find(x=>x.category===phase.category && norm(x.name)===norm(field.value));
     const any=ACTIVITIES.find(x=>norm(x.name)===norm(field.value));
@@ -196,21 +194,16 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
     const field=activityField(activity);
     if(!head||!field)return;
     let ident=head.querySelector('.planning-activity-ident');
-    if(!ident){
-      ident=document.createElement('div');ident.className='planning-activity-ident';
-      head.insertBefore(ident,head.firstChild);
-    }
+    if(!ident){ident=document.createElement('div');ident.className='planning-activity-ident';head.insertBefore(ident,head.firstChild);}
     const meta=resolveMeta(activity);
-    const title=String(field.value||'').trim()||'Attivita da definire';
+    const title=String(field.value||'').trim()||'Attività da definire';
     ident.innerHTML=`<div class="planning-activity-main"><strong>${esc(meta?.code||'ATT')}</strong><span>${esc(title)}</span></div>${meta?.discipline?`<em>${esc(meta.discipline)}</em>`:''}`;
     activity.dataset.activityCode=meta?.code||field.dataset.activityCode||'';
   }
 
   function prepareActivity(activity){
     if(!activity)return;
-    let field=activityField(activity);
-    if(!field)return;
-
+    let field=activityField(activity);if(!field)return;
     if(field.tagName==='SELECT'){
       const model=document.createElement('input');
       model.type='hidden';model.className='activity-name';model.value=field.value||'';
@@ -221,11 +214,9 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
     }else{
       field.removeAttribute('list');field.setAttribute('autocomplete','off');field.type='hidden';
     }
-
     const head=activity.querySelector('.activity-head');
     head?.querySelectorAll('.activity-suggest-menu,.activity-dropdown-toggle').forEach(el=>el.remove());
     head?.classList.remove('activity-autocomplete-wrap');
-
     if(activity.dataset.planningPrepared!=='1'){
       activity.dataset.planningPrepared='1';
       const sync=()=>{resolveMeta(activity);renderActivityIdentity(activity);scheduleRefresh();};
@@ -238,15 +229,12 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
   function selectedMetas(card){
     return [...card.querySelectorAll('.activity-card')].map(activity=>{
       prepareActivity(activity);
-      const meta=resolveMeta(activity);
-      const field=activityField(activity);
+      const meta=resolveMeta(activity),field=activityField(activity);
       return {activity,meta,name:field?.value||'',code:meta?.code||field?.dataset.activityCode||''};
     }).filter(x=>String(x.name).trim());
   }
 
-  function activityIsUsed(card,item){
-    return selectedMetas(card).some(x=>x.code===item.code || (!x.code && norm(x.name)===norm(item.name)));
-  }
+  function activityIsUsed(card,item){return selectedMetas(card).some(x=>x.code===item.code || (!x.code && norm(x.name)===norm(item.name)));}
 
   function setExactActivity(activity,item){
     prepareActivity(activity);
@@ -281,16 +269,15 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
     const list=board.querySelector('.planning-available-list');
     const count=board.querySelector('.planning-available-count');
     const items=ACTIVITIES.filter(x=>x.category===phase.category);
-    if(count)count.textContent=`${items.length} attivita`;
+    if(count)count.textContent=`${items.length} attività`;
     list.innerHTML=items.map(item=>{
       const used=activityIsUsed(card,item);
       return `<article class="planning-available-card ${used?'used':''}" data-code="${esc(item.code)}" draggable="${used?'false':'true'}">
         <div class="planning-available-code">${esc(item.code)}</div>
         <div class="planning-available-copy"><strong>${esc(item.name)}</strong><span>${esc(item.discipline)}</span></div>
-        <button type="button" class="planning-card-add" ${used?'disabled':''} title="${used?'Attivita gia preventivata':'Aggiungi alle attivita preventivate'}">${used?'✓':'＋'}</button>
+        <button type="button" class="planning-card-add" ${used?'disabled':''} title="${used?'Attività già preventivata':'Aggiungi alle attività preventivate'}">${used?'✓':'＋'}</button>
       </article>`;
-    }).join('') || '<div class="planning-empty">Nessuna attivita disponibile per questa fase.</div>';
-
+    }).join('') || '<div class="planning-empty">Nessuna attività disponibile per questa fase.</div>';
     list.querySelectorAll('.planning-available-card').forEach(el=>{
       const item=ACTIVITIES.find(x=>x.code===el.dataset.code);if(!item)return;
       el.querySelector('.planning-card-add')?.addEventListener('click',()=>addToPhase(phase.id,item));
@@ -308,12 +295,11 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
   function updateSelectedSummary(card){
     const board=card.querySelector('.planning-phase-board');if(!board)return;
     const selected=selectedMetas(card);
-    const empty=board.querySelector('.planning-selected-empty');
-    if(empty)empty.hidden=selected.length>0;
+    const empty=board.querySelector('.planning-selected-empty');if(empty)empty.hidden=selected.length>0;
     const summary=board.querySelector('.planning-selected-summary');
     const hours=card.querySelector('.phase-hours')?.textContent||'0,00';
     const cost=card.querySelector('.phase-work-cost')?.textContent||'0,00 €';
-    if(summary)summary.textContent=`${selected.length} ${selected.length===1?'attivita':'attivita'} · ${hours} h · ${cost}`;
+    if(summary)summary.textContent=`${selected.length} attività · ${hours} h · ${cost}`;
   }
 
   function ensurePhaseBoard(card){
@@ -322,69 +308,55 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
     const activities=body?.querySelector('.activities');
     const add=body?.querySelector('.add-activity');
     if(!body||!activities||!add)return;
-
     card.dataset.planningBoardReady='1';
     const board=document.createElement('div');board.className='planning-phase-board';
     board.innerHTML=`
       <section class="planning-column planning-available-column">
-        <div class="planning-column-head"><div><strong>Attivita disponibili</strong><span class="planning-available-count"></span></div><span class="planning-column-hint">trascina o usa +</span></div>
+        <div class="planning-column-head"><div><strong>Attività disponibili</strong><span class="planning-available-count"></span></div><span class="planning-column-hint">trascina o usa +</span></div>
         <div class="planning-available-list"></div>
       </section>
       <section class="planning-column planning-selected-column">
-        <div class="planning-column-head"><div><strong>Attivita preventivate</strong><span class="planning-selected-summary">0 attivita · 0,00 h · 0,00 €</span></div><span class="planning-column-hint">figura + ore</span></div>
+        <div class="planning-column-head"><div><strong>Attività preventivate</strong><span class="planning-selected-summary">0 attività · 0,00 h · 0,00 €</span></div><span class="planning-column-hint">figura + ore</span></div>
         <div class="planning-selected-drop"></div>
       </section>`;
     body.insertBefore(board,body.firstChild);
-
     const drop=board.querySelector('.planning-selected-drop');
-    activities.classList.add('planning-selected-list');
-    drop.appendChild(activities);
-    const empty=document.createElement('div');empty.className='planning-selected-empty';empty.textContent='Trascina qui un’attivita oppure premi + nella colonna a sinistra.';drop.appendChild(empty);
+    activities.classList.add('planning-selected-list');drop.appendChild(activities);
+    const empty=document.createElement('div');empty.className='planning-selected-empty';empty.textContent='Trascina qui un’attività oppure premi + nella colonna a sinistra.';drop.appendChild(empty);
     drop.appendChild(add);
-
     drop.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='copy';drop.classList.add('drag-over');});
     drop.addEventListener('dragleave',e=>{if(!drop.contains(e.relatedTarget))drop.classList.remove('drag-over');});
     drop.addEventListener('drop',e=>{
       e.preventDefault();drop.classList.remove('drag-over');
       try{
         const data=JSON.parse(e.dataTransfer.getData('text/plain')||'{}');
-        const phase=cardPhase(card);
-        if(data.phase!==phase)return;
+        const phase=cardPhase(card);if(data.phase!==phase)return;
         const item=ACTIVITIES.find(x=>x.code===data.code);if(item)addToPhase(phase,item);
       }catch(_e){}
     });
-
     activities.querySelectorAll('.activity-card').forEach(prepareActivity);
   }
 
   function renderTabs(){
     const tabs=document.getElementById('planningPhaseTabs');if(!tabs)return;
     tabs.innerHTML=PHASES.map(phase=>{
-      const card=findPhaseCard(phase.id);
-      const count=card?selectedMetas(card).length:0;
+      const card=findPhaseCard(phase.id),count=card?selectedMetas(card).length:0;
       return `<button type="button" class="kanban-phase-tab ${activePhase===phase.id?'active':''}" data-phase="${phase.id}">${phase.label}<span class="count">${count}</span></button>`;
     }).join('');
-    tabs.querySelectorAll('.kanban-phase-tab').forEach(btn=>btn.addEventListener('click',()=>{
-      activePhase=btn.dataset.phase;refreshPlanning();
-    }));
+    tabs.querySelectorAll('.kanban-phase-tab').forEach(btn=>btn.addEventListener('click',()=>{activePhase=btn.dataset.phase;refreshPlanning();}));
   }
 
   function refreshPlanning(){
     if(!root)return;
     phaseCards().forEach(card=>{
       ensurePhaseBoard(card);
-      const id=cardPhase(card);
-      card.dataset.planningPhase=id;
-      card.classList.toggle('planning-active',id===activePhase);
-      const phase=PHASES.find(p=>p.id===id);
-      if(phase){renderAvailable(card,phase);updateSelectedSummary(card);}
+      const id=cardPhase(card);card.dataset.planningPhase=id;card.classList.toggle('planning-active',id===activePhase);
+      const phase=PHASES.find(p=>p.id===id);if(phase){renderAvailable(card,phase);updateSelectedSummary(card);}
     });
     renderTabs();
   }
 
-  function scheduleRefresh(delay=35){
-    clearTimeout(refreshTimer);refreshTimer=setTimeout(refreshPlanning,delay);
-  }
+  function scheduleRefresh(delay=35){clearTimeout(refreshTimer);refreshTimer=setTimeout(refreshPlanning,delay);}
 
   function setPhase(card,id,label){
     if(!card)return;
@@ -409,8 +381,7 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
       attempts++;
       const latest=phaseCards().at(-1);
       if(latest?.querySelector('.phase-type-select')){
-        setPhase(latest,'consulenze','Consulenze varie');
-        ensurePhaseBoard(latest);scheduleRefresh(20);return;
+        setPhase(latest,'consulenze','Consulenze varie');ensurePhaseBoard(latest);scheduleRefresh(20);return;
       }
       if(attempts<30)setTimeout(finish,50);
     };
@@ -480,49 +451,48 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
     document.head.appendChild(style);
   }
 
+  function isModelMutationNode(node){
+    if(!(node instanceof HTMLElement))return false;
+    return node.matches('.phase-work-card,.activity-card') || !!node.querySelector?.('.phase-work-card,.activity-card');
+  }
+
   function install(attempt=0){
     root=document.getElementById('phaseWorkCards');
     const section=document.getElementById('phaseWorkloadSection');
     const ready=root && section && root.querySelectorAll(':scope > .phase-work-card').length>=4 && root.querySelector('.phase-type-select');
     if(!ready){if(attempt<220)setTimeout(()=>install(attempt+1),50);return;}
-
     installStyles();
-    const head=section.querySelector(':scope > .section-head span:first-child');if(head)head.innerHTML='◷&nbsp;&nbsp;Pianificazione attivita e ore';
+    const head=section.querySelector(':scope > .section-head span:first-child');if(head)head.innerHTML='◷&nbsp;&nbsp;Pianificazione attività e ore';
     const toolbar=section.querySelector('.workload-toolbar>div');
-    if(toolbar)toolbar.innerHTML='<strong>Costruzione del preventivo</strong><span>Sposta le attivita disponibili tra le attivita preventivate e assegna figure e ore.</span>';
-
+    if(toolbar)toolbar.innerHTML='<strong>Costruzione del preventivo</strong><span>Sposta le attività disponibili tra le attività preventivate e assegna figure e ore.</span>';
     if(!document.getElementById('planningPhaseTabs')){
-      const tabs=document.createElement('div');tabs.id='planningPhaseTabs';tabs.className='kanban-phase-tabs';
-      root.parentElement.insertBefore(tabs,root);
+      const tabs=document.createElement('div');tabs.id='planningPhaseTabs';tabs.className='kanban-phase-tabs';root.parentElement.insertBefore(tabs,root);
     }
-
     phaseCards().forEach(card=>{ensurePhaseBoard(card);card.querySelectorAll('.activity-card').forEach(prepareActivity);});
     ensureFixedPhases();
-
     if(observer)observer.disconnect();
     observer=new MutationObserver(mutations=>{
       let structural=false;
       mutations.forEach(m=>{
         if(m.type!=='childList')return;
-        [...m.addedNodes].forEach(node=>{
-          if(!(node instanceof HTMLElement))return;
-          if(node.matches('.phase-work-card')){ensurePhaseBoard(node);structural=true;}
-          if(node.matches('.activity-card')){prepareActivity(node);structural=true;}
-          node.querySelectorAll?.('.phase-work-card').forEach(x=>{ensurePhaseBoard(x);structural=true;});
-          node.querySelectorAll?.('.activity-card').forEach(x=>{prepareActivity(x);structural=true;});
+        const added=[...m.addedNodes].filter(isModelMutationNode);
+        const removed=[...m.removedNodes].filter(isModelMutationNode);
+        added.forEach(node=>{
+          if(node.matches?.('.phase-work-card'))ensurePhaseBoard(node);
+          if(node.matches?.('.activity-card'))prepareActivity(node);
+          node.querySelectorAll?.('.phase-work-card').forEach(ensurePhaseBoard);
+          node.querySelectorAll?.('.activity-card').forEach(prepareActivity);
         });
-        if([...m.removedNodes].some(n=>n.nodeType===1))structural=true;
+        if(added.length||removed.length)structural=true;
       });
       if(structural)scheduleRefresh(45);
     });
     observer.observe(root,{childList:true,subtree:true});
-
     section.addEventListener('input',()=>scheduleRefresh(25),true);
     section.addEventListener('change',()=>scheduleRefresh(25),true);
     section.addEventListener('click',e=>{
       if(e.target.closest('.activity-delete,.assignment-delete,.add-assignment,.planning-card-add'))scheduleRefresh(60);
     },true);
-
     window.DABSTER_ACTIVITY_REGISTRY=ACTIVITIES.map(x=>({...x}));
     refreshPlanning();
   }

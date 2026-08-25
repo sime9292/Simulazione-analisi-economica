@@ -87,3 +87,41 @@
   #tab-analisi .dimensioning .dim-addline{margin-bottom:19px!important}
   #tab-analisi .dimensioning .dim-fee-line{margin-bottom:22px!important}
 }
+
+/* v51 - flatten the retired economic layout wrapper so it cannot reserve empty height. */
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic{
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:hidden!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic>.analysis-body,
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic.open>.analysis-body{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:hidden!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .analysis-layout{
+  display:contents!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-summary-bar{
+  order:1;
+  flex:none!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-table-wrap{
+  order:2;
+  flex:none!important;
+  height:auto!important;
+  min-height:0!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-kpis{
+  order:3;
+  flex:none!important;
+  height:auto!important;
+  min-height:0!important;
+  margin-top:6px!important;
+}

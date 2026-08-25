@@ -1,9 +1,25 @@
-/* v34 - Totale opere arrotondato usable as standalone base + IM/IE compensation follows fee slider */
+/* v47 - Totale opere standalone + selectable phases for economic analysis */
 (function(){
   function install(attempt=0){
     if(typeof recalcDimensioning!=='function' || typeof dimRows==='undefined' || !dimRows){
       if(attempt<160)setTimeout(()=>install(attempt+1),60);
       return;
+    }
+
+    const PHASE_IDS=['preliminare','definitivo','esecutivo','dl'];
+
+    function ensurePhaseSelectors(){
+      const rows=[...document.querySelectorAll('.dim-phase-row')].slice(0,4);
+      rows.forEach((row,index)=>{
+        const name=row.querySelector('.dim-phase-name');
+        if(!name||name.querySelector('.dim-phase-include'))return;
+        const label=document.createElement('label');
+        label.className='dim-phase-include';
+        label.title='Includi questa fase quando trasferisci la proposta economica';
+        label.innerHTML=`<input class="dim-phase-include-check" type="checkbox" data-phase="${PHASE_IDS[index]}" checked><span aria-hidden="true"></span>`;
+        name.prepend(label);
+      });
+      if(!Array.isArray(window.DABSTER_DIM_SELECTED_PHASES))window.DABSTER_DIM_SELECTED_PHASES=[];
     }
 
     function recalcFromRoundedTotal(){
@@ -58,8 +74,6 @@
 
         let phaseTotal=0;
         if(hasDetailedSplit){
-          /* These columns are compensation amounts, not raw works shares.
-             Therefore they must react immediately to the overall fee slider. */
           const phaseMechComp=mechRounded*effectivePct/100;
           const phaseElecComp=elecRounded*effectivePct/100*ieFactor;
           if(phaseMechEls[index])phaseMechEls[index].textContent=formatItalianNumber(phaseMechComp);
@@ -75,10 +89,12 @@
         return phaseTotal;
       });
 
+      window.DABSTER_DIM_PHASE_VALUES=phaseValues.slice();
       setText('dimProposalTotal',formatItalianNumber(phaseValues.reduce((a,b)=>a+b,0)));
       if(dimTransfer)dimTransfer.disabled=Math.abs(shareTotal-100)>0.01;
     }
 
+    ensurePhaseSelectors();
     recalcDimensioning=recalcFromRoundedTotal;
 
     /* Existing listeners may retain older function references, so this final pass wins. */
@@ -86,6 +102,17 @@
     dimIeFactor?.addEventListener('input',recalcFromRoundedTotal);
     phasePctInputs.forEach(i=>i.addEventListener('input',recalcFromRoundedTotal));
     dimRounded?.addEventListener('input',()=>setTimeout(recalcFromRoundedTotal,0));
+
+    /* Transfer makes the checkbox selection effective. The legacy transfer can still populate
+       its four technical rows; the dynamic economic controller decides which rows are visible/countable. */
+    dimTransfer?.addEventListener('click',()=>{
+      ensurePhaseSelectors();
+      const selected=[...document.querySelectorAll('.dim-phase-include-check:checked')].map(x=>x.dataset.phase).filter(Boolean);
+      window.DABSTER_DIM_SELECTED_PHASES=selected;
+      window.DABSTER_DIM_PHASE_VALUES=phaseValues.slice();
+      window.dispatchEvent(new CustomEvent('dabster-dimension-transfer',{detail:{selected:selected.slice(),values:phaseValues.slice()}}));
+      setTimeout(()=>window.dabsterRecalcEconomic?.(),110);
+    });
 
     recalcFromRoundedTotal();
   }

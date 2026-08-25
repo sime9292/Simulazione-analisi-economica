@@ -125,3 +125,45 @@ html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-kpis{
   min-height:0!important;
   margin-top:6px!important;
 }
+
+/* v52 - the apparent blank space belonged to the old sections moved below the summary.
+   Remove their inherited fixed/minimum heights and let the new flat workspace size to content. */
+html body #tab-analisi #analysisSubtabImpianti>.flat-planning,
+html body #tab-analisi #analysisSubtabImpianti>.flat-reimbursements,
+html body #tab-analisi #analysisSubtabImpianti>.flat-external,
+html body #tab-analisi #analysisSubtabImpianti>.flat-planning>.section-body,
+html body #tab-analisi #analysisSubtabImpianti>.flat-reimbursements>.section-body,
+html body #tab-analisi #analysisSubtabImpianti>.flat-external>.section-body,
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkCards{
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+}
+
+/* The legacy planning board forced both columns to at least 385px. That value was useful
+   when it was a standalone accordion, but produces a large empty band in the new workspace. */
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-phase-board{
+  align-items:start!important;
+  height:auto!important;
+  min-height:0!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-column{
+  align-self:start!important;
+  height:auto!important;
+  min-height:0!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-available-list{
+  height:auto!important;
+  min-height:0!important;
+  max-height:260px!important;
+  overflow:auto!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-selected-drop{
+  height:auto!important;
+  min-height:72px!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic + .flat-planning{
+  margin-top:4px!important;
+}

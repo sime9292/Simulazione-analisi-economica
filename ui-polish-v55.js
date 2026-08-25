@@ -1,4 +1,4 @@
-/* v55 - compact hour scrubber + economic units in headers only */
+/* v56 - compact hour scrubber + economic units in headers + centered monetary columns/KPIs */
 (function(){
   const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
   const numeric=v=>Number.parseFloat(String(v??'').replace(',','.'))||0;
@@ -15,6 +15,33 @@
       #tab-analisi #analysisSubtabImpianti .economic-table .money-cell input{padding-left:8px!important;padding-right:8px!important}
       #tab-analisi #analysisSubtabImpianti .economic-table .computed-cell,
       #tab-analisi #analysisSubtabImpianti .economic-table .total-value{gap:0!important;padding-right:9px!important}
+
+      /* Economic alignment: phase stays left, all monetary columns are centered. */
+      #tab-analisi #analysisSubtabImpianti .economic-table .economic-head>div:first-child,
+      #tab-analisi #analysisSubtabImpianti .economic-table .economic-row>div:first-child{
+        justify-content:flex-start!important;text-align:left!important;
+      }
+      #tab-analisi #analysisSubtabImpianti .economic-table .economic-head>div:nth-child(n+2),
+      #tab-analisi #analysisSubtabImpianti .economic-table .economic-row>div:nth-child(n+2){
+        justify-content:center!important;text-align:center!important;
+      }
+      #tab-analisi #analysisSubtabImpianti .economic-table .money-cell input{
+        text-align:center!important;
+      }
+      #tab-analisi #analysisSubtabImpianti .economic-table .computed-cell,
+      #tab-analisi #analysisSubtabImpianti .economic-table .total-value{
+        justify-content:center!important;text-align:center!important;
+      }
+
+      /* KPIs use the same centered visual rhythm. */
+      #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi{
+        justify-items:center!important;text-align:center!important;
+      }
+      #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-label,
+      #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-value,
+      #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-sub{
+        width:100%!important;text-align:center!important;justify-self:center!important;
+      }
 
       /* Hours: compact potentiometer/scrubber. */
       #phaseWorkloadSection .assignment-head,

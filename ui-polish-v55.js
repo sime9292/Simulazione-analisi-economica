@@ -1,4 +1,4 @@
-/* v56 - compact hour scrubber + economic units in headers + centered monetary columns/KPIs */
+/* v57 - compact hour scrubber + economic units in headers + hard-centered monetary columns/KPIs */
 (function(){
   const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
   const numeric=v=>Number.parseFloat(String(v??'').replace(',','.'))||0;
@@ -33,14 +33,29 @@
         justify-content:center!important;text-align:center!important;
       }
 
-      /* KPIs use the same centered visual rhythm. */
-      #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi{
-        justify-items:center!important;text-align:center!important;
+      /* KPIs: center both labels and figures, overriding the old right-aligned desktop rules. */
+      html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi{
+        display:grid!important;
+        grid-template-columns:1fr!important;
+        justify-items:center!important;
+        align-items:center!important;
+        align-content:center!important;
+        text-align:center!important;
       }
-      #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-label,
-      #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-value,
-      #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-sub{
-        width:100%!important;text-align:center!important;justify-self:center!important;
+      html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-label,
+      html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-value,
+      html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-sub{
+        display:block!important;
+        width:100%!important;
+        max-width:100%!important;
+        margin-left:auto!important;
+        margin-right:auto!important;
+        text-align:center!important;
+        justify-self:center!important;
+        align-self:center!important;
+      }
+      html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-value *{
+        text-align:center!important;
       }
 
       /* Hours: compact potentiometer/scrubber. */
@@ -104,6 +119,24 @@
     setDirectLabel(head.children[3],'COSTI €');
   }
 
+  function centerKpis(){
+    document.querySelectorAll('#tab-analisi #analysisSubtabImpianti .economic-kpis .kpi').forEach(kpi=>{
+      kpi.style.setProperty('justify-items','center','important');
+      kpi.style.setProperty('align-items','center','important');
+      kpi.style.setProperty('align-content','center','important');
+      kpi.style.setProperty('text-align','center','important');
+      kpi.querySelectorAll('.kpi-label,.kpi-value,.kpi-sub').forEach(el=>{
+        el.style.setProperty('display','block','important');
+        el.style.setProperty('width','100%','important');
+        el.style.setProperty('text-align','center','important');
+        el.style.setProperty('justify-self','center','important');
+        el.style.setProperty('align-self','center','important');
+        el.style.setProperty('margin-left','auto','important');
+        el.style.setProperty('margin-right','auto','important');
+      });
+    });
+  }
+
   function syncKnob(input,knob){
     const value=Math.max(0,numeric(input.value));
     const visualMax=200;
@@ -158,7 +191,6 @@
       if(pointerId===null||e.pointerId!==pointerId)return;
       const dx=e.clientX-startX;
       if(Math.abs(dx)>2)moved=true;
-      /* 3 px = one 0.5 h step. Compact but still controllable; exact values remain typable. */
       const steps=Math.round(dx/3);
       setValue(startValue+steps*step);
     });
@@ -179,6 +211,7 @@
   function enhanceAll(root=document){
     root.querySelectorAll?.('#phaseWorkloadSection .assignment-hours').forEach(enhanceHoursInput);
     cleanEconomicUnits();
+    centerKpis();
   }
 
   function install(attempt=0){
@@ -198,7 +231,7 @@
     document.addEventListener('click',e=>{
       if(e.target.closest('#prefillDemoData,#clearDemoData,#dimTransfer,.analysis-subtab'))setTimeout(()=>enhanceAll(),180);
     },true);
-    setTimeout(enhanceAll,500);setTimeout(enhanceAll,1600);
+    setTimeout(enhanceAll,500);setTimeout(enhanceAll,1600);setTimeout(centerKpis,2800);
   }
 
   install();

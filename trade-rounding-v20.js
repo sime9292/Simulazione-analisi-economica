@@ -181,3 +181,12 @@
 
   install();
 })();
+
+/* v55 UI experiment loader: compact draggable hours control + cleaner economic units. */
+(function(){
+  if(document.querySelector('script[data-dabster-ui-polish="55"]'))return;
+  const script=document.createElement('script');
+  script.dataset.dabsterUiPolish='55';
+  script.src='ui-polish-v55.js?v=55';
+  document.head.appendChild(script);
+})();

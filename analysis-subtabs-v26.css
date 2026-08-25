@@ -295,3 +295,20 @@ html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-sub{
   align-self:start!important;
   overflow:visible!important;
 }
+
+/* v50 - economic summary must hug its real content height after KPI layout moved below the table. */
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic,
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic>.section-body,
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic.open>.section-body,
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .analysis-body,
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .analysis-layout,
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-table-wrap,
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-kpis{
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .analysis-layout{
+  align-content:start!important;
+  align-items:start!important;
+}

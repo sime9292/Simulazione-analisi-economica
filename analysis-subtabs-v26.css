@@ -280,3 +280,18 @@ html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-sub{
   #analysisSubtabImpianti>.flat-economic,
   #analysisSubtabImpianti #planningPhaseTabs{position:relative!important;top:auto!important}
 }
+
+/* v47 - selected activities grow the Kanban instead of creating a nested scrollbar. */
+#phaseWorkloadSection .planning-phase-board{
+  align-items:start!important;
+}
+#phaseWorkloadSection .planning-selected-drop{
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+  min-height:385px!important;
+}
+#phaseWorkloadSection .planning-selected-column{
+  align-self:start!important;
+  overflow:visible!important;
+}

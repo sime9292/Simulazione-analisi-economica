@@ -184,3 +184,294 @@ html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-kpis .kp
   min-height:50px!important;
   max-height:50px!important;
 }
+
+/* v54 - visual readability polish: clearer hierarchy, lighter surfaces, less nested-box effect. */
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic{
+  border-color:#dfe5e8!important;
+  box-shadow:0 3px 11px rgba(35,50,60,.08)!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic>.analysis-body{
+  padding:7px 8px 8px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-summary-bar{
+  padding:2px 3px 8px!important;
+  margin-bottom:3px!important;
+  border-bottom-color:#e9edef!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-summary-title strong{
+  font-size:12.4px!important;
+  line-height:1.1!important;
+  color:#2f424d!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-summary-title span{
+  font-size:9.1px!important;
+  line-height:1.2!important;
+  color:#687680!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-trade-control{
+  font-size:9.4px!important;
+  color:#4f606b!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-trade-slider #tradePctLabel{
+  font-size:10.6px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-table{
+  border-color:#dbe2e5!important;
+  box-shadow:0 1px 2px rgba(35,50,60,.025)!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-row{
+  min-height:32px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-row>div{
+  padding:3px 8px!important;
+  border-color:#e6eaec!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-head{
+  min-height:33px!important;
+  font-size:9.4px!important;
+  letter-spacing:.015em!important;
+  color:#44545e!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-head>div{
+  font-weight:750!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .phase-row>div:first-child,
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-phase-label{
+  font-size:11.4px!important;
+  line-height:1.15!important;
+  font-weight:650!important;
+  color:#364a55!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .money-cell input,
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .computed-cell,
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .total-value{
+  font-size:11.5px!important;
+  font-variant-numeric:tabular-nums;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .total-row{
+  min-height:36px!important;
+  border-top:2px solid #aab6bc!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .total-row>div:first-child{
+  font-size:10.4px!important;
+  letter-spacing:.03em!important;
+}
+
+/* KPI: enough height to read labels, still a compact single strip. */
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-kpis{
+  grid-template-rows:58px!important;
+  height:58px!important;
+  min-height:58px!important;
+  max-height:58px!important;
+  gap:7px!important;
+  margin-top:7px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-kpis .kpi{
+  height:58px!important;
+  min-height:58px!important;
+  max-height:58px!important;
+  padding:8px 9px!important;
+  border-color:#dfe5e8!important;
+  border-radius:7px!important;
+  box-shadow:0 1px 2px rgba(35,50,60,.025)!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-kpis .kpi-label{
+  font-size:8.4px!important;
+  line-height:1.13!important;
+  letter-spacing:.015em!important;
+  color:#596a74!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-kpis .kpi-value{
+  font-size:12.2px!important;
+  line-height:1!important;
+  color:#2f414c!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-kpis .kpi-sub{
+  font-size:8.6px!important;
+}
+
+/* Planning workspace: selected work is primary (about 65%), available catalog secondary (about 35%). */
+html body #tab-analisi #analysisSubtabImpianti>.flat-planning .workload-toolbar{
+  padding:6px 4px 5px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-planning .workload-toolbar>div strong{
+  font-size:11.7px!important;
+  line-height:1.1!important;
+  color:#314651!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-planning .workload-toolbar>div span{
+  font-size:9px!important;
+  line-height:1.2!important;
+  color:#687680!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #planningPhaseTabs{
+  border-color:#e0e5e8!important;
+  box-shadow:0 2px 7px rgba(35,50,60,.055)!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #planningPhaseTabs .kanban-phase-tab{
+  font-size:9.5px!important;
+  color:#52636d!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #planningPhaseTabs .kanban-phase-tab.active{
+  font-weight:750!important;
+  color:#9b5528!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-phase-board{
+  grid-template-columns:minmax(270px,.7fr) minmax(470px,1.3fr)!important;
+  gap:9px!important;
+  padding:8px!important;
+  background:#f7f8f9!important;
+  border-color:#e7eaec!important;
+  border-radius:0 0 8px 8px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-column{
+  background:#fff!important;
+  border-color:#e0e5e8!important;
+  border-radius:8px!important;
+  box-shadow:0 1px 3px rgba(35,50,60,.035)!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-column-head{
+  min-height:42px!important;
+  padding:6px 9px!important;
+  background:#f6f8f9!important;
+  border-bottom-color:#e3e8ea!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-selected-column .planning-column-head{
+  background:#f2f7f8!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-column-head strong{
+  font-size:10.3px!important;
+  text-decoration:none!important;
+  color:#344a55!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-column-head span{
+  font-size:8.3px!important;
+  color:#687982!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-column-hint{
+  font-size:8px!important;
+  color:#7d8a92!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-available-list,
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-selected-drop{
+  padding:7px!important;
+  gap:7px!important;
+  background:#fff!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-available-list{
+  max-height:300px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-available-card{
+  min-height:50px!important;
+  padding:7px 8px!important;
+  border-color:#d9e0e4!important;
+  border-left-color:#7b99a8!important;
+  box-shadow:none!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-available-card:hover{
+  border-color:#becbd2!important;
+  box-shadow:0 2px 5px rgba(35,50,60,.05)!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-available-copy strong{
+  font-size:10.2px!important;
+  line-height:1.22!important;
+  color:#334751!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-available-copy span,
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-available-code{
+  font-size:8px!important;
+}
+
+/* Selected activity card: stronger title hierarchy, clearer metrics and working rows. */
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .activity-card{
+  border-color:#d4dde2!important;
+  border-left-color:#6f93a4!important;
+  box-shadow:0 1px 3px rgba(35,50,60,.045)!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .activity-head{
+  min-height:48px!important;
+  padding:6px 7px 6px 9px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-activity-main strong{
+  font-size:8.6px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-activity-main span{
+  font-size:11px!important;
+  line-height:1.22!important;
+  color:#2f434e!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-activity-ident em{
+  height:20px!important;
+  padding:0 7px!important;
+  font-size:7.8px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .activity-head-metrics span{
+  height:25px!important;
+  padding:0 7px!important;
+  font-size:8.5px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .activity-body{
+  padding:8px 8px 10px!important;
+  background:#fcfdfd!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .assignment-head{
+  font-size:8.7px!important;
+  color:#667780!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .assignment-row,
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .assignment-row select,
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .assignment-row input{
+  font-size:10.2px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .assignment-row select,
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .assignment-row input{
+  height:28px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .assignment-cost{
+  font-size:10.3px!important;
+  color:#264d5e!important;
+}
+
+/* Reimbursements / external costs: secondary sections, more compact and less boxed. */
+html body #tab-analisi #analysisSubtabImpianti>.flat-reimbursements,
+html body #tab-analisi #analysisSubtabImpianti>.flat-external{
+  border-top-color:#e5e9eb!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-reimbursements .reimb-intro strong,
+html body #tab-analisi #analysisSubtabImpianti>.flat-external .supplier-intro strong{
+  font-size:11.4px!important;
+  color:#354a55!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-reimbursements .reimb-intro span,
+html body #tab-analisi #analysisSubtabImpianti>.flat-external .supplier-intro span{
+  font-size:8.9px!important;
+  color:#6d7b84!important;
+}
+html body #tab-analisi #analysisSubtabImpianti .reimb-table,
+html body #tab-analisi #analysisSubtabImpianti .supplier-table{
+  border-color:#e1e6e9!important;
+  box-shadow:none!important;
+}
+html body #tab-analisi #analysisSubtabImpianti .reimb-head,
+html body #tab-analisi #analysisSubtabImpianti .supplier-head{
+  background:#f6f8f9!important;
+  color:#53636d!important;
+}
+html body #tab-analisi #analysisSubtabImpianti .reimb-row{
+  min-height:33px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti .reimb-footer,
+html body #tab-analisi #analysisSubtabImpianti .supplier-footer{
+  background:#fafbfc!important;
+  border-color:#e5e9eb!important;
+}
+
+@media(max-width:900px){
+  html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-phase-board{
+    min-width:800px!important;
+    grid-template-columns:285px 1fr!important;
+  }
+  html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-kpis{
+    min-width:600px!important;
+  }
+}

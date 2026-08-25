@@ -1,4 +1,4 @@
-/* v47 - Totale opere standalone + selectable phases for economic analysis */
+/* v48 - Totale opere standalone + selectable phases for economic analysis */
 (function(){
   function install(attempt=0){
     if(typeof recalcDimensioning!=='function' || typeof dimRows==='undefined' || !dimRows){
@@ -7,6 +7,18 @@
     }
 
     const PHASE_IDS=['preliminare','definitivo','esecutivo','dl'];
+
+    function installSelectorStyles(){
+      if(document.getElementById('dimPhaseSelectorStyles'))return;
+      const style=document.createElement('style');
+      style.id='dimPhaseSelectorStyles';
+      style.textContent=`
+        .dim-phase-name{display:flex!important;align-items:center!important;gap:7px!important}
+        .dim-phase-include{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:18px;height:18px;cursor:pointer}
+        .dim-phase-include input{width:13px;height:13px;margin:0;cursor:pointer;accent-color:#2b9bad}
+      `;
+      document.head.appendChild(style);
+    }
 
     function ensurePhaseSelectors(){
       const rows=[...document.querySelectorAll('.dim-phase-row')].slice(0,4);
@@ -94,17 +106,15 @@
       if(dimTransfer)dimTransfer.disabled=Math.abs(shareTotal-100)>0.01;
     }
 
+    installSelectorStyles();
     ensurePhaseSelectors();
     recalcDimensioning=recalcFromRoundedTotal;
 
-    /* Existing listeners may retain older function references, so this final pass wins. */
     dimFeePct?.addEventListener('input',recalcFromRoundedTotal);
     dimIeFactor?.addEventListener('input',recalcFromRoundedTotal);
     phasePctInputs.forEach(i=>i.addEventListener('input',recalcFromRoundedTotal));
     dimRounded?.addEventListener('input',()=>setTimeout(recalcFromRoundedTotal,0));
 
-    /* Transfer makes the checkbox selection effective. The legacy transfer can still populate
-       its four technical rows; the dynamic economic controller decides which rows are visible/countable. */
     dimTransfer?.addEventListener('click',()=>{
       ensurePhaseSelectors();
       const selected=[...document.querySelectorAll('.dim-phase-include-check:checked')].map(x=>x.dataset.phase).filter(Boolean);
@@ -113,6 +123,20 @@
       window.dispatchEvent(new CustomEvent('dabster-dimension-transfer',{detail:{selected:selected.slice(),values:phaseValues.slice()}}));
       setTimeout(()=>window.dabsterRecalcEconomic?.(),110);
     });
+
+    /* Demo controls must not leave transferred phase state behind. */
+    document.addEventListener('click',e=>{
+      if(e.target.closest('#clearDemoData')){
+        window.DABSTER_DIM_SELECTED_PHASES=[];
+        setTimeout(()=>window.dabsterEconomicPhaseController?.reconcile(),0);
+      }
+      if(e.target.closest('#prefillDemoData')){
+        ensurePhaseSelectors();
+        document.querySelectorAll('.dim-phase-include-check').forEach(input=>input.checked=true);
+        window.DABSTER_DIM_SELECTED_PHASES=[];
+        setTimeout(()=>window.dabsterEconomicPhaseController?.reconcile(),0);
+      }
+    },true);
 
     recalcFromRoundedTotal();
   }

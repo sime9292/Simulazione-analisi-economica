@@ -167,3 +167,20 @@ html body #tab-analisi #analysisSubtabImpianti #phaseWorkloadSection .planning-s
 html body #tab-analisi #analysisSubtabImpianti>.flat-economic + .flat-planning{
   margin-top:4px!important;
 }
+
+/* v53 - horizontal KPI strip must no longer retain the legacy 193px vertical KPI container. */
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-kpis{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  grid-template-rows:50px!important;
+  height:50px!important;
+  min-height:50px!important;
+  max-height:50px!important;
+  align-self:start!important;
+  overflow:hidden!important;
+}
+html body #tab-analisi #analysisSubtabImpianti>.flat-economic .economic-kpis .kpi{
+  height:50px!important;
+  min-height:50px!important;
+  max-height:50px!important;
+}

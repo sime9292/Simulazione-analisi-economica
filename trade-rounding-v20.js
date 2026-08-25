@@ -1,4 +1,4 @@
-/* v43 - Trattativa as markup; definitive economic KPIs from TOT, robust for all manual cost edits */
+/* v47 - Trattativa markup + definitive KPIs, excluding inactive dynamic phase rows */
 (function(){
   const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   const pct=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
@@ -13,12 +13,20 @@
     const tradeLabel=document.getElementById('tradePctLabel');
     if(tradeLabel)tradeLabel.textContent=tradePct===0?'0%':'+'+tradePct+'%';
 
-    let gross=0;                 // totale colonna TOT
-    let negotiatedTotal=0;       // totale colonna Trattativa
-    let directCosts=0;           // totale Riepilogo Costi
-    let internalSalesBase=0;     // vendita ore interne: TOT fasi, esclusi rimborsi ed esterni
+    let gross=0;
+    let negotiatedTotal=0;
+    let directCosts=0;
+    let internalSalesBase=0;
 
     table.querySelectorAll('.phase-row').forEach(row=>{
+      /* Managed phase rows stay in the DOM as technical containers, but only active phases
+         are visible and economically countable. Special rows (rimborsi/esterni) are always handled. */
+      const isManagedDynamicPhase=!!row.dataset.economicPhase;
+      if(isManagedDynamicPhase&&row.dataset.economicActive!=='1'){
+        const out=row.querySelector('.ae-discount');if(out)out.textContent=money(0);
+        return;
+      }
+
       const proposal=num(row.querySelector('.ae-proposal')?.value);
       const cost=num(row.querySelector('.ae-cost')?.value);
       const rawNegotiated=proposal*(1+tradePct/100);
@@ -28,8 +36,7 @@
       negotiatedTotal+=negotiated;
       directCosts+=cost;
 
-      /* Modello Excel: SPESE GENERALI SU VENDITA ORE INT. = 35%.
-         La base è il TOT delle sole fasi operative: Rimborsi Spese e Costi Esterni sono esclusi. */
+      /* SPESE GENERALI SU VENDITA ORE INT. = 35% del TOT delle sole fasi operative attive. */
       if(row.dataset.phaseManaged==='1')internalSalesBase+=proposal;
 
       const out=row.querySelector('.ae-discount');
@@ -41,7 +48,6 @@
       }
     });
 
-    /* KPI definitivi: tutti basati sulla colonna TOT, non sulla Trattativa. */
     const mol=gross-directCosts;
     const generalExpenses=internalSalesBase*0.35;
     const mon=mol-generalExpenses;
@@ -49,7 +55,6 @@
     const molPct=gross?mol/gross*100:0;
 
     const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
-
     set('aeGross',money(gross));
     set('aeDiscountTotal',money(negotiatedTotal));
     set('aeCosts',money(directCosts));
@@ -62,7 +67,7 @@
     const expensesLabel=document.querySelector('#tab-analisi .kpi.expenses .kpi-label');
     if(expensesLabel){
       expensesLabel.textContent='SPESE GENERALI SU VENDITA ORE INT. · 35%';
-      expensesLabel.title='35% del TOT delle fasi operative, esclusi Rimborsi Spese e Costi Esterni';
+      expensesLabel.title='35% del TOT delle fasi operative attive, esclusi Rimborsi Spese e Costi Esterni';
     }
   }
 
@@ -84,8 +89,6 @@
     document.getElementById('phaseWorkloadSection')?.addEventListener('change',()=>schedule(),true);
     document.getElementById('dimTransfer')?.addEventListener('click',()=>schedule(90));
 
-    /* Delegated listeners also cover sections created asynchronously by app-v10.
-       This guarantees the definitive formulas after reimbursements/supplier recalculations. */
     document.addEventListener('input',e=>{
       if(e.target?.closest?.('#reimbursementsSection,#externalCostsSection'))schedule(40);
     },true);
@@ -95,9 +98,8 @@
     document.addEventListener('click',e=>{
       if(e.target?.closest?.('#addSupplierCost,.supplier-delete,.addExternalCost,.phase-delete,#addEconomicPhase'))schedule(100);
     },true);
+    window.addEventListener('dabster-dimension-transfer',()=>schedule(45));
 
-    /* Recalculate when economic rows are added OR removed. Text-only updates are ignored,
-       avoiding observer loops while still covering dynamic phase/supplier rows. */
     new MutationObserver(mutations=>{
       const structuralChange=mutations.some(m=>m.type==='childList' &&
         [...m.addedNodes,...m.removedNodes].some(n=>n.nodeType===1));

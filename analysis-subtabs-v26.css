@@ -167,6 +167,107 @@ html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-sub{
   margin-left:3px!important;
 }
 
+/* v46 - Impianti is a continuous workspace, not a stack of accordions. */
+#analysisSubtabImpianti>.flat-imp-section{
+  margin-top:9px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+#analysisSubtabImpianti>.flat-imp-section:first-child{margin-top:0!important}
+#analysisSubtabImpianti>.flat-imp-section>.section-head{display:none!important}
+#analysisSubtabImpianti>.flat-imp-section>.section-body,
+#analysisSubtabImpianti>.flat-imp-section.open>.section-body{
+  display:block!important;
+}
+
+/* Economic table is the fixed top of the Impianti workspace, with no redundant title bar. */
+#analysisSubtabImpianti>.flat-economic{
+  position:sticky!important;
+  top:4px!important;
+  z-index:80!important;
+  padding:0!important;
+  border:1px solid #d9e1e5!important;
+  border-radius:7px!important;
+  background:#fff!important;
+  box-shadow:0 5px 16px rgba(35,50,60,.12)!important;
+}
+#analysisSubtabImpianti>.flat-economic>.section-body,
+#analysisSubtabImpianti>.flat-economic.open>.section-body{
+  padding:5px 7px 6px!important;
+  border-radius:7px!important;
+  background:#fff!important;
+}
+
+/* Planning starts immediately under the economic summary. */
+#analysisSubtabImpianti>.flat-planning{
+  margin-top:7px!important;
+}
+#analysisSubtabImpianti>.flat-planning>.section-body,
+#analysisSubtabImpianti>.flat-planning.open>.section-body{
+  padding:0 0 8px!important;
+  background:#fff!important;
+}
+#analysisSubtabImpianti>.flat-planning .workload-toolbar{
+  min-height:34px!important;
+  margin:0!important;
+  padding:5px 5px 4px!important;
+  border:0!important;
+  background:#fff!important;
+}
+#analysisSubtabImpianti>.flat-planning .workload-toolbar>div strong{
+  font-size:10.5px!important;
+  color:#344653!important;
+}
+#analysisSubtabImpianti>.flat-planning .workload-toolbar>div span{
+  font-size:8.3px!important;
+  color:#7b8790!important;
+}
+
+/* Phase tabs remain fixed immediately below the real height of the sticky economic summary. */
+#analysisSubtabImpianti #planningPhaseTabs{
+  position:sticky!important;
+  top:calc(8px + var(--economic-sticky-height, 220px))!important;
+  z-index:75!important;
+  margin:0 0 8px!important;
+  border:1px solid #dce3e7!important;
+  border-radius:7px!important;
+  background:#fff!important;
+  box-shadow:0 4px 10px rgba(35,50,60,.08)!important;
+}
+
+/* Reimbursements and external costs stay below the Kanban as always-open normal blocks. */
+#analysisSubtabImpianti>.flat-reimbursements,
+#analysisSubtabImpianti>.flat-external{
+  margin-top:12px!important;
+  padding-top:9px!important;
+  border-top:1px solid #dde4e8!important;
+}
+#analysisSubtabImpianti>.flat-reimbursements>.section-body,
+#analysisSubtabImpianti>.flat-reimbursements.open>.section-body,
+#analysisSubtabImpianti>.flat-external>.section-body,
+#analysisSubtabImpianti>.flat-external.open>.section-body{
+  padding:4px 0 7px!important;
+  background:#fff!important;
+}
+#analysisSubtabImpianti>.flat-reimbursements .reimb-intro,
+#analysisSubtabImpianti>.flat-external .supplier-intro{
+  margin:0 2px 7px!important;
+  padding:0!important;
+}
+#analysisSubtabImpianti>.flat-reimbursements .reimb-intro strong,
+#analysisSubtabImpianti>.flat-external .supplier-intro strong{
+  font-size:10.8px!important;
+  color:#344653!important;
+}
+#analysisSubtabImpianti>.flat-reimbursements .reimb-intro span,
+#analysisSubtabImpianti>.flat-external .supplier-intro span{
+  font-size:8.4px!important;
+  color:#7b8790!important;
+}
+
 /* Future disciplines (e.g. VVF) can be added as further tabs without changing the layout. */
 @media(max-width:780px){
   .analysis-subtabs{overflow-x:auto;align-items:stretch;scrollbar-width:thin}
@@ -174,6 +275,8 @@ html body #tab-analisi #analysisSubtabImpianti .economic-kpis .kpi-sub{
   .analysis-subtab-panel{padding-left:0;padding-right:0}
 }
 @media(max-width:900px){
-  /* On narrow screens normal document flow is safer than a large sticky block. */
-  #analysisSubtabImpianti>.analysis{position:relative!important;top:auto!important}
+  /* On narrow screens normal document flow is safer than large sticky blocks. */
+  #analysisSubtabImpianti>.analysis,
+  #analysisSubtabImpianti>.flat-economic,
+  #analysisSubtabImpianti #planningPhaseTabs{position:relative!important;top:auto!important}
 }

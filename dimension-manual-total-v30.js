@@ -1,4 +1,4 @@
-/* v49 - Totale opere standalone + selectable phases + simplified managerial phase table */
+/* v50 - Dimensionamento Opere is an independent technical reference; no phase transfer to Analisi Offerta. */
 (function(){
   function install(attempt=0){
     if(typeof recalcDimensioning!=='function' || typeof dimRows==='undefined' || !dimRows){
@@ -6,21 +6,30 @@
       return;
     }
 
-    const PHASE_IDS=['preliminare','definitivo','esecutivo','dl'];
-
-    function installSelectorStyles(){
-      if(document.getElementById('dimPhaseSelectorStyles'))return;
+    function installReferenceStyles(){
+      if(document.getElementById('dimIndependentReferenceStyles'))return;
       const style=document.createElement('style');
-      style.id='dimPhaseSelectorStyles';
+      style.id='dimIndependentReferenceStyles';
       style.textContent=`
-        .dim-phase-name{display:flex!important;align-items:center!important;gap:7px!important}
-        .dim-phase-include{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:18px;height:18px;cursor:pointer}
-        .dim-phase-include input{width:13px;height:13px;margin:0;cursor:pointer;accent-color:#2b9bad}
+        #analysisSubtabDimensionamento .dim-phases,
+        #analysisSubtabDimensionamento .dim-phase-footer{display:none!important}
+        #analysisSubtabDimensionamento .dim-independent-note{margin:8px 0 2px;padding:7px 9px;border:1px solid #dce4e7;border-radius:6px;background:#f7f9fa;color:#65747c;font-size:8.7px;line-height:1.35}
+        #analysisSubtabDimensionamento .dim-independent-note strong{color:#41555f}
       `;
       document.head.appendChild(style);
     }
 
-    function simplifyPhaseTable(){
+    function installReferenceNote(){
+      if(document.querySelector('.dim-independent-note'))return;
+      const feeLine=document.querySelector('.dim-fee-line');
+      if(!feeLine)return;
+      const note=document.createElement('div');
+      note.className='dim-independent-note';
+      note.innerHTML='<strong>Riferimento tecnico indipendente.</strong> Il Dimensionamento Opere non seleziona fasi e non trasferisce importi nell’Analisi Offerta.';
+      feeLine.insertAdjacentElement('afterend',note);
+    }
+
+    function simplifyLegacyPhaseTable(){
       const head=document.querySelector('.dim-phase-head');
       if(!head)return;
       const headCells=[...head.children];
@@ -38,21 +47,6 @@
       if(labels[2])labels[2].textContent='QUOTA IM';
       if(labels[3])labels[3].textContent='QUOTA IE';
       if(labels[4])labels[4].textContent='COMPENSO FASE';
-      document.querySelector('.dim-phases')?.classList.add('managerial-phase-table');
-    }
-
-    function ensurePhaseSelectors(){
-      const rows=[...document.querySelectorAll('.dim-phase-row')].slice(0,4);
-      rows.forEach((row,index)=>{
-        const name=row.querySelector('.dim-phase-name');
-        if(!name||name.querySelector('.dim-phase-include'))return;
-        const label=document.createElement('label');
-        label.className='dim-phase-include';
-        label.title='Includi questa fase quando trasferisci la proposta economica';
-        label.innerHTML=`<input class="dim-phase-include-check" type="checkbox" data-phase="${PHASE_IDS[index]}" checked><span aria-hidden="true"></span>`;
-        name.prepend(label);
-      });
-      if(!Array.isArray(window.DABSTER_DIM_SELECTED_PHASES))window.DABSTER_DIM_SELECTED_PHASES=[];
     }
 
     function recalcFromRoundedTotal(){
@@ -91,16 +85,12 @@
         dimIeFactor.title=hasDetailedSplit?'Fattore applicato alla quota impianti elettrici':'Disponibile quando è presente una ripartizione IM / IE';
       }
 
+      /* The hidden legacy phase calculation is kept only to preserve the current prototype DOM.
+         Its values are deliberately NOT exported to the economic analysis. */
       const shares=phasePctInputs.map(i=>Number(i.value||0));
-      const shareTotal=shares.reduce((a,b)=>a+b,0);
-      const check=document.getElementById('phaseTotalCheck');
-      setText('phaseTotalPct',Number(shareTotal).toLocaleString('it-IT',{maximumFractionDigits:1})+'%');
-      check?.classList.toggle('invalid',Math.abs(shareTotal-100)>0.01);
-
       const phaseResultEls=[...document.querySelectorAll('.phase-result-value')];
       const phaseMechEls=[...document.querySelectorAll('.phase-mech-value')];
       const phaseElecEls=[...document.querySelectorAll('.phase-elec-value')];
-
       phaseValues=shares.map((share,index)=>{
         const effectivePct=feePct*share/100;
         let phaseTotal=0;
@@ -115,44 +105,37 @@
           if(phaseElecEls[index])phaseElecEls[index].textContent='—';
           phaseTotal=rounded*effectivePct/100;
         }
-
         if(phaseResultEls[index])phaseResultEls[index].textContent=formatItalianNumber(phaseTotal);
         return phaseTotal;
       });
 
-      window.DABSTER_DIM_PHASE_VALUES=phaseValues.slice();
       setText('dimProposalTotal',formatItalianNumber(phaseValues.reduce((a,b)=>a+b,0)));
-      if(dimTransfer)dimTransfer.disabled=Math.abs(shareTotal-100)>0.01;
+      window.DABSTER_DIM_SELECTED_PHASES=[];
+      window.DABSTER_DIM_PHASE_VALUES=[];
     }
 
-    installSelectorStyles();
-    simplifyPhaseTable();
-    ensurePhaseSelectors();
-    recalcDimensioning=recalcFromRoundedTotal;
+    installReferenceStyles();
+    simplifyLegacyPhaseTable();
+    installReferenceNote();
+    window.DABSTER_DIM_SELECTED_PHASES=[];
+    window.DABSTER_DIM_PHASE_VALUES=[];
 
+    if(dimTransfer){
+      dimTransfer.disabled=true;
+      dimTransfer.hidden=true;
+      dimTransfer.style.setProperty('display','none','important');
+    }
+
+    recalcDimensioning=recalcFromRoundedTotal;
     dimFeePct?.addEventListener('input',recalcFromRoundedTotal);
     dimIeFactor?.addEventListener('input',recalcFromRoundedTotal);
     phasePctInputs.forEach(i=>i.addEventListener('input',recalcFromRoundedTotal));
     dimRounded?.addEventListener('input',()=>setTimeout(recalcFromRoundedTotal,0));
 
-    dimTransfer?.addEventListener('click',()=>{
-      ensurePhaseSelectors();
-      const selected=[...document.querySelectorAll('.dim-phase-include-check:checked')].map(x=>x.dataset.phase).filter(Boolean);
-      window.DABSTER_DIM_SELECTED_PHASES=selected;
-      window.DABSTER_DIM_PHASE_VALUES=phaseValues.slice();
-      window.dispatchEvent(new CustomEvent('dabster-dimension-transfer',{detail:{selected:selected.slice(),values:phaseValues.slice()}}));
-      setTimeout(()=>window.dabsterRecalcEconomic?.(),110);
-    });
-
     document.addEventListener('click',e=>{
-      if(e.target.closest('#clearDemoData')){
+      if(e.target.closest('#clearDemoData,#prefillDemoData')){
         window.DABSTER_DIM_SELECTED_PHASES=[];
-        setTimeout(()=>window.dabsterEconomicPhaseController?.reconcile(),0);
-      }
-      if(e.target.closest('#prefillDemoData')){
-        ensurePhaseSelectors();
-        document.querySelectorAll('.dim-phase-include-check').forEach(input=>input.checked=true);
-        window.DABSTER_DIM_SELECTED_PHASES=[];
+        window.DABSTER_DIM_PHASE_VALUES=[];
         setTimeout(()=>window.dabsterEconomicPhaseController?.reconcile(),0);
       }
     },true);

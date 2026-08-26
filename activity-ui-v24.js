@@ -1,4 +1,4 @@
-/* v45 - Planning UI aligned with Attività Commessa: phase tabs + available/prevented activity cards */
+/* v58 - Planning UI: seven operational phases + phase-specific activity registry */
 (function(){
   const RAW_ACTIVITIES=`
 ATT001|L10 Analisi Energetica|Pratiche|IM
@@ -144,25 +144,36 @@ ATT711|Commissioning IE|Direzione Lavori|IE
 ATT712|Commissioning VVF|Direzione Lavori|VVF
 `.trim();
 
+  const FIRE_EVALUATION_CODES=new Set(['ATT012','ATT013','ATT014','ATT066','ATT103','ATT117','ATT319','ATT498']);
+  const FIRE_SCIA_CODES=new Set(['ATT041','ATT042','ATT063','ATT078','ATT486']);
+  const mapCategory=(code,legacy)=>{
+    if(FIRE_EVALUATION_CODES.has(code))return 'Valutazione Progetto Antincendio';
+    if(FIRE_SCIA_CODES.has(code))return 'SCIA Antincendio';
+    if(legacy==='Pratiche'||legacy==='Progetto Preliminare')return 'Progetto preliminare e Pratiche';
+    if(legacy==='Progetto Definitivo')return 'Progetto PFTE';
+    if(legacy==='Progetto Esecutivo')return 'Progetto Esecutivo';
+    if(legacy==='Direzione Lavori')return 'Direzione Lavori';
+    return 'Consulenze Varie';
+  };
+
   const ACTIVITIES=RAW_ACTIVITIES.split('\n').map(line=>{
-    const [code,name,category,discipline]=line.split('|');
-    return {code,name,category,discipline};
+    const [code,name,legacyCategory,discipline]=line.split('|');
+    return {code,name,legacyCategory,category:mapCategory(code,legacyCategory),discipline};
   });
 
   const PHASES=[
-    {id:'preliminare',label:'Progetto Preliminare',category:'Progetto Preliminare'},
-    {id:'definitivo',label:'Progetto Definitivo',category:'Progetto Definitivo'},
+    {id:'preliminare',label:'Progetto preliminare e Pratiche',category:'Progetto preliminare e Pratiche'},
+    {id:'definitivo',label:'Progetto PFTE',category:'Progetto PFTE'},
+    {id:'valutazione_vvf',label:'Valutazione Progetto Antincendio',category:'Valutazione Progetto Antincendio'},
     {id:'esecutivo',label:'Progetto Esecutivo',category:'Progetto Esecutivo'},
     {id:'dl',label:'Direzione Lavori',category:'Direzione Lavori'},
+    {id:'scia_vvf',label:'SCIA Antincendio',category:'SCIA Antincendio'},
     {id:'consulenze',label:'Consulenze varie',category:'Consulenze Varie'}
   ];
 
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-  let root=null;
-  let activePhase='preliminare';
-  let refreshTimer=null;
-  let observer=null;
+  let root=null,activePhase='preliminare',refreshTimer=null,observer=null;
 
   function phaseDef(id){return PHASES.find(p=>p.id===id)||PHASES[0];}
   function phaseCards(){return root?[...root.querySelectorAll(':scope > .phase-work-card')]:[];}
@@ -171,18 +182,15 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
   function activityField(activity){return activity?.querySelector('.activity-name')||null;}
 
   function resolveMeta(activity){
-    const field=activityField(activity);
-    if(!field)return null;
+    const field=activityField(activity);if(!field)return null;
     const existing=ACTIVITIES.find(x=>x.code===field.dataset.activityCode);
-    if(existing && norm(existing.name)===norm(field.value))return existing;
+    if(existing&&norm(existing.name)===norm(field.value))return existing;
     const phase=phaseDef(cardPhase(activity.closest('.phase-work-card')));
-    const byPhase=ACTIVITIES.find(x=>x.category===phase.category && norm(x.name)===norm(field.value));
+    const byPhase=ACTIVITIES.find(x=>x.category===phase.category&&norm(x.name)===norm(field.value));
     const any=ACTIVITIES.find(x=>norm(x.name)===norm(field.value));
     const meta=byPhase||any||null;
     if(meta){
-      field.dataset.activityCode=meta.code;
-      field.dataset.activityDiscipline=meta.discipline;
-      field.dataset.activityCategory=meta.category;
+      field.dataset.activityCode=meta.code;field.dataset.activityDiscipline=meta.discipline;field.dataset.activityCategory=meta.category;
     }else{
       field.dataset.activityCode='';field.dataset.activityDiscipline='';field.dataset.activityCategory='';
     }
@@ -190,33 +198,24 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
   }
 
   function renderActivityIdentity(activity){
-    const head=activity.querySelector('.activity-head');
-    const field=activityField(activity);
-    if(!head||!field)return;
+    const head=activity.querySelector('.activity-head'),field=activityField(activity);if(!head||!field)return;
     let ident=head.querySelector('.planning-activity-ident');
     if(!ident){ident=document.createElement('div');ident.className='planning-activity-ident';head.insertBefore(ident,head.firstChild);}
-    const meta=resolveMeta(activity);
-    const title=String(field.value||'').trim()||'Attività da definire';
+    const meta=resolveMeta(activity),title=String(field.value||'').trim()||'Attività da definire';
     ident.innerHTML=`<div class="planning-activity-main"><strong>${esc(meta?.code||'ATT')}</strong><span>${esc(title)}</span></div>${meta?.discipline?`<em>${esc(meta.discipline)}</em>`:''}`;
     activity.dataset.activityCode=meta?.code||field.dataset.activityCode||'';
   }
 
   function prepareActivity(activity){
-    if(!activity)return;
-    let field=activityField(activity);if(!field)return;
+    if(!activity)return;let field=activityField(activity);if(!field)return;
     if(field.tagName==='SELECT'){
-      const model=document.createElement('input');
-      model.type='hidden';model.className='activity-name';model.value=field.value||'';
+      const model=document.createElement('input');model.type='hidden';model.className='activity-name';model.value=field.value||'';
       model.dataset.activityCode=field.dataset.activityCode||field.selectedOptions?.[0]?.dataset?.code||'';
       model.dataset.activityDiscipline=field.dataset.activityDiscipline||field.selectedOptions?.[0]?.dataset?.discipline||'';
       model.dataset.activityCategory=field.dataset.activityCategory||field.selectedOptions?.[0]?.dataset?.category||'';
       field.replaceWith(model);field=model;
-    }else{
-      field.removeAttribute('list');field.setAttribute('autocomplete','off');field.type='hidden';
-    }
-    const head=activity.querySelector('.activity-head');
-    head?.querySelectorAll('.activity-suggest-menu,.activity-dropdown-toggle').forEach(el=>el.remove());
-    head?.classList.remove('activity-autocomplete-wrap');
+    }else{field.removeAttribute('list');field.setAttribute('autocomplete','off');field.type='hidden';}
+    const head=activity.querySelector('.activity-head');head?.querySelectorAll('.activity-suggest-menu,.activity-dropdown-toggle').forEach(el=>el.remove());head?.classList.remove('activity-autocomplete-wrap');
     if(activity.dataset.planningPrepared!=='1'){
       activity.dataset.planningPrepared='1';
       const sync=()=>{resolveMeta(activity);renderActivityIdentity(activity);scheduleRefresh();};
@@ -228,65 +227,42 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
 
   function selectedMetas(card){
     return [...card.querySelectorAll('.activity-card')].map(activity=>{
-      prepareActivity(activity);
-      const meta=resolveMeta(activity),field=activityField(activity);
+      prepareActivity(activity);const meta=resolveMeta(activity),field=activityField(activity);
       return {activity,meta,name:field?.value||'',code:meta?.code||field?.dataset.activityCode||''};
     }).filter(x=>String(x.name).trim());
   }
-
-  function activityIsUsed(card,item){return selectedMetas(card).some(x=>x.code===item.code || (!x.code && norm(x.name)===norm(item.name)));}
+  function activityIsUsed(card,item){return selectedMetas(card).some(x=>x.code===item.code||(!x.code&&norm(x.name)===norm(item.name)));}
 
   function setExactActivity(activity,item){
-    prepareActivity(activity);
-    const field=activityField(activity);if(!field)return;
-    field.value=item.name;
-    field.dataset.activityCode=item.code;
-    field.dataset.activityDiscipline=item.discipline;
-    field.dataset.activityCategory=item.category;
-    activity.dataset.activityCode=item.code;
-    field.dispatchEvent(new Event('change',{bubbles:true}));
-    renderActivityIdentity(activity);
+    prepareActivity(activity);const field=activityField(activity);if(!field)return;
+    field.value=item.name;field.dataset.activityCode=item.code;field.dataset.activityDiscipline=item.discipline;field.dataset.activityCategory=item.category;activity.dataset.activityCode=item.code;
+    field.dispatchEvent(new Event('change',{bubbles:true}));renderActivityIdentity(activity);
   }
 
   function addToPhase(phaseId,item){
     const card=findPhaseCard(phaseId);if(!card||activityIsUsed(card,item))return;
-    const add=card.querySelector('.add-activity');if(!add)return;
-    add.click();
+    const add=card.querySelector('.add-activity');if(!add)return;add.click();
     setTimeout(()=>{
-      const activities=[...card.querySelectorAll('.activities .activity-card')];
-      const activity=activities[activities.length-1];if(!activity)return;
-      prepareActivity(activity);
-      const rows=activity.querySelector('.assignment-rows');if(rows)rows.innerHTML='';
-      setExactActivity(activity,item);
-      activity.classList.remove('collapsed');
-      scheduleRefresh(10);
+      const activity=[...card.querySelectorAll('.activities .activity-card')].at(-1);if(!activity)return;
+      prepareActivity(activity);const rows=activity.querySelector('.assignment-rows');if(rows)rows.innerHTML='';
+      setExactActivity(activity,item);activity.classList.remove('collapsed');scheduleRefresh(10);
       setTimeout(()=>activity.scrollIntoView({behavior:'smooth',block:'nearest'}),40);
     },70);
   }
 
   function renderAvailable(card,phase){
     const board=card.querySelector('.planning-phase-board');if(!board)return;
-    const list=board.querySelector('.planning-available-list');
-    const count=board.querySelector('.planning-available-count');
-    const items=ACTIVITIES.filter(x=>x.category===phase.category);
-    if(count)count.textContent=`${items.length} attività`;
+    const list=board.querySelector('.planning-available-list'),count=board.querySelector('.planning-available-count');
+    const items=ACTIVITIES.filter(x=>x.category===phase.category);if(count)count.textContent=`${items.length} attività`;
     list.innerHTML=items.map(item=>{
       const used=activityIsUsed(card,item);
-      return `<article class="planning-available-card ${used?'used':''}" data-code="${esc(item.code)}" draggable="${used?'false':'true'}">
-        <div class="planning-available-code">${esc(item.code)}</div>
-        <div class="planning-available-copy"><strong>${esc(item.name)}</strong><span>${esc(item.discipline)}</span></div>
-        <button type="button" class="planning-card-add" ${used?'disabled':''} title="${used?'Attività già preventivata':'Aggiungi alle attività preventivate'}">${used?'✓':'＋'}</button>
-      </article>`;
-    }).join('') || '<div class="planning-empty">Nessuna attività disponibile per questa fase.</div>';
+      return `<article class="planning-available-card ${used?'used':''}" data-code="${esc(item.code)}" draggable="${used?'false':'true'}"><div class="planning-available-code">${esc(item.code)}</div><div class="planning-available-copy"><strong>${esc(item.name)}</strong><span>${esc(item.discipline)}</span></div><button type="button" class="planning-card-add" ${used?'disabled':''} title="${used?'Attività già preventivata':'Aggiungi alle attività preventivate'}">${used?'✓':'＋'}</button></article>`;
+    }).join('')||'<div class="planning-empty">Nessuna attività disponibile per questa fase.</div>';
     list.querySelectorAll('.planning-available-card').forEach(el=>{
       const item=ACTIVITIES.find(x=>x.code===el.dataset.code);if(!item)return;
       el.querySelector('.planning-card-add')?.addEventListener('click',()=>addToPhase(phase.id,item));
       if(!el.classList.contains('used')){
-        el.addEventListener('dragstart',e=>{
-          e.dataTransfer.effectAllowed='copy';
-          e.dataTransfer.setData('text/plain',JSON.stringify({phase:phase.id,code:item.code}));
-          el.classList.add('dragging');
-        });
+        el.addEventListener('dragstart',e=>{e.dataTransfer.effectAllowed='copy';e.dataTransfer.setData('text/plain',JSON.stringify({phase:phase.id,code:item.code}));el.classList.add('dragging');});
         el.addEventListener('dragend',()=>el.classList.remove('dragging'));
       }
     });
@@ -294,109 +270,83 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
 
   function updateSelectedSummary(card){
     const board=card.querySelector('.planning-phase-board');if(!board)return;
-    const selected=selectedMetas(card);
-    const empty=board.querySelector('.planning-selected-empty');if(empty)empty.hidden=selected.length>0;
-    const summary=board.querySelector('.planning-selected-summary');
-    const hours=card.querySelector('.phase-hours')?.textContent||'0,00';
-    const cost=card.querySelector('.phase-work-cost')?.textContent||'0,00 €';
+    const selected=selectedMetas(card),empty=board.querySelector('.planning-selected-empty'),summary=board.querySelector('.planning-selected-summary');
+    if(empty)empty.hidden=selected.length>0;
+    const hours=card.querySelector('.phase-hours')?.textContent||'0,00',cost=card.querySelector('.phase-work-cost')?.textContent||'0,00 €';
     if(summary)summary.textContent=`${selected.length} attività · ${hours} h · ${cost}`;
   }
 
   function ensurePhaseBoard(card){
     if(!card||card.dataset.planningBoardReady==='1')return;
-    const body=card.querySelector('.phase-card-body');
-    const activities=body?.querySelector('.activities');
-    const add=body?.querySelector('.add-activity');
-    if(!body||!activities||!add)return;
+    const body=card.querySelector('.phase-card-body'),activities=body?.querySelector('.activities'),add=body?.querySelector('.add-activity');if(!body||!activities||!add)return;
     card.dataset.planningBoardReady='1';
     const board=document.createElement('div');board.className='planning-phase-board';
-    board.innerHTML=`
-      <section class="planning-column planning-available-column">
-        <div class="planning-column-head"><div><strong>Attività disponibili</strong><span class="planning-available-count"></span></div><span class="planning-column-hint">trascina o usa +</span></div>
-        <div class="planning-available-list"></div>
-      </section>
-      <section class="planning-column planning-selected-column">
-        <div class="planning-column-head"><div><strong>Attività preventivate</strong><span class="planning-selected-summary">0 attività · 0,00 h · 0,00 €</span></div><span class="planning-column-hint">figura + ore</span></div>
-        <div class="planning-selected-drop"></div>
-      </section>`;
+    board.innerHTML=`<section class="planning-column planning-available-column"><div class="planning-column-head"><div><strong>Attività disponibili</strong><span class="planning-available-count"></span></div><span class="planning-column-hint">trascina o usa +</span></div><div class="planning-available-list"></div></section><section class="planning-column planning-selected-column"><div class="planning-column-head"><div><strong>Attività preventivate</strong><span class="planning-selected-summary">0 attività · 0,00 h · 0,00 €</span></div><span class="planning-column-hint">figura + ore</span></div><div class="planning-selected-drop"></div></section>`;
     body.insertBefore(board,body.firstChild);
-    const drop=board.querySelector('.planning-selected-drop');
-    activities.classList.add('planning-selected-list');drop.appendChild(activities);
-    const empty=document.createElement('div');empty.className='planning-selected-empty';empty.textContent='Trascina qui un’attività oppure premi + nella colonna a sinistra.';drop.appendChild(empty);
-    drop.appendChild(add);
+    const drop=board.querySelector('.planning-selected-drop');activities.classList.add('planning-selected-list');drop.appendChild(activities);
+    const empty=document.createElement('div');empty.className='planning-selected-empty';empty.textContent='Trascina qui un’attività oppure premi + nella colonna a sinistra.';drop.appendChild(empty);drop.appendChild(add);
     drop.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='copy';drop.classList.add('drag-over');});
     drop.addEventListener('dragleave',e=>{if(!drop.contains(e.relatedTarget))drop.classList.remove('drag-over');});
-    drop.addEventListener('drop',e=>{
-      e.preventDefault();drop.classList.remove('drag-over');
-      try{
-        const data=JSON.parse(e.dataTransfer.getData('text/plain')||'{}');
-        const phase=cardPhase(card);if(data.phase!==phase)return;
-        const item=ACTIVITIES.find(x=>x.code===data.code);if(item)addToPhase(phase,item);
-      }catch(_e){}
-    });
+    drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('drag-over');try{const data=JSON.parse(e.dataTransfer.getData('text/plain')||'{}');const phase=cardPhase(card);if(data.phase!==phase)return;const item=ACTIVITIES.find(x=>x.code===data.code);if(item)addToPhase(phase,item);}catch(_e){}});
     activities.querySelectorAll('.activity-card').forEach(prepareActivity);
   }
 
   function renderTabs(){
     const tabs=document.getElementById('planningPhaseTabs');if(!tabs)return;
-    tabs.innerHTML=PHASES.map(phase=>{
-      const card=findPhaseCard(phase.id),count=card?selectedMetas(card).length:0;
-      return `<button type="button" class="kanban-phase-tab ${activePhase===phase.id?'active':''}" data-phase="${phase.id}">${phase.label}<span class="count">${count}</span></button>`;
-    }).join('');
+    tabs.innerHTML=PHASES.map(phase=>{const card=findPhaseCard(phase.id),count=card?selectedMetas(card).length:0;return `<button type="button" class="kanban-phase-tab ${activePhase===phase.id?'active':''}" data-phase="${phase.id}">${phase.label}<span class="count">${count}</span></button>`;}).join('');
     tabs.querySelectorAll('.kanban-phase-tab').forEach(btn=>btn.addEventListener('click',()=>{activePhase=btn.dataset.phase;refreshPlanning();}));
   }
 
   function refreshPlanning(){
     if(!root)return;
-    phaseCards().forEach(card=>{
-      ensurePhaseBoard(card);
-      const id=cardPhase(card);card.dataset.planningPhase=id;card.classList.toggle('planning-active',id===activePhase);
-      const phase=PHASES.find(p=>p.id===id);if(phase){renderAvailable(card,phase);updateSelectedSummary(card);}
-    });
+    phaseCards().forEach(card=>{ensurePhaseBoard(card);const id=cardPhase(card);card.dataset.planningPhase=id;card.classList.toggle('planning-active',id===activePhase);const phase=PHASES.find(p=>p.id===id);if(phase){renderAvailable(card,phase);updateSelectedSummary(card);}});
     renderTabs();
   }
-
   function scheduleRefresh(delay=35){clearTimeout(refreshTimer);refreshTimer=setTimeout(refreshPlanning,delay);}
 
-  function setPhase(card,id,label){
-    if(!card)return;
-    const select=card.querySelector('.phase-type-select');
-    if(select && select.value!==id){select.value=id;select.dispatchEvent(new Event('change',{bubbles:true}));}
+  function ensurePhaseOption(select,id,label){
+    if(!select)return;let option=[...select.options].find(o=>o.value===id);
+    if(!option){option=document.createElement('option');option.value=id;option.textContent=label;select.appendChild(option);}else option.textContent=label;
+  }
+
+  function setPhase(card,id,label=phaseDef(id).label){
+    if(!card)return;const select=card.querySelector('.phase-type-select');ensurePhaseOption(select,id,label);
+    if(select&&select.value!==id){select.value=id;select.dispatchEvent(new Event('change',{bubbles:true}));}
     card.dataset.planningPhase=id;
-    if(label){
-      const row=document.querySelector(`.economic-row[data-phase-id="${card.dataset.phaseId}"]`);
-      const input=row?.querySelector('.phase-name-input');
-      if(input && norm(input.value)!==norm(label)){input.value=label;input.dispatchEvent(new Event('input',{bubbles:true}));}
-    }
+    const row=document.querySelector(`.economic-row[data-phase-id="${card.dataset.phaseId}"]`),input=row?.querySelector('.phase-name-input');
+    if(input&&norm(input.value)!==norm(label)){input.value=label;input.dispatchEvent(new Event('input',{bubbles:true}));}
   }
 
   function ensureFixedPhases(){
     const cards=phaseCards();
-    ['preliminare','definitivo','esecutivo','dl'].forEach((id,index)=>setPhase(cards[index],id));
-    if(findPhaseCard('consulenze')){scheduleRefresh();return;}
-    const add=document.getElementById('addEconomicPhase');if(!add)return;
-    add.click();
-    let attempts=0;
-    const finish=()=>{
-      attempts++;
-      const latest=phaseCards().at(-1);
-      if(latest?.querySelector('.phase-type-select')){
-        setPhase(latest,'consulenze','Consulenze varie');ensurePhaseBoard(latest);scheduleRefresh(20);return;
-      }
-      if(attempts<30)setTimeout(finish,50);
+    ['preliminare','definitivo','esecutivo','dl'].forEach((id,index)=>setPhase(cards[index],id,phaseDef(id).label));
+    const extras=['valutazione_vvf','scia_vvf','consulenze'];
+    const add=document.getElementById('addEconomicPhase');
+    const ensureNext=index=>{
+      if(index>=extras.length){PHASES.forEach(p=>{const c=findPhaseCard(p.id);if(c)ensurePhaseBoard(c);});scheduleRefresh(25);setTimeout(()=>window.dabsterEconomicPhaseController?.reconcile(),80);return;}
+      const id=extras[index],def=phaseDef(id),existing=findPhaseCard(id);
+      if(existing){setPhase(existing,id,def.label);ensurePhaseBoard(existing);ensureNext(index+1);return;}
+      if(!add){setTimeout(()=>ensureNext(index),60);return;}
+      const before=new Set(phaseCards());add.click();let attempts=0;
+      const finish=()=>{
+        attempts++;const created=phaseCards().find(c=>!before.has(c));
+        if(created?.querySelector('.phase-type-select')){setPhase(created,id,def.label);ensurePhaseBoard(created);ensureNext(index+1);return;}
+        if(attempts<40)setTimeout(finish,40);else ensureNext(index+1);
+      };
+      setTimeout(finish,40);
     };
-    setTimeout(finish,60);
+    ensureNext(0);
   }
 
   function installStyles(){
     if(document.getElementById('planningBoardStyles'))return;
-    const style=document.createElement('style');style.id='planningBoardStyles';
-    style.textContent=`
+    const style=document.createElement('style');style.id='planningBoardStyles';style.textContent=`
       #phaseWorkloadSection .workload-body{padding:7px 8px 9px!important;background:#fff!important}
       #phaseWorkloadSection .workload-toolbar{margin-bottom:7px!important;padding:2px 2px 0!important}
       #phaseWorkloadSection .workload-toolbar>div strong{font-size:11px!important;color:#344653!important}
       #phaseWorkloadSection .workload-toolbar>div span{font-size:8.8px!important;color:#74818a!important}
-      #planningPhaseTabs{margin:0 -1px 8px!important;border:1px solid #e3e8eb!important;border-radius:7px 7px 0 0!important;overflow-x:auto!important}
+      #planningPhaseTabs{display:flex!important;align-items:stretch!important;margin:0 -1px 8px!important;border:1px solid #e3e8eb!important;border-radius:7px 7px 0 0!important;overflow-x:auto!important;scrollbar-width:thin}
+      #planningPhaseTabs .kanban-phase-tab{flex:0 0 auto!important;min-width:118px!important;padding-left:9px!important;padding-right:9px!important;white-space:nowrap!important}
       #phaseWorkCards{display:block!important}
       #phaseWorkloadSection .phase-work-card{display:none!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
       #phaseWorkloadSection .phase-work-card.planning-active{display:block!important}
@@ -406,95 +356,42 @@ ATT712|Commissioning VVF|Direzione Lavori|VVF
       #phaseWorkloadSection .planning-column{min-width:0;border:1px solid #dce3e7;border-radius:7px;background:#f7f8f9;overflow:hidden}
       #phaseWorkloadSection .planning-column-head{min-height:38px;padding:5px 8px;border-bottom:1px solid #dfe5e8;background:#f1f3f5;display:flex;align-items:center;justify-content:space-between;gap:8px;color:#46545f}
       #phaseWorkloadSection .planning-column-head>div{display:flex;flex-direction:column;gap:1px;min-width:0}
-      #phaseWorkloadSection .planning-column-head strong{font-size:9.5px;font-weight:750;text-decoration:underline;text-underline-offset:2px}
-      #phaseWorkloadSection .planning-column-head span{font-size:7.8px;color:#7a8790;white-space:nowrap}
+      #phaseWorkloadSection .planning-column-head strong{font-size:9.5px;font-weight:750}.planning-column-head span{font-size:7.8px;color:#7a8790;white-space:nowrap}
       #phaseWorkloadSection .planning-column-hint{font-size:7.7px!important;color:#88949b!important}
       #phaseWorkloadSection .planning-available-list,#phaseWorkloadSection .planning-selected-drop{min-height:385px;max-height:485px;overflow:auto;padding:6px;display:flex;flex-direction:column;gap:6px;transition:.12s}
       #phaseWorkloadSection .planning-selected-drop.drag-over{background:#eaf4f6;outline:2px dashed #76aebb;outline-offset:-4px}
       #phaseWorkloadSection .planning-available-card{display:grid;grid-template-columns:54px minmax(0,1fr) 28px;gap:7px;align-items:center;min-height:48px;padding:6px 7px;border:1px solid #cfd9df;border-left:3px solid #7897a8;border-radius:7px;background:#fff;box-shadow:0 1px 2px rgba(29,45,57,.04);cursor:grab;user-select:none}
-      #phaseWorkloadSection .planning-available-card:hover{border-color:#b7c8d1;box-shadow:0 2px 6px rgba(29,45,57,.07)}
-      #phaseWorkloadSection .planning-available-card.dragging{opacity:.45}
-      #phaseWorkloadSection .planning-available-card.used{opacity:.55;cursor:default;background:#f3f5f6;border-left-color:#aab5bb}
-      #phaseWorkloadSection .planning-available-code{font-size:8.4px;font-weight:800;color:#567382;letter-spacing:.02em}
-      #phaseWorkloadSection .planning-available-copy{display:flex;flex-direction:column;gap:2px;min-width:0}
-      #phaseWorkloadSection .planning-available-copy strong{font-size:9.6px;line-height:1.2;color:#344653;font-weight:700;white-space:normal}
-      #phaseWorkloadSection .planning-available-copy span{font-size:7.6px;color:#6b8491;font-weight:750}
-      #phaseWorkloadSection .planning-card-add{width:25px;height:25px;border:1px solid #cfdbe0;border-radius:6px;background:#fff;color:#4e7c8b;font-size:14px;line-height:1;cursor:pointer}
-      #phaseWorkloadSection .planning-card-add:hover:not(:disabled){background:#edf7f8;border-color:#9ec2ca}
-      #phaseWorkloadSection .planning-card-add:disabled{cursor:default;background:#eef1f2;color:#6e8780;border-color:#dce2e4}
-      #phaseWorkloadSection .planning-selected-list{display:flex!important;flex-direction:column!important;gap:7px!important;margin:0!important;padding:0!important}
-      #phaseWorkloadSection .planning-selected-empty{padding:13px 10px;border:1px dashed #d5dee3;border-radius:7px;background:#fbfcfd;color:#87929a;font-size:8.7px;line-height:1.4;text-align:center}
-      #phaseWorkloadSection .planning-selected-empty[hidden]{display:none!important}
-      #phaseWorkloadSection .add-activity{display:none!important}
+      #phaseWorkloadSection .planning-available-card:hover{border-color:#b7c8d1;box-shadow:0 2px 6px rgba(29,45,57,.07)}#phaseWorkloadSection .planning-available-card.dragging{opacity:.45}#phaseWorkloadSection .planning-available-card.used{opacity:.55;cursor:default;background:#f3f5f6;border-left-color:#aab5bb}
+      #phaseWorkloadSection .planning-available-code{font-size:8.4px;font-weight:800;color:#567382;letter-spacing:.02em}.planning-available-copy{display:flex;flex-direction:column;gap:2px;min-width:0}#phaseWorkloadSection .planning-available-copy strong{font-size:9.6px;line-height:1.2;color:#344653;font-weight:700;white-space:normal}#phaseWorkloadSection .planning-available-copy span{font-size:7.6px;color:#6b8491;font-weight:750}
+      #phaseWorkloadSection .planning-card-add{width:25px;height:25px;border:1px solid #cfdbe0;border-radius:6px;background:#fff;color:#4e7c8b;font-size:14px;line-height:1;cursor:pointer}#phaseWorkloadSection .planning-card-add:hover:not(:disabled){background:#edf7f8;border-color:#9ec2ca}#phaseWorkloadSection .planning-card-add:disabled{cursor:default;background:#eef1f2;color:#6e8780;border-color:#dce2e4}
+      #phaseWorkloadSection .planning-selected-list{display:flex!important;flex-direction:column!important;gap:7px!important;margin:0!important;padding:0!important}#phaseWorkloadSection .planning-selected-empty{padding:13px 10px;border:1px dashed #d5dee3;border-radius:7px;background:#fbfcfd;color:#87929a;font-size:8.7px;line-height:1.4;text-align:center}#phaseWorkloadSection .planning-selected-empty[hidden]{display:none!important}#phaseWorkloadSection .add-activity{display:none!important}
       #phaseWorkloadSection .activity-card{border:1px solid #cfd9df!important;border-left:3px solid #7897a8!important;border-radius:7px!important;background:#fff!important;box-shadow:0 1px 2px rgba(29,45,57,.04)!important;margin:0!important;overflow:hidden!important}
-      #phaseWorkloadSection .activity-head{display:grid!important;grid-template-columns:minmax(220px,1fr) auto 25px!important;gap:6px!important;align-items:center!important;min-height:43px!important;padding:5px 6px 5px 8px!important;background:#fff!important}
-      #phaseWorkloadSection .activity-name{display:none!important}
-      #phaseWorkloadSection .planning-activity-ident{min-width:0;display:flex;align-items:center;justify-content:space-between;gap:7px}
-      #phaseWorkloadSection .planning-activity-main{min-width:0;display:flex;align-items:center;gap:7px}
-      #phaseWorkloadSection .planning-activity-main strong{flex:0 0 auto;font-size:8.3px;color:#567382;font-weight:800}
-      #phaseWorkloadSection .planning-activity-main span{font-size:10px;color:#344653;font-weight:750;line-height:1.2;white-space:normal}
-      #phaseWorkloadSection .planning-activity-ident em{flex:0 0 auto;height:19px;padding:0 6px;border-radius:999px;background:#e8f2f6;color:#47718a;display:inline-flex;align-items:center;font-size:7.5px;font-style:normal;font-weight:750}
-      #phaseWorkloadSection .activity-head-metrics{gap:4px!important}
-      #phaseWorkloadSection .activity-head-metrics span{height:23px!important;padding:0 6px!important;font-size:8px!important}
-      #phaseWorkloadSection .activity-toggle{display:none!important}
+      #phaseWorkloadSection .activity-head{display:grid!important;grid-template-columns:minmax(220px,1fr) auto 25px!important;gap:6px!important;align-items:center!important;min-height:43px!important;padding:5px 6px 5px 8px!important;background:#fff!important}#phaseWorkloadSection .activity-name{display:none!important}
+      #phaseWorkloadSection .planning-activity-ident{min-width:0;display:flex;align-items:center;justify-content:space-between;gap:7px}#phaseWorkloadSection .planning-activity-main{min-width:0;display:flex;align-items:center;gap:7px}#phaseWorkloadSection .planning-activity-main strong{flex:0 0 auto;font-size:8.3px;color:#567382;font-weight:800}#phaseWorkloadSection .planning-activity-main span{font-size:10px;color:#344653;font-weight:750;line-height:1.2;white-space:normal}#phaseWorkloadSection .planning-activity-ident em{flex:0 0 auto;height:19px;padding:0 6px;border-radius:999px;background:#e8f2f6;color:#47718a;display:inline-flex;align-items:center;font-size:7.5px;font-style:normal;font-weight:750}
+      #phaseWorkloadSection .activity-head-metrics{gap:4px!important}#phaseWorkloadSection .activity-head-metrics span{height:23px!important;padding:0 6px!important;font-size:8px!important}#phaseWorkloadSection .activity-toggle{display:none!important}
       #phaseWorkloadSection .activity-body,#phaseWorkloadSection .activity-card.collapsed .activity-body{display:block!important;padding:7px 7px 9px!important;border-top:1px solid #edf0f2!important;background:#fbfcfd!important}
-      #phaseWorkloadSection .assignment-head,#phaseWorkloadSection .assignment-row{grid-template-columns:minmax(135px,1fr) 68px 76px 96px 24px!important;gap:6px!important}
-      #phaseWorkloadSection .assignment-head{min-height:27px!important;padding:3px 0 4px!important}
-      #phaseWorkloadSection .assignment-row{min-height:31px!important}
-      #phaseWorkloadSection .assignment-row select,#phaseWorkloadSection .assignment-row input{height:26px!important}
-      #phaseWorkloadSection .add-assignment{height:25px!important;margin-top:7px!important;padding:0 8px!important}
-      @media(max-width:900px){
-        #phaseWorkloadSection .planning-phase-board{min-width:780px;grid-template-columns:320px 1fr}
-        #phaseWorkloadSection .planning-available-list,#phaseWorkloadSection .planning-selected-drop{max-height:430px}
-      }
-    `;
-    document.head.appendChild(style);
+      #phaseWorkloadSection .assignment-head,#phaseWorkloadSection .assignment-row{grid-template-columns:minmax(135px,1fr) 68px 76px 96px 24px!important;gap:6px!important}#phaseWorkloadSection .assignment-head{min-height:27px!important;padding:3px 0 4px!important}#phaseWorkloadSection .assignment-row{min-height:31px!important}#phaseWorkloadSection .assignment-row select,#phaseWorkloadSection .assignment-row input{height:26px!important}#phaseWorkloadSection .add-assignment{height:25px!important;margin-top:7px!important;padding:0 8px!important}
+      @media(max-width:900px){#phaseWorkloadSection .planning-phase-board{min-width:780px;grid-template-columns:320px 1fr}#phaseWorkloadSection .planning-available-list,#phaseWorkloadSection .planning-selected-drop{max-height:430px}}
+    `;document.head.appendChild(style);
   }
 
-  function isModelMutationNode(node){
-    if(!(node instanceof HTMLElement))return false;
-    return node.matches('.phase-work-card,.activity-card') || !!node.querySelector?.('.phase-work-card,.activity-card');
-  }
+  function isModelMutationNode(node){return node instanceof HTMLElement&&(node.matches('.phase-work-card,.activity-card')||!!node.querySelector?.('.phase-work-card,.activity-card'));}
 
   function install(attempt=0){
-    root=document.getElementById('phaseWorkCards');
-    const section=document.getElementById('phaseWorkloadSection');
-    const ready=root && section && root.querySelectorAll(':scope > .phase-work-card').length>=4 && root.querySelector('.phase-type-select');
+    root=document.getElementById('phaseWorkCards');const section=document.getElementById('phaseWorkloadSection');
+    const ready=root&&section&&root.querySelectorAll(':scope > .phase-work-card').length>=4&&root.querySelector('.phase-type-select');
     if(!ready){if(attempt<220)setTimeout(()=>install(attempt+1),50);return;}
     installStyles();
     const head=section.querySelector(':scope > .section-head span:first-child');if(head)head.innerHTML='◷&nbsp;&nbsp;Pianificazione attività e ore';
-    const toolbar=section.querySelector('.workload-toolbar>div');
-    if(toolbar)toolbar.innerHTML='<strong>Costruzione del preventivo</strong><span>Sposta le attività disponibili tra le attività preventivate e assegna figure e ore.</span>';
-    if(!document.getElementById('planningPhaseTabs')){
-      const tabs=document.createElement('div');tabs.id='planningPhaseTabs';tabs.className='kanban-phase-tabs';root.parentElement.insertBefore(tabs,root);
-    }
+    const toolbar=section.querySelector('.workload-toolbar>div');if(toolbar)toolbar.innerHTML='<strong>Costruzione del preventivo</strong><span>Sposta le attività disponibili tra le attività preventivate e assegna figure e ore.</span>';
+    if(!document.getElementById('planningPhaseTabs')){const tabs=document.createElement('div');tabs.id='planningPhaseTabs';tabs.className='kanban-phase-tabs';root.parentElement.insertBefore(tabs,root);}
     phaseCards().forEach(card=>{ensurePhaseBoard(card);card.querySelectorAll('.activity-card').forEach(prepareActivity);});
     ensureFixedPhases();
-    if(observer)observer.disconnect();
-    observer=new MutationObserver(mutations=>{
-      let structural=false;
-      mutations.forEach(m=>{
-        if(m.type!=='childList')return;
-        const added=[...m.addedNodes].filter(isModelMutationNode);
-        const removed=[...m.removedNodes].filter(isModelMutationNode);
-        added.forEach(node=>{
-          if(node.matches?.('.phase-work-card'))ensurePhaseBoard(node);
-          if(node.matches?.('.activity-card'))prepareActivity(node);
-          node.querySelectorAll?.('.phase-work-card').forEach(ensurePhaseBoard);
-          node.querySelectorAll?.('.activity-card').forEach(prepareActivity);
-        });
-        if(added.length||removed.length)structural=true;
-      });
-      if(structural)scheduleRefresh(45);
-    });
-    observer.observe(root,{childList:true,subtree:true});
-    section.addEventListener('input',()=>scheduleRefresh(25),true);
-    section.addEventListener('change',()=>scheduleRefresh(25),true);
-    section.addEventListener('click',e=>{
-      if(e.target.closest('.activity-delete,.assignment-delete,.add-assignment,.planning-card-add'))scheduleRefresh(60);
-    },true);
-    window.DABSTER_ACTIVITY_REGISTRY=ACTIVITIES.map(x=>({...x}));
-    refreshPlanning();
+    if(observer)observer.disconnect();observer=new MutationObserver(mutations=>{
+      let structural=false;mutations.forEach(m=>{if(m.type!=='childList')return;const added=[...m.addedNodes].filter(isModelMutationNode),removed=[...m.removedNodes].filter(isModelMutationNode);added.forEach(node=>{if(node.matches?.('.phase-work-card'))ensurePhaseBoard(node);if(node.matches?.('.activity-card'))prepareActivity(node);node.querySelectorAll?.('.phase-work-card').forEach(ensurePhaseBoard);node.querySelectorAll?.('.activity-card').forEach(prepareActivity);});if(added.length||removed.length)structural=true;});if(structural)scheduleRefresh(45);
+    });observer.observe(root,{childList:true,subtree:true});
+    section.addEventListener('input',()=>scheduleRefresh(25),true);section.addEventListener('change',()=>scheduleRefresh(25),true);section.addEventListener('click',e=>{if(e.target.closest('.activity-delete,.assignment-delete,.add-assignment,.planning-card-add'))scheduleRefresh(60);},true);
+    window.DABSTER_ACTIVITY_REGISTRY=ACTIVITIES.map(x=>({...x}));window.DABSTER_PLANNING_PHASES=PHASES.map(x=>({...x}));refreshPlanning();
   }
 
   install();

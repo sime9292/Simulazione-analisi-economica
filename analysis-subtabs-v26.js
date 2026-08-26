@@ -1,11 +1,13 @@
-/* v49 - Flat Impianti workspace + dynamic phases + compact economic summary */
+/* v58 - Flat Impianti workspace + seven operational phases + compact economic summary */
 (function(){
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const PHASES=[
-    {id:'preliminare',label:'Progetto Preliminare',dimIndex:0},
-    {id:'definitivo',label:'Progetto Definitivo',dimIndex:1},
+    {id:'preliminare',label:'Progetto preliminare e Pratiche',dimIndex:0},
+    {id:'definitivo',label:'Progetto PFTE',dimIndex:1},
+    {id:'valutazione_vvf',label:'Valutazione Progetto Antincendio',dimIndex:null},
     {id:'esecutivo',label:'Progetto Esecutivo',dimIndex:2},
     {id:'dl',label:'Direzione Lavori',dimIndex:3},
+    {id:'scia_vvf',label:'SCIA Antincendio',dimIndex:null},
     {id:'consulenze',label:'Consulenze varie',dimIndex:null}
   ];
   const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -58,7 +60,7 @@
 
     let timer=null,observer=null,manualBeforeTransfer=new Map();
     const cards=()=>[...document.querySelectorAll('#phaseWorkCards > .phase-work-card')];
-    const cardFor=id=>cards().find(c=>c.querySelector('.phase-type-select')?.value===id)||null;
+    const cardFor=id=>cards().find(c=>((c.querySelector('.phase-type-select')?.value)||c.dataset.planningPhase)===id)||null;
     const rowFor=id=>{const c=cardFor(id);return c?sections.economic.querySelector(`.economic-table .phase-row[data-phase-id="${c.dataset.phaseId}"]`):null;};
     const countActivities=c=>c?[...c.querySelectorAll('.activity-card .activity-name')].filter(x=>String(x.value||'').trim()).length:0;
     const selected=()=>new Set(Array.isArray(window.DABSTER_DIM_SELECTED_PHASES)?window.DABSTER_DIM_SELECTED_PHASES:[]);
@@ -101,7 +103,7 @@
 
     (function installController(attempt=0){
       const root=document.getElementById('phaseWorkCards');
-      if(!(root&&cards().length>=5&&PHASES.every(d=>cardFor(d.id)&&rowFor(d.id)))){if(attempt<240)setTimeout(()=>installController(attempt+1),50);return;}
+      if(!(root&&cards().length>=7&&PHASES.every(d=>cardFor(d.id)&&rowFor(d.id)))){if(attempt<280)setTimeout(()=>installController(attempt+1),50);return;}
       PHASES.forEach(d=>prepareRow(d,rowFor(d.id)));reconcile();
       observer?.disconnect();observer=new MutationObserver(ms=>{if(ms.some(m=>m.type==='childList'))schedule();});observer.observe(root,{childList:true,subtree:true});
       root.addEventListener('input',()=>schedule(25),true);root.addEventListener('change',()=>schedule(25),true);

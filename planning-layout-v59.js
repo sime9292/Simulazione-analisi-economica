@@ -1,4 +1,4 @@
-/* v59 - Seven-phase planning presentation + stronger separation below sticky economics. */
+/* v60 - Seven-phase planning presentation + offer-lines workflow loader. */
 (function(){
   function install(attempt=0){
     const panel=document.getElementById('analysisSubtabImpianti');
@@ -90,4 +90,13 @@
   }
 
   install();
+})();
+
+/* v63 - Analisi Economica -> Righe Offerta -> Confermata snapshot. */
+(function(){
+  if(document.querySelector('script[data-dabster-offer-lines="63"]'))return;
+  const script=document.createElement('script');
+  script.dataset.dabsterOfferLines='63';
+  script.src='offer-lines-v63.js?v=63';
+  document.head.appendChild(script);
 })();

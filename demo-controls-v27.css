@@ -32,6 +32,25 @@
 }
 .analysis-demo-status{font-size:8.8px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
+/* v61 - phase navigation belongs to normal document flow.
+   Only the economic summary remains sticky; phase tabs must never overlay the planning board. */
+html body #tab-analisi #analysisSubtabImpianti #planningPhaseTabs{
+  position:relative!important;
+  top:auto!important;
+  bottom:auto!important;
+  left:auto!important;
+  right:auto!important;
+  z-index:1!important;
+  transform:none!important;
+  margin-top:0!important;
+  margin-bottom:10px!important;
+}
+html body #tab-analisi #analysisSubtabImpianti #phaseWorkCards{
+  position:relative!important;
+  z-index:0!important;
+  clear:both!important;
+}
+
 @media(max-width:700px){
   .analysis-demo-toolbar{overflow-x:auto;justify-content:flex-start;white-space:nowrap}
   .analysis-demo-status{display:none}

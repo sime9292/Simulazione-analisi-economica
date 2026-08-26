@@ -35,10 +35,8 @@
       const proposal=num(row.querySelector('.ae-proposal')?.value);
       const cost=num(row.querySelector('.ae-cost')?.value);
 
-      /* Rimborsi Spese e Costi Esterni sono visibili solo quando valorizzati. */
       syncSpecialRowVisibility(row,proposal,cost);
 
-      /* Le fasi tecniche inattive restano nel DOM solo come struttura e non contano economicamente. */
       const isManagedDynamicPhase=!!row.dataset.economicPhase;
       if(isManagedDynamicPhase&&row.dataset.economicActive!=='1'){
         const out=row.querySelector('.ae-discount');
@@ -46,11 +44,6 @@
         return;
       }
 
-      /* TRATTATIVA:
-         1. parte sempre dal TOT/proposta della singola riga;
-         2. applica una MAGGIORAZIONE: proposta * (1 + percentuale/100);
-         3. con percentuale > 0 arrotonda PER ECCESSO al successivo multiplo di 100 €;
-         4. il totale Trattativa è la somma delle righe già arrotondate. */
       const rawNegotiated=proposal*(1+tradePct/100);
       const negotiated=tradePct===0?proposal:roundUp100(rawNegotiated);
 
@@ -58,9 +51,6 @@
       negotiatedTotal+=negotiated;
       directCosts+=cost;
 
-      /* SPESE GENERALI:
-         35% del TOT/proposta delle sole fasi operative attive.
-         Rimborsi Spese e Costi Esterni sono esclusi esplicitamente dalla base. */
       const isActiveOperatingPhase=row.dataset.phaseManaged==='1' && !isSpecialRow(row);
       if(isActiveOperatingPhase)internalSalesBase+=proposal;
 
@@ -73,7 +63,6 @@
       }
     });
 
-    /* KPI DEFINITIVI - tutti basati sulla colonna TOT/proposta, non sulla Trattativa. */
     const mol=gross-directCosts;
     const generalExpenses=internalSalesBase*0.35;
     const mon=mol-generalExpenses;
@@ -102,8 +91,6 @@
     timer=setTimeout(recalcRoundedTrade,delay);
   }
 
-  /* Several legacy modules still fire their historical economic recalculation synchronously.
-     Settle the definitive result after the same event and after any queued legacy callback. */
   function settle(){
     recalcRoundedTrade();
     queueMicrotask(recalcRoundedTrade);
@@ -117,13 +104,9 @@
     const trade=document.getElementById('tradePct');
     if(!table||!trade){if(attempt<160)setTimeout(()=>install(attempt+1),60);return;}
 
-    /* Direct listener works on the initial slider. */
     trade.addEventListener('input',settle);
     trade.addEventListener('change',settle);
 
-    /* IMPORTANT: app-v7 replaces #tradePct with a cloned input during startup, which removes
-       listeners attached to the original node. Delegated bubbling listeners survive that clone.
-       They run after the old target listener, so the final visible value is always the markup. */
     document.addEventListener('input',e=>{
       if(e.target?.id==='tradePct'){
         settle();
@@ -139,7 +122,6 @@
       if(e.target?.closest?.('#reimbursementsSection,#externalCostsSection'))schedule(40);
     },false);
 
-    /* Table and workload edits: legacy routines may run first; this delayed calculation is final. */
     table.addEventListener('input',()=>schedule(35),true);
     table.addEventListener('change',()=>schedule(35),true);
     document.getElementById('phaseWorkloadSection')?.addEventListener('input',()=>schedule(40),true);
@@ -157,14 +139,12 @@
     },true);
     window.addEventListener('dabster-dimension-transfer',()=>{schedule(80);setTimeout(recalcRoundedTrade,180);});
 
-    /* Phase/supplier rows can be created or removed dynamically. */
     new MutationObserver(mutations=>{
       const structuralChange=mutations.some(m=>m.type==='childList' &&
         [...m.addedNodes,...m.removedNodes].some(n=>n.nodeType===1));
       if(structuralChange)schedule(50);
     }).observe(table,{childList:true,subtree:true});
 
-    /* Precompila/Svuota mark their final state on body: recalculate after the async procedure ends. */
     if(document.body){
       new MutationObserver(mutations=>{
         if(mutations.some(m=>m.type==='attributes'&&m.attributeName==='data-demo-seeded'))settle();
@@ -188,5 +168,14 @@
   const script=document.createElement('script');
   script.dataset.dabsterUiPolish='55';
   script.src='ui-polish-v55.js?v=55';
+  document.head.appendChild(script);
+})();
+
+/* v59 planning layout loader: seven fixed phase tabs + visual separator below sticky economics. */
+(function(){
+  if(document.querySelector('script[data-dabster-planning-layout="59"]'))return;
+  const script=document.createElement('script');
+  script.dataset.dabsterPlanningLayout='59';
+  script.src='planning-layout-v59.js?v=59';
   document.head.appendChild(script);
 })();

@@ -1,4 +1,4 @@
-/* v50 - Dimensionamento Opere is an independent technical reference; no phase transfer to Analisi Offerta. */
+/* v51 - Dimensionamento Opere is an independent technical reference; phase split remains visible but never transfers to Analisi Economica. */
 (function(){
   function install(attempt=0){
     if(typeof recalcDimensioning!=='function' || typeof dimRows==='undefined' || !dimRows){
@@ -11,8 +11,7 @@
       const style=document.createElement('style');
       style.id='dimIndependentReferenceStyles';
       style.textContent=`
-        #analysisSubtabDimensionamento .dim-phases,
-        #analysisSubtabDimensionamento .dim-phase-footer{display:none!important}
+        #analysisSubtabDimensionamento .dim-transfer-wrap{display:none!important}
         #analysisSubtabDimensionamento .dim-independent-note{margin:8px 0 2px;padding:7px 9px;border:1px solid #dce4e7;border-radius:6px;background:#f7f9fa;color:#65747c;font-size:8.7px;line-height:1.35}
         #analysisSubtabDimensionamento .dim-independent-note strong{color:#41555f}
       `;
@@ -25,7 +24,7 @@
       if(!feeLine)return;
       const note=document.createElement('div');
       note.className='dim-independent-note';
-      note.innerHTML='<strong>Riferimento tecnico indipendente.</strong> Il Dimensionamento Opere non seleziona fasi e non trasferisce importi nell’Analisi Offerta.';
+      note.innerHTML='<strong>Riferimento tecnico indipendente.</strong> La ripartizione del compenso per fase è solo indicativa e non trasferisce importi nell’Analisi Economica.';
       feeLine.insertAdjacentElement('afterend',note);
     }
 
@@ -85,8 +84,7 @@
         dimIeFactor.title=hasDetailedSplit?'Fattore applicato alla quota impianti elettrici':'Disponibile quando è presente una ripartizione IM / IE';
       }
 
-      /* The hidden legacy phase calculation is kept only to preserve the current prototype DOM.
-         Its values are deliberately NOT exported to the economic analysis. */
+      /* Phase calculation is reference-only. Values are deliberately NOT exported to the economic analysis. */
       const shares=phasePctInputs.map(i=>Number(i.value||0));
       const phaseResultEls=[...document.querySelectorAll('.phase-result-value')];
       const phaseMechEls=[...document.querySelectorAll('.phase-mech-value')];

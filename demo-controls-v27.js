@@ -1,4 +1,4 @@
-/* v42 - Precompila aligned with Righe Offerta -> Importo Conferma -> Confermata workflow. */
+/* v43 - Precompila aligned with: In lavorazione -> Analisi Offerta -> Completata -> Inviata -> Confermata -> Righe Offerta. */
 (function(){
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
@@ -24,10 +24,14 @@
       ?.querySelector('select')||null;
   }
 
-  function amountDetailInput(label){
+  function offerAmountInput(label){
     return [...document.querySelectorAll('#tab-dati .accordion.amounts label.field')]
       .find(x=>norm(x.querySelector(':scope > span')?.textContent).startsWith(norm(label)))
       ?.querySelector('input')||null;
+  }
+
+  function proposalInputForPhase(phaseId){
+    return document.querySelector(`#tab-analisi .economic-table .phase-row[data-economic-phase="${phaseId}"] .ae-proposal`)||null;
   }
 
   function setStatus(text){
@@ -48,7 +52,6 @@
         document.querySelectorAll('.phase-work-card').length>=7 &&
         document.querySelector('.phase-type-select') &&
         document.querySelectorAll('#dimRows .dim-data').length>=3 &&
-        document.getElementById('dimTransfer') &&
         document.getElementById('offerLinesSection') &&
         document.getElementById('confirmationAmountsSection') &&
         window.DABSTER_OFFER_LINES;
@@ -71,66 +74,20 @@
     return [...root.querySelectorAll('.dim-data')].slice(0,3);
   }
 
-  function setNonConfirmedStatus(preferred='completata'){
+  function setWorkflowStatus(preferred='in lavorazione'){
     const st=statusSelect();if(!st)return;
     const option=[...st.options].find(o=>norm(o.value||o.textContent)===preferred)
       || [...st.options].find(o=>norm(o.value||o.textContent)==='in lavorazione')
-      || [...st.options].find(o=>norm(o.value||o.textContent)!=='confermata');
+      || st.options[0];
     if(option){st.value=option.value;fire(st,'change');}
   }
 
-  function resetOfferBreakdown(){
-    ['Consulenza','Progetti','Direzione lavori'].forEach(label=>{
-      const input=amountDetailInput(label);
+  function resetOfferAmounts(){
+    ['Importo stimato','Importo opere','Consulenza','Progetti','Direzione lavori'].forEach(label=>{
+      const input=offerAmountInput(label);
       if(input){input.value='0,00';fire(input,'input');fire(input,'change');}
     });
-    window.DABSTER_OFFER_LINES?.sync?.();
-  }
-
-  function syncOfferBreakdownFromLines(){
-    window.DABSTER_OFFER_LINES?.sync?.();
-    const lines=Array.isArray(window.DABSTER_OFFER_LINES?.lines)?window.DABSTER_OFFER_LINES.lines:[];
-    let consulting=0,projects=0,direction=0;
-    lines.forEach(line=>{
-      const value=Number(line.amount||0);
-      if(line.phase==='dl')direction+=value;
-      else if(line.phase==='consulenze')consulting+=value;
-      else projects+=value;
-    });
-    const values={
-      'Consulenza':consulting,
-      'Progetti':projects,
-      'Direzione lavori':direction
-    };
-    Object.entries(values).forEach(([label,value])=>{
-      const input=amountDetailInput(label);
-      if(input){input.value=money(value);fire(input,'input');fire(input,'change');}
-    });
-    window.DABSTER_OFFER_LINES?.sync?.();
-    return {consulting,projects,direction,total:consulting+projects+direction};
-  }
-
-  async function purgeGeneratedProgramming(){
-    const st=statusSelect();
-    if(!st)return;
-    const confirmed=[...st.options].find(o=>norm(o.value||o.textContent)==='confermata');
-    if(!confirmed)return;
-
-    const original=st.value;
-    const activityNames=[...document.querySelectorAll('#phaseWorkloadSection .activity-name')].map(input=>({input,value:input.value}));
-    activityNames.forEach(x=>{x.input.value='';});
-
-    /* Legacy cleanup attempt: it may be rejected by the new confirmation validation,
-       so the real reset is completed by clearData + prototype unlock listeners. */
-    st.value=confirmed.value;
-    fire(st,'change');
-    await sleep(120);
-
-    st.value=original;
-    fire(st,'change');
-    await sleep(100);
-
-    activityNames.forEach(x=>{x.input.value=x.value;});
+    const total=document.getElementById('totaleOfferta');if(total)total.value='0,00';
   }
 
   async function clearData(silent=false){
@@ -138,10 +95,10 @@
     if(!silent)setBusy(true,'Svuotamento…');
     try{
       if(!await waitReady())throw new Error('Interfaccia non pronta');
-      await purgeGeneratedProgramming();
 
-      setNonConfirmedStatus('in lavorazione');
+      setWorkflowStatus('in lavorazione');
       await sleep(100);
+      window.DABSTER_OFFER_LINES?.resetPostConfirmation?.();
 
       const cs=commessaSelect();
       if(cs?.selectedOptions?.[0]){
@@ -150,6 +107,8 @@
         cs.selectedOptions[0].value=base;
         fire(cs,'change');
       }
+
+      resetOfferAmounts();
 
       const rows=await ensureThreeDimensionRows();
       rows.forEach(row=>{
@@ -163,13 +122,12 @@
       setValue(document.getElementById('dimFeePct'),'7');
       setValue(document.getElementById('dimIeFactor'),'1');
       fire(document.getElementById('dimIeFactor'),'blur');
-      [10,35,25,30].forEach((v,i)=>setValue(document.querySelectorAll('.phase-pct')[i],v));
 
       document.querySelectorAll('.phase-work-card').forEach(card=>{
         card.querySelectorAll('.activity-delete').forEach(btn=>btn.click());
         card.classList.add('collapsed');
       });
-      await sleep(100);
+      await sleep(140);
 
       document.querySelectorAll('#tab-analisi .ae-proposal').forEach(input=>{
         if(!input.readOnly)setValue(input,'0,00');
@@ -179,16 +137,17 @@
       document.querySelectorAll('#reimbursementRows .reimb-row').forEach(row=>{
         setValue(row.querySelector('.reimb-km'),'0');
         setValue(row.querySelector('.reimb-weekqty'),'0');
+        const phase=row.querySelector('.cost-phase-select');if(phase)setValue(phase,'','change');
       });
       document.querySelectorAll('#supplierCostRows .supplier-delete').forEach(btn=>btn.click());
 
-      await sleep(180);
-      window.DABSTER_OFFER_LINES?.sync?.();
-      resetOfferBreakdown();
-
+      window.DABSTER_DIM_SELECTED_PHASES=[];
+      window.DABSTER_DIM_PHASE_VALUES=[];
+      window.dabsterEconomicPhaseController?.reconcile?.();
+      window.dabsterRecalcEconomic?.();
       window.dabsterAnalysisSubtabs?.activate('dimensionamento');
       document.body.dataset.demoSeeded='0';
-      if(!silent)setStatus('Dati svuotati · offerta riportata in lavorazione');
+      if(!silent)setStatus('Dati svuotati · offerta in lavorazione');
     }catch(err){
       if(!silent)setStatus('Errore: '+(err.message||err));
     }finally{
@@ -221,12 +180,31 @@
     phase.classList.add('collapsed');
   }
 
+  async function setDemoAnalysisProposals(){
+    const proposals={preliminare:3360,definitivo:11760,esecutivo:8400,dl:10080};
+    for(let attempt=0;attempt<40;attempt++){
+      const ready=Object.keys(proposals).every(id=>proposalInputForPhase(id));
+      if(ready)break;
+      window.dabsterEconomicPhaseController?.reconcile?.();
+      await sleep(50);
+    }
+    Object.entries(proposals).forEach(([id,value])=>{
+      const input=proposalInputForPhase(id);
+      if(input){input.value=money(value);input.dataset.demoProposal='1';fire(input,'input');fire(input,'change');}
+    });
+    setValue(document.getElementById('tradePct'),'0');
+    window.dabsterRecalcEconomic?.();
+    await sleep(120);
+    window.dabsterRecalcEconomic?.();
+  }
+
   async function prefill(){
     if(busy)return;
     setBusy(true,'Precompilazione…');
     try{
       if(!await waitReady())throw new Error('Interfaccia non pronta');
       await clearData(true);
+      setWorkflowStatus('in lavorazione');
 
       const cs=commessaSelect();
       if(cs?.selectedOptions?.[0]){
@@ -236,6 +214,7 @@
         fire(cs,'change');
       }
 
+      /* Dimensionamento: riferimento tecnico indipendente. */
       const rows=await ensureThreeDimensionRows();
       const demo=[
         {desc:'Uffici e servizi',mq:650,mech:210,elec:160},
@@ -254,7 +233,10 @@
       setValue(document.getElementById('dimFeePct'),'7');
       setValue(document.getElementById('dimIeFactor'),'1');
       fire(document.getElementById('dimIeFactor'),'blur');
+      window.DABSTER_DIM_SELECTED_PHASES=[];
+      window.DABSTER_DIM_PHASE_VALUES=[];
 
+      /* Analisi Offerta: costruita autonomamente da attività, figure, ore e importi decisi dall'utente. */
       const phaseMap={};
       document.querySelectorAll('.phase-work-card').forEach(card=>{
         const id=card.querySelector('.phase-type-select')?.value||card.dataset.planningPhase||'';
@@ -266,33 +248,23 @@
         {type:'esecutivo',title:'Calcoli Illuminotecnici',assign:[{role:'RS_IE',hours:28},{role:'UT_IE_S',hours:100}]},
         {type:'dl',title:'Direzione Lavori Generica IM',assign:[{role:'PM',hours:20},{role:'RS_IM',hours:40}]}
       ];
-      for(const item of scenario){
-        const phase=phaseMap[item.type];
-        if(phase)await addActivity(phase,item.type,item.title,item.assign);
-      }
+      for(const item of scenario){const phase=phaseMap[item.type];if(phase)await addActivity(phase,item.type,item.title,item.assign);}
 
-      await sleep(180);
-      document.getElementById('dimTransfer')?.click();
-      await sleep(450);
-      window.dabsterRecalcEconomic?.();
-      window.DABSTER_OFFER_LINES?.sync?.();
-      await sleep(180);
+      await sleep(260);
+      window.dabsterEconomicPhaseController?.reconcile?.();
+      await setDemoAnalysisProposals();
 
-      const breakdown=syncOfferBreakdownFromLines();
-      await sleep(120);
-
-      /* Precompila prepares a complete offer but deliberately does NOT confirm it.
-         The user can now switch Stato -> Confermata and test Importo Conferma. */
-      setNonConfirmedStatus('completata');
-      await sleep(120);
+      /* Importo Offerta is deliberately left at zero: in the real workflow the user enters
+         the commercial amount in Dati Offerta after deciding it in the analysis. */
+      resetOfferAmounts();
+      setWorkflowStatus('in lavorazione');
 
       document.querySelectorAll('.accordion').forEach(section=>section.classList.remove('open'));
-      document.querySelector('.dimensioning')?.classList.add('open');
-      document.getElementById('offerLinesSection')?.classList.add('open');
+      document.querySelector('.analysis')?.classList.add('open');
       document.querySelectorAll('.phase-work-card').forEach(card=>card.classList.add('collapsed'));
-      window.dabsterAnalysisSubtabs?.activate('dimensionamento');
+      window.dabsterAnalysisSubtabs?.activate('impianti');
       document.body.dataset.demoSeeded='1';
-      setStatus(`Dati demo caricati · Righe Offerta ${money(breakdown.total)} € · stato Completata, pronto per conferma`);
+      setStatus('Analisi demo caricata · proposta 33.600,00 € · stato In lavorazione · inserisci Importo Offerta nei Dati Offerta');
     }catch(err){
       setStatus('Errore: '+(err.message||err));
     }finally{
@@ -305,16 +277,15 @@
     setBusy(true,'Salvataggio…');
     try{
       if(!await waitReady())throw new Error('Interfaccia non pronta');
-      const st=statusSelect();
-      const confirmed=st && norm(st.value)==='confermata';
-
-      if(confirmed){
-        fire(st,'change');
-        await sleep(180);
-        setStatus('Analisi salvata · attività commessa sincronizzate');
-      }else{
+      const st=statusSelect(),state=norm(st?.value);
+      if(state==='in lavorazione'){
+        window.dabsterRecalcEconomic?.();
+        setStatus('Analisi salvata · puoi definire Importo Offerta e passare a Completata');
+      }else if(state==='confermata'){
         window.DABSTER_OFFER_LINES?.sync?.();
-        setStatus('Analisi salvata · Righe Offerta aggiornate, in attesa di conferma');
+        setStatus(window.DABSTER_OFFER_LINES?.readyForInvoicing?'Offerta confermata · righe quadrate':'Offerta confermata · completa Importo Conferma e Righe Offerta');
+      }else{
+        setStatus('Analisi congelata nello stato '+(st?.selectedOptions?.[0]?.textContent||st?.value||''));
       }
     }catch(err){
       setStatus('Errore: '+(err.message||err));
@@ -336,20 +307,6 @@
     document.getElementById('prefillDemoData').addEventListener('click',prefill);
     document.getElementById('clearDemoData').addEventListener('click',()=>clearData(false));
     document.getElementById('saveAnalysisData').addEventListener('click',saveAnalysis);
-
-    const planning=document.getElementById('phaseWorkloadSection');
-    if(planning){
-      const dirty=()=>{
-        if(busy)return;
-        const st=statusSelect();
-        if(st && norm(st.value)==='confermata')setStatus('Modifiche attività da salvare');
-      };
-      planning.addEventListener('input',dirty,true);
-      planning.addEventListener('change',dirty,true);
-      planning.addEventListener('click',e=>{
-        if(e.target.closest('.add-activity,.activity-delete,.assignment-delete,.add-assignment,.phase-delete,#addEconomicPhase'))setTimeout(dirty,30);
-      },true);
-    }
   }
 
   window.addEventListener('load',()=>setTimeout(install,350),{once:true});

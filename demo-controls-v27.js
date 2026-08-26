@@ -1,8 +1,9 @@
-/* v41 - manual Precompila/Svuota/Salva controls aligned with the Dabster activity registry. */
+/* v42 - Precompila aligned with Righe Offerta -> Importo Conferma -> Confermata workflow. */
 (function(){
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
   const fire=(el,type='input')=>el?.dispatchEvent(new Event(type,{bubbles:true}));
+  const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   let busy=false;
 
   function setValue(el,value,type='input'){
@@ -23,6 +24,12 @@
       ?.querySelector('select')||null;
   }
 
+  function amountDetailInput(label){
+    return [...document.querySelectorAll('#tab-dati .accordion.amounts label.field')]
+      .find(x=>norm(x.querySelector(':scope > span')?.textContent).startsWith(norm(label)))
+      ?.querySelector('input')||null;
+  }
+
   function setStatus(text){
     const el=document.querySelector('.analysis-demo-status');
     if(el)el.textContent=text;
@@ -36,12 +43,15 @@
   }
 
   async function waitReady(){
-    for(let i=0;i<220;i++){
+    for(let i=0;i<260;i++){
       const ready=document.getElementById('analysisSubtabs') &&
-        document.querySelectorAll('.phase-work-card').length>=4 &&
+        document.querySelectorAll('.phase-work-card').length>=7 &&
         document.querySelector('.phase-type-select') &&
         document.querySelectorAll('#dimRows .dim-data').length>=3 &&
-        document.getElementById('dimTransfer');
+        document.getElementById('dimTransfer') &&
+        document.getElementById('offerLinesSection') &&
+        document.getElementById('confirmationAmountsSection') &&
+        window.DABSTER_OFFER_LINES;
       if(ready)return true;
       await sleep(50);
     }
@@ -61,6 +71,45 @@
     return [...root.querySelectorAll('.dim-data')].slice(0,3);
   }
 
+  function setNonConfirmedStatus(preferred='completata'){
+    const st=statusSelect();if(!st)return;
+    const option=[...st.options].find(o=>norm(o.value||o.textContent)===preferred)
+      || [...st.options].find(o=>norm(o.value||o.textContent)==='in lavorazione')
+      || [...st.options].find(o=>norm(o.value||o.textContent)!=='confermata');
+    if(option){st.value=option.value;fire(st,'change');}
+  }
+
+  function resetOfferBreakdown(){
+    ['Consulenza','Progetti','Direzione lavori'].forEach(label=>{
+      const input=amountDetailInput(label);
+      if(input){input.value='0,00';fire(input,'input');fire(input,'change');}
+    });
+    window.DABSTER_OFFER_LINES?.sync?.();
+  }
+
+  function syncOfferBreakdownFromLines(){
+    window.DABSTER_OFFER_LINES?.sync?.();
+    const lines=Array.isArray(window.DABSTER_OFFER_LINES?.lines)?window.DABSTER_OFFER_LINES.lines:[];
+    let consulting=0,projects=0,direction=0;
+    lines.forEach(line=>{
+      const value=Number(line.amount||0);
+      if(line.phase==='dl')direction+=value;
+      else if(line.phase==='consulenze')consulting+=value;
+      else projects+=value;
+    });
+    const values={
+      'Consulenza':consulting,
+      'Progetti':projects,
+      'Direzione lavori':direction
+    };
+    Object.entries(values).forEach(([label,value])=>{
+      const input=amountDetailInput(label);
+      if(input){input.value=money(value);fire(input,'input');fire(input,'change');}
+    });
+    window.DABSTER_OFFER_LINES?.sync?.();
+    return {consulting,projects,direction,total:consulting+projects+direction};
+  }
+
   async function purgeGeneratedProgramming(){
     const st=statusSelect();
     if(!st)return;
@@ -71,6 +120,8 @@
     const activityNames=[...document.querySelectorAll('#phaseWorkloadSection .activity-name')].map(input=>({input,value:input.value}));
     activityNames.forEach(x=>{x.input.value='';});
 
+    /* Legacy cleanup attempt: it may be rejected by the new confirmation validation,
+       so the real reset is completed by clearData + prototype unlock listeners. */
     st.value=confirmed.value;
     fire(st,'change');
     await sleep(120);
@@ -89,11 +140,8 @@
       if(!await waitReady())throw new Error('Interfaccia non pronta');
       await purgeGeneratedProgramming();
 
-      const st=statusSelect();
-      if(st){
-        const nonConfirmed=[...st.options].find(o=>norm(o.value||o.textContent)==='in lavorazione') || [...st.options].find(o=>norm(o.value||o.textContent)!=='confermata');
-        if(nonConfirmed){st.value=nonConfirmed.value;fire(st,'change');await sleep(100);}
-      }
+      setNonConfirmedStatus('in lavorazione');
+      await sleep(100);
 
       const cs=commessaSelect();
       if(cs?.selectedOptions?.[0]){
@@ -134,9 +182,13 @@
       });
       document.querySelectorAll('#supplierCostRows .supplier-delete').forEach(btn=>btn.click());
 
+      await sleep(180);
+      window.DABSTER_OFFER_LINES?.sync?.();
+      resetOfferBreakdown();
+
       window.dabsterAnalysisSubtabs?.activate('dimensionamento');
       document.body.dataset.demoSeeded='0';
-      if(!silent)setStatus('Dati svuotati · attività in programmazione rimosse');
+      if(!silent)setStatus('Dati svuotati · offerta riportata in lavorazione');
     }catch(err){
       if(!silent)setStatus('Errore: '+(err.message||err));
     }finally{
@@ -203,32 +255,44 @@
       setValue(document.getElementById('dimIeFactor'),'1');
       fire(document.getElementById('dimIeFactor'),'blur');
 
-      const phases=[...document.querySelectorAll('.phase-work-card')].slice(0,4);
-      /* With TOT €33,600 and 35% general expenses on phase sales, these hours give
-         about €11,161 direct cost and ~31.8% net project profit at 0% trade uplift. */
+      const phaseMap={};
+      document.querySelectorAll('.phase-work-card').forEach(card=>{
+        const id=card.querySelector('.phase-type-select')?.value||card.dataset.planningPhase||'';
+        if(id&&!phaseMap[id])phaseMap[id]=card;
+      });
       const scenario=[
         {type:'preliminare',title:'Progetto Preliminare IE',assign:[{role:'RS_IE',hours:24},{role:'UT_IE_S',hours:24}]},
         {type:'definitivo',title:'Progetto IM',assign:[{role:'RS_IM',hours:40},{role:'UT_IM_S',hours:75}]},
         {type:'esecutivo',title:'Calcoli Illuminotecnici',assign:[{role:'RS_IE',hours:28},{role:'UT_IE_S',hours:100}]},
         {type:'dl',title:'Direzione Lavori Generica IM',assign:[{role:'PM',hours:20},{role:'RS_IM',hours:40}]}
       ];
-      for(let i=0;i<scenario.length;i++)await addActivity(phases[i],scenario[i].type,scenario[i].title,scenario[i].assign);
+      for(const item of scenario){
+        const phase=phaseMap[item.type];
+        if(phase)await addActivity(phase,item.type,item.title,item.assign);
+      }
 
-      await sleep(120);
+      await sleep(180);
       document.getElementById('dimTransfer')?.click();
+      await sleep(450);
+      window.dabsterRecalcEconomic?.();
+      window.DABSTER_OFFER_LINES?.sync?.();
+      await sleep(180);
+
+      const breakdown=syncOfferBreakdownFromLines();
       await sleep(120);
 
-      const st=statusSelect();
-      const confirmed=st?[...st.options].find(o=>norm(o.value||o.textContent)==='confermata'):null;
-      if(st&&confirmed){st.value=confirmed.value;fire(st,'change');}
-      await sleep(160);
+      /* Precompila prepares a complete offer but deliberately does NOT confirm it.
+         The user can now switch Stato -> Confermata and test Importo Conferma. */
+      setNonConfirmedStatus('completata');
+      await sleep(120);
 
       document.querySelectorAll('.accordion').forEach(section=>section.classList.remove('open'));
       document.querySelector('.dimensioning')?.classList.add('open');
+      document.getElementById('offerLinesSection')?.classList.add('open');
       document.querySelectorAll('.phase-work-card').forEach(card=>card.classList.add('collapsed'));
       window.dabsterAnalysisSubtabs?.activate('dimensionamento');
       document.body.dataset.demoSeeded='1';
-      setStatus('Dati demo caricati · costi calibrati per utile ~31,8%');
+      setStatus(`Dati demo caricati · Righe Offerta ${money(breakdown.total)} € · stato Completata, pronto per conferma`);
     }catch(err){
       setStatus('Errore: '+(err.message||err));
     }finally{
@@ -249,7 +313,8 @@
         await sleep(180);
         setStatus('Analisi salvata · attività commessa sincronizzate');
       }else{
-        setStatus('Analisi salvata · nessun trasferimento perché offerta non confermata');
+        window.DABSTER_OFFER_LINES?.sync?.();
+        setStatus('Analisi salvata · Righe Offerta aggiornate, in attesa di conferma');
       }
     }catch(err){
       setStatus('Errore: '+(err.message||err));

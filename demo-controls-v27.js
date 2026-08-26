@@ -1,4 +1,4 @@
-/* v43 - Precompila aligned with: In lavorazione -> Analisi Offerta -> Completata -> Inviata -> Confermata -> Righe Offerta. */
+/* v44 - Empty analysis follows the same editable draft state used by Precompila. */
 (function(){
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
@@ -32,6 +32,11 @@
 
   function proposalInputForPhase(phaseId){
     return document.querySelector(`#tab-analisi .economic-table .phase-row[data-economic-phase="${phaseId}"] .ae-proposal`)||null;
+  }
+
+  function hasPlannedActivities(){
+    return [...document.querySelectorAll('#phaseWorkCards .activity-name')]
+      .some(input=>String(input.value||'').trim());
   }
 
   function setStatus(text){
@@ -82,6 +87,17 @@
     if(option){st.value=option.value;fire(st,'change');}
   }
 
+  async function ensureEmptyDraftEditable(){
+    if(hasPlannedActivities())return;
+    const st=statusSelect();
+    if(st&&norm(st.value)!=='in lavorazione')setWorkflowStatus('in lavorazione');
+    await sleep(90);
+    const current=statusSelect();
+    if(current&&norm(current.value)==='in lavorazione')fire(current,'change');
+    await sleep(50);
+    window.dabsterEconomicPhaseController?.reconcile?.();
+  }
+
   function resetOfferAmounts(){
     ['Importo stimato','Importo opere','Consulenza','Progetti','Direzione lavori'].forEach(label=>{
       const input=offerAmountInput(label);
@@ -128,6 +144,7 @@
         card.classList.add('collapsed');
       });
       await sleep(140);
+      await ensureEmptyDraftEditable();
 
       document.querySelectorAll('#tab-analisi .ae-proposal').forEach(input=>{
         if(!input.readOnly)setValue(input,'0,00');
@@ -147,7 +164,7 @@
       window.dabsterRecalcEconomic?.();
       window.dabsterAnalysisSubtabs?.activate('dimensionamento');
       document.body.dataset.demoSeeded='0';
-      if(!silent)setStatus('Dati svuotati · offerta in lavorazione');
+      if(!silent)setStatus('Dati svuotati · offerta in lavorazione · attività modificabili');
     }catch(err){
       if(!silent)setStatus('Errore: '+(err.message||err));
     }finally{
@@ -299,10 +316,11 @@
     const tab=document.getElementById('tab-analisi');
     const nav=document.getElementById('analysisSubtabs');
     if(!tab||!nav||document.getElementById('analysisDemoToolbar'))return;
+    await ensureEmptyDraftEditable();
     const bar=document.createElement('div');
     bar.id='analysisDemoToolbar';
     bar.className='analysis-demo-toolbar';
-    bar.innerHTML=`<span class="analysis-demo-status">Pagina pronta · nessun dato demo caricato automaticamente</span><button type="button" class="analysis-demo-btn prefill" id="prefillDemoData">Precompila dati</button><button type="button" class="analysis-demo-btn clear" id="clearDemoData">Svuota</button><button type="button" class="analysis-demo-btn save" id="saveAnalysisData">Salva Analisi</button>`;
+    bar.innerHTML=`<span class="analysis-demo-status">Pagina pronta · offerta in lavorazione · attività modificabili</span><button type="button" class="analysis-demo-btn prefill" id="prefillDemoData">Precompila dati</button><button type="button" class="analysis-demo-btn clear" id="clearDemoData">Svuota</button><button type="button" class="analysis-demo-btn save" id="saveAnalysisData">Salva Analisi</button>`;
     tab.insertBefore(bar,nav);
     document.getElementById('prefillDemoData').addEventListener('click',prefill);
     document.getElementById('clearDemoData').addEventListener('click',()=>clearData(false));

@@ -1,4 +1,4 @@
-/* v50 - Single definitive economic engine: markup + 100€ upward rounding + validated KPIs + phase hours */
+/* v51 - Single definitive economic engine: markup + 100€ upward rounding + validated KPIs + phase hours */
 (function(){
   const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   const pct=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
@@ -283,5 +283,14 @@
   const script=document.createElement('script');
   script.dataset.dabsterPlanningLayout='59';
   script.src='planning-layout-v59.js?v=59';
+  document.head.appendChild(script);
+})();
+
+/* v62 approval email loader: offer data + proposal/trade choice + professional HTML preview. */
+(function(){
+  if(document.querySelector('script[data-dabster-approval-mail="62"]'))return;
+  const script=document.createElement('script');
+  script.dataset.dabsterApprovalMail='62';
+  script.src='approval-mail-v62.js?v=62';
   document.head.appendChild(script);
 })();

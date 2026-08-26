@@ -1,4 +1,4 @@
-/* v49 - Single definitive economic engine: markup + 100€ upward rounding + validated KPIs */
+/* v50 - Single definitive economic engine: markup + 100€ upward rounding + validated KPIs + phase hours */
 (function(){
   const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   const pct=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
@@ -8,6 +8,109 @@
 
   function isSpecialRow(row){
     return row.dataset.specialCost==='reimbursements' || row.dataset.specialCost==='suppliers';
+  }
+
+  function installHoursStyles(){
+    if(document.getElementById('economicHoursV50Styles'))return;
+    const style=document.createElement('style');
+    style.id='economicHoursV50Styles';
+    style.textContent=`
+      html body #tab-analisi #analysisSubtabImpianti .economic-table .economic-row{
+        grid-template-columns:var(--ae-col1,minmax(190px,1.18fr)) var(--ae-col2,minmax(100px,.66fr)) var(--ae-col3,minmax(105px,.68fr)) var(--ae-col4,minmax(100px,.66fr)) minmax(90px,.52fr)!important;
+      }
+      html body #tab-analisi #analysisSubtabImpianti .economic-table .economic-hours-head{
+        display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;
+        background:#f0f4f6!important;color:#4c606b!important;font-weight:750!important;
+      }
+      html body #tab-analisi #analysisSubtabImpianti .economic-table .economic-hours-cell{
+        display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;
+        background:#f7fafb!important;color:#3f5661!important;font-size:12px!important;font-weight:650!important;
+        font-variant-numeric:tabular-nums!important;white-space:nowrap!important;
+      }
+      html body #tab-analisi #analysisSubtabImpianti .economic-table .total-row .economic-hours-total{
+        background:#eaf0f2!important;color:#334a55!important;font-weight:780!important;
+      }
+      @media(max-width:900px){
+        html body #tab-analisi #analysisSubtabImpianti .economic-table{min-width:720px!important}
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function ensureHoursColumn(table){
+    if(!table)return;
+    installHoursStyles();
+
+    const head=table.querySelector('.economic-head');
+    if(head&&!head.querySelector('.economic-hours-head')){
+      const cell=document.createElement('div');
+      cell.className='numeric economic-hours-head';
+      cell.textContent='ORE TOTALI';
+      head.appendChild(cell);
+    }
+
+    table.querySelectorAll('.economic-row:not(.economic-head):not(.total-row)').forEach(row=>{
+      if(row.querySelector('.economic-hours-cell'))return;
+      const cell=document.createElement('div');
+      cell.className='economic-hours-cell';
+      cell.textContent=isSpecialRow(row)?'—':'0,00 h';
+      row.appendChild(cell);
+    });
+
+    const totalRow=table.querySelector('.total-row');
+    if(totalRow&&!totalRow.querySelector('.economic-hours-total')){
+      const cell=document.createElement('div');
+      cell.className='economic-hours-cell economic-hours-total';
+      cell.textContent='0,00 h';
+      totalRow.appendChild(cell);
+    }
+  }
+
+  function cardForEconomicRow(row){
+    if(!row)return null;
+    const phaseId=row.dataset.phaseId||'';
+    const economicPhase=row.dataset.economicPhase||'';
+    return [...document.querySelectorAll('#phaseWorkCards > .phase-work-card')].find(card=>{
+      if(phaseId&&card.dataset.phaseId===phaseId)return true;
+      if(!economicPhase)return false;
+      const phase=(card.querySelector('.phase-type-select')?.value)||card.dataset.planningPhase||'';
+      return phase===economicPhase;
+    })||null;
+  }
+
+  function cardHours(card){
+    if(!card)return 0;
+    return [...card.querySelectorAll('.assignment-hours')].reduce((sum,input)=>sum+Math.max(0,num(input.value)),0);
+  }
+
+  function syncHoursColumn(table){
+    ensureHoursColumn(table);
+    let totalHours=0;
+
+    table.querySelectorAll('.economic-row:not(.economic-head):not(.total-row)').forEach(row=>{
+      const cell=row.querySelector('.economic-hours-cell');
+      if(!cell)return;
+      if(isSpecialRow(row)){
+        cell.textContent='—';
+        cell.title='Riga senza ore interne';
+        return;
+      }
+
+      const card=cardForEconomicRow(row);
+      const hours=cardHours(card);
+      cell.textContent=hours.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+' h';
+      cell.title='Somma delle ore delle figure professionali previste per questa fase';
+
+      const managed=!!row.dataset.economicPhase;
+      const active=managed?row.dataset.economicActive==='1':!row.hidden;
+      if(active)totalHours+=hours;
+    });
+
+    const total=table.querySelector('.economic-hours-total');
+    if(total){
+      total.textContent=totalHours.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+' h';
+      total.title='Ore totali previste sulle fasi attive';
+    }
   }
 
   function syncSpecialRowVisibility(row,proposal,cost){
@@ -21,6 +124,7 @@
   function recalcRoundedTrade(){
     const table=document.querySelector('#tab-analisi .economic-table');
     if(!table)return;
+    ensureHoursColumn(table);
 
     const tradePct=Math.max(0,Number(document.getElementById('tradePct')?.value||0));
     const tradeLabel=document.getElementById('tradePctLabel');
@@ -78,6 +182,7 @@
     set('aeGeneralExpenses',money(generalExpenses));
     set('aeMon',money(mon));
     set('aeProfitPct',pct(profitPct));
+    syncHoursColumn(table);
 
     const expensesLabel=document.querySelector('#tab-analisi .kpi.expenses .kpi-label');
     if(expensesLabel){
@@ -104,6 +209,7 @@
     const trade=document.getElementById('tradePct');
     if(!table||!trade){if(attempt<160)setTimeout(()=>install(attempt+1),60);return;}
 
+    ensureHoursColumn(table);
     trade.addEventListener('input',settle);
     trade.addEventListener('change',settle);
 

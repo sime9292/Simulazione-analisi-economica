@@ -2,6 +2,7 @@ import {createStore} from './store.js';
 import {createBillingDomain} from './billing-domain.js';
 import {installEconomicAdapter} from './economic-adapter.js';
 import {installOfferWorkflow} from './offer-workflow.js';
+import {runSelfTests} from './self-test.js';
 
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
@@ -25,6 +26,8 @@ async function loadPresentationModules(){
 
 async function boot(){
   if(window.DABSTER_CLEAN_V2?.booted)return window.DABSTER_CLEAN_V2;
+  const tests=runSelfTests();
+  if(!tests.ok)throw new Error('Regression test economici Clean V2 non superati');
   if(!await waitForCore())throw new Error('Componenti base del gestionale non disponibili');
 
   const store=createStore();
@@ -34,7 +37,8 @@ async function boot(){
 
   window.DABSTER_STORE=store;
   window.DABSTER_BILLING_DOMAIN=billing;
-  window.DABSTER_CLEAN_V2={booted:true,store,billing,economic,offer,version:'clean-v2'};
+  window.DABSTER_CLEAN_TESTS=tests;
+  window.DABSTER_CLEAN_V2={booted:true,store,billing,economic,offer,tests,version:'clean-v2'};
 
   await loadPresentationModules();
   economic.settle();

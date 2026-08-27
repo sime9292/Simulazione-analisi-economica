@@ -13,7 +13,8 @@
   core.dataset.cleanLegacyUi='1';
   core.onload=()=>{
     const cleanup=document.createElement('script');cleanup.src='workspace-cleanup-v34.js?v=34';document.head.appendChild(cleanup);
-    const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=34';document.head.appendChild(billingEntry);
+    const flow=document.createElement('script');flow.src='pe04-flow-v36.js?v=36';flow.dataset.pe04Flow='1';document.head.appendChild(flow);
+    const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=36';document.head.appendChild(billingEntry);
   };
   document.head.appendChild(core);
 })();

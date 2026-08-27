@@ -1,4 +1,4 @@
-/* v34 - Isolated entry point: billing prototype loads only when Dashboard Fatturazione is opened. */
+/* v35 entry - Isolated billing prototype loads only when Dashboard Fatturazione is opened. */
 (function(){
   let loading=false,loaded=false;
 
@@ -6,7 +6,7 @@
     if(loaded||loading)return;
     loading=true;
     const script=document.createElement('script');
-    script.src='billing-dashboard-v33.js?v=33';
+    script.src='billing-dashboard-v35.js?v=35';
     script.dataset.cleanBillingDashboard='1';
     script.onload=()=>{loaded=true;loading=false;};
     script.onerror=()=>{loading=false;console.error('[Dabster] Impossibile caricare Dashboard Fatturazione');};

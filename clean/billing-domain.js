@@ -52,7 +52,8 @@ export function createBillingDomain(store){
     const errors=[];
     allocations.forEach(a=>{
       const amount=cents(a.amount);
-      if(!remaining.has(a.offerLineId))errors.push(`Riga offerta inesistente: ${a.offerLineId}`);
+      if(!a.offerLineId)errors.push('Allocazione senza Riga Offerta.');
+      else if(!remaining.has(a.offerLineId))errors.push(`Riga offerta inesistente: ${a.offerLineId}`);
       else if(amount<=0)errors.push(`Importo non valido per ${a.offerLineId}`);
       else if(amount>remaining.get(a.offerLineId)+.01)errors.push(`Importo superiore al residuo per ${a.offerLineId}`);
       else remaining.set(a.offerLineId,cents(remaining.get(a.offerLineId)-amount));
@@ -66,12 +67,22 @@ export function createBillingDomain(store){
     if(!invoice?.id)errors.push('La fattura deve avere un ID stabile.');
     if(!lines.length)errors.push('La fattura deve contenere almeno una Riga Fattura.');
 
+    const lineIds=new Set();
     const allAllocations=[];
     lines.forEach(line=>{
+      if(lineIds.has(line.id))errors.push(`ID Riga Fattura duplicato: ${line.id}`);
+      lineIds.add(line.id);
       if(line.amount<=0)errors.push(`Importo Riga Fattura non valido: ${line.description||line.id}`);
+
       const allocations=line.allocations||[];
       const allocated=cents(allocations.reduce((sum,a)=>sum+Number(a.amount||0),0));
-      const free=line.originType==='free'||allocations.length===0;
+      const free=line.originType==='free';
+      if(free&&allocations.length){
+        errors.push(`Una Riga libera non può avere allocazioni a Righe Offerta: ${line.description||line.id}`);
+      }
+      if(!free&&!allocations.length){
+        errors.push(`Riga Fattura senza allocazioni: ${line.description||line.id}`);
+      }
       if(!free&&Math.abs(allocated-line.amount)>.01){
         errors.push(`Riga Fattura non quadrata: ${line.description||line.id} · importo ${line.amount} · attribuito ${allocated}`);
       }
@@ -88,6 +99,7 @@ export function createBillingDomain(store){
     if(!validation.valid)throw new Error(validation.errors.join(' · '));
     const current=invoices();
     if(current.some(x=>x.id===invoice.id))throw new Error(`Fattura già presente: ${invoice.id}`);
+    if(invoice.number&&current.some(x=>String(x.number||'').trim()===String(invoice.number).trim()))throw new Error(`Numero fattura già presente: ${invoice.number}`);
     const cleanInvoice={...invoice,lines:validation.lines};
     delete cleanInvoice.allocations;
     store.patch('billing',{invoices:[...current,cleanInvoice]},'billing:invoice-added');

@@ -12,60 +12,18 @@
     const link=document.createElement('link');link.rel='preload';link.as='script';link.href=`${file}?${query}`;link.dataset.cleanPreload=file;document.head.appendChild(link);
   });
 
-  function guardedMutationObserverScope(){
-    const Native=window.MutationObserver;
-    if(!Native||Native.__dabsterPe04Guarded)return ()=>{};
-    class GuardedMutationObserver{
-      constructor(callback){
-        this._callback=callback;this._observations=[];this._inside=false;
-        this._native=new Native(records=>{
-          if(this._inside)return;
-          this._inside=true;
-          const observations=this._observations.slice();this._native.disconnect();
-          try{callback(records,this);}finally{
-            observations.forEach(({target,options})=>{try{this._native.observe(target,options);}catch(_e){}});
-            this._inside=false;
-          }
-        });
-      }
-      observe(target,options){const found=this._observations.find(x=>x.target===target);if(found)found.options=options;else this._observations.push({target,options});this._native.observe(target,options);}
-      disconnect(){this._observations=[];this._native.disconnect();}
-      takeRecords(){return this._native.takeRecords();}
-    }
-    GuardedMutationObserver.__dabsterPe04Guarded=true;window.MutationObserver=GuardedMutationObserver;
-    return ()=>{if(window.MutationObserver===GuardedMutationObserver)window.MutationObserver=Native;};
-  }
-
-  function loadBillingRules(){
-    if(document.querySelector('script[data-billing-rules]'))return;
-    const rules=document.createElement('script');rules.src='billing-rules-v37.js?v=37';rules.dataset.billingRules='1';rules.onerror=()=>console.error('[Dabster] Errore caricamento regole fatturazione v37');document.head.appendChild(rules);
-  }
-
-  function loadPe04Flow(){
-    if(document.querySelector('script[data-pe04-flow]'))return;
-    const restoreObserver=guardedMutationObserverScope();
-    const flow=document.createElement('script');
-    flow.src='pe04-flow-v36.js?v=36.1';flow.dataset.pe04Flow='1';
-    flow.onerror=()=>{restoreObserver();revealFailsafe();console.error('[Dabster] Errore caricamento flusso PE04');};
-    flow.onload=()=>{
-      let attempts=0;
-      const release=()=>{
-        attempts++;
-        if(window.DABSTER_PE04_FLOW){restoreObserver();loadBillingRules();return;}
-        if(attempts>300){restoreObserver();loadBillingRules();return;}
-        setTimeout(release,50);
-      };
-      release();
-    };
-    document.head.appendChild(flow);
+  function loadOfferFlow(){
+    if(document.querySelector('script[data-offer-flow-v38]'))return;
+    const flow=document.createElement('script');flow.src='offer-flow-v38.js?v=38';flow.dataset.offerFlowV38='1';
+    flow.onerror=()=>{revealFailsafe();console.error('[Dabster] Errore caricamento flusso offerta v38');};document.head.appendChild(flow);
   }
 
   const core=document.createElement('script');
   core.src='app-v13.js?v=clean2';core.dataset.cleanLegacyUi='1';core.onerror=revealFailsafe;
   core.onload=()=>{
     const cleanup=document.createElement('script');cleanup.src='workspace-cleanup-v34.js?v=34';document.head.appendChild(cleanup);
-    const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=37';document.head.appendChild(billingEntry);
-    if(document.readyState==='complete')setTimeout(loadPe04Flow,0);else window.addEventListener('load',loadPe04Flow,{once:true});
+    const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=38';document.head.appendChild(billingEntry);
+    if(document.readyState==='complete')setTimeout(loadOfferFlow,0);else window.addEventListener('load',loadOfferFlow,{once:true});
   };
   document.head.appendChild(core);
 })();

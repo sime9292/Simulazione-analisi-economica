@@ -1,10 +1,10 @@
-/* v37 entry - Isolated billing dashboard loads only when Dashboard Fatturazione is opened. */
+/* v38 entry - Isolated billing dashboard loads only when Dashboard Fatturazione is opened. */
 (function(){
   let loading=false,loaded=false;
   function loadDashboard(){
     if(loaded||loading)return;loading=true;
-    const script=document.createElement('script');script.src='billing-dashboard-v37.js?v=37';script.dataset.cleanBillingDashboard='1';
-    script.onload=()=>{loaded=true;loading=false;};script.onerror=()=>{loading=false;console.error('[Dabster] Impossibile caricare Dashboard Fatturazione v37');};document.head.appendChild(script);
+    const script=document.createElement('script');script.src='billing-dashboard-v38.js?v=38';script.dataset.cleanBillingDashboard='1';
+    script.onload=()=>{loaded=true;loading=false;};script.onerror=()=>{loading=false;console.error('[Dabster] Impossibile caricare Dashboard Fatturazione v38');};document.head.appendChild(script);
   }
   function install(attempt=0){
     const nav=document.querySelector('#appSidebar .sidebar-nav');if(!nav){if(attempt<220)setTimeout(()=>install(attempt+1),50);return;}

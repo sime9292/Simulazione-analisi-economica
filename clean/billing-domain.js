@@ -55,7 +55,7 @@ export function createBillingDomain(store){
       if(!a.offerLineId)errors.push('Allocazione senza Riga Offerta.');
       else if(!remaining.has(a.offerLineId))errors.push(`Riga offerta inesistente: ${a.offerLineId}`);
       else if(amount<=0)errors.push(`Importo non valido per ${a.offerLineId}`);
-      else if(amount>remaining.get(a.offerLineId)+.01)errors.push(`Importo superiore al residuo per ${a.offerLineId}`);
+      else if(amount>remaining.get(a.offerLineId))errors.push(`Importo superiore al residuo per ${a.offerLineId}`);
       else remaining.set(a.offerLineId,cents(remaining.get(a.offerLineId)-amount));
     });
     return {valid:errors.length===0,errors};
@@ -83,7 +83,7 @@ export function createBillingDomain(store){
       if(!free&&!allocations.length){
         errors.push(`Riga Fattura senza allocazioni: ${line.description||line.id}`);
       }
-      if(!free&&Math.abs(allocated-line.amount)>.01){
+      if(!free&&allocated!==line.amount){
         errors.push(`Riga Fattura non quadrata: ${line.description||line.id} · importo ${line.amount} · attribuito ${allocated}`);
       }
       allAllocations.push(...allocations);

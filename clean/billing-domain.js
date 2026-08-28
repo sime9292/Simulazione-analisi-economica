@@ -1,12 +1,35 @@
 import {cents} from './domain.js';
 
 export function createBillingDomain(store){
-  const invoiceAllocations=()=>store.getState().billing?.invoices||[];
+  const invoices=()=>store.getState().billing?.invoices||[];
+
+  function normalizedInvoiceLines(invoice){
+    if(Array.isArray(invoice?.lines)){
+      return invoice.lines.map((line,index)=>({
+        ...line,
+        id:line.id||`${invoice.id}:line:${index+1}`,
+        amount:cents(line.amount),
+        allocations:(line.allocations||[]).map(a=>({offerLineId:a.offerLineId,amount:cents(a.amount)}))
+      }));
+    }
+    // Compatibilità con il vecchio prototipo che salvava le allocazioni direttamente sulla fattura.
+    const legacy=(invoice?.allocations||[]).map(a=>({offerLineId:a.offerLineId,amount:cents(a.amount)}));
+    if(!legacy.length)return [];
+    return [{
+      id:`${invoice.id}:legacy-line`,
+      description:invoice.description||'Riga fattura legacy',
+      amount:cents(legacy.reduce((sum,a)=>sum+a.amount,0)),
+      originType:'offer',
+      allocations:legacy
+    }];
+  }
 
   function billedByLine(){
     const totals=new Map();
-    invoiceAllocations().forEach(invoice=>{
-      (invoice.allocations||[]).forEach(a=>totals.set(a.offerLineId,cents((totals.get(a.offerLineId)||0)+Number(a.amount||0))));
+    invoices().forEach(invoice=>{
+      normalizedInvoiceLines(invoice).forEach(line=>{
+        (line.allocations||[]).forEach(a=>totals.set(a.offerLineId,cents((totals.get(a.offerLineId)||0)+Number(a.amount||0))));
+      });
     });
     return totals;
   }
@@ -37,20 +60,43 @@ export function createBillingDomain(store){
     return {valid:errors.length===0,errors};
   }
 
+  function validateInvoice(invoice){
+    const errors=[];
+    const lines=normalizedInvoiceLines(invoice);
+    if(!invoice?.id)errors.push('La fattura deve avere un ID stabile.');
+    if(!lines.length)errors.push('La fattura deve contenere almeno una Riga Fattura.');
+
+    const allAllocations=[];
+    lines.forEach(line=>{
+      if(line.amount<=0)errors.push(`Importo Riga Fattura non valido: ${line.description||line.id}`);
+      const allocations=line.allocations||[];
+      const allocated=cents(allocations.reduce((sum,a)=>sum+Number(a.amount||0),0));
+      const free=line.originType==='free'||allocations.length===0;
+      if(!free&&Math.abs(allocated-line.amount)>.01){
+        errors.push(`Riga Fattura non quadrata: ${line.description||line.id} · importo ${line.amount} · attribuito ${allocated}`);
+      }
+      allAllocations.push(...allocations);
+    });
+
+    const allocationValidation=validateAllocations(allAllocations);
+    errors.push(...allocationValidation.errors);
+    return {valid:errors.length===0,errors,lines};
+  }
+
   function registerInvoice(invoice){
-    if(!invoice?.id)throw new Error('La fattura deve avere un ID stabile.');
-    const allocations=(invoice.allocations||[]).map(a=>({offerLineId:a.offerLineId,amount:cents(a.amount)}));
-    const validation=validateAllocations(allocations);
+    const validation=validateInvoice(invoice);
     if(!validation.valid)throw new Error(validation.errors.join(' · '));
-    const current=store.getState().billing?.invoices||[];
+    const current=invoices();
     if(current.some(x=>x.id===invoice.id))throw new Error(`Fattura già presente: ${invoice.id}`);
-    store.patch('billing',{invoices:[...current,{...invoice,allocations}]},'billing:invoice-added');
+    const cleanInvoice={...invoice,lines:validation.lines};
+    delete cleanInvoice.allocations;
+    store.patch('billing',{invoices:[...current,cleanInvoice]},'billing:invoice-added');
     return balances();
   }
 
   function canDeleteOfferLine(id){
-    return !invoiceAllocations().some(inv=>(inv.allocations||[]).some(a=>a.offerLineId===id&&Number(a.amount||0)>0));
+    return !invoices().some(inv=>normalizedInvoiceLines(inv).some(line=>(line.allocations||[]).some(a=>a.offerLineId===id&&Number(a.amount||0)>0)));
   }
 
-  return {balances,validateAllocations,registerInvoice,canDeleteOfferLine};
+  return {balances,validateAllocations,validateInvoice,registerInvoice,normalizedInvoiceLines,canDeleteOfferLine};
 }

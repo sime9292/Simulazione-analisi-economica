@@ -12,6 +12,10 @@
     const link=document.createElement('link');link.rel='preload';link.as='script';link.href=`${file}?${query}`;link.dataset.cleanPreload=file;document.head.appendChild(link);
   });
 
+  function normalizeTestRoute(){
+    const test=sessionStorage.getItem('dabster.environment.v44')==='test';
+    if(test&&location.hash.startsWith('#offerta-'))history.replaceState(null,'','#offerte');
+  }
   function loadBillingPlan(){
     if(document.querySelector('script[data-billing-plan-v47]'))return;
     const plan=document.createElement('script');plan.src='billing-plan-v47.js?v=47';plan.dataset.billingPlanV47='1';
@@ -19,14 +23,15 @@
   }
   function loadOfferFlow(){
     if(document.querySelector('script[data-offer-flow-v38]'))return;
+    normalizeTestRoute();
     const flow=document.createElement('script');flow.src='offer-flow-v38.js?v=38';flow.dataset.offerFlowV38='1';
     flow.onload=loadBillingPlan;
     flow.onerror=()=>{revealFailsafe();console.error('[Dabster] Errore caricamento flusso offerta v38');};document.head.appendChild(flow);
   }
   function loadTestDataEntry(){
-    if(document.querySelector('script[data-test-data-entry-v49]'))return;
-    const test=document.createElement('script');test.src='test-data-entry-v49.js?v=49';test.dataset.testDataEntryV49='1';
-    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test dati v49');document.head.appendChild(test);
+    if(document.querySelector('script[data-test-data-entry-v50]'))return;
+    const test=document.createElement('script');test.src='test-data-entry-v50.js?v=50';test.dataset.testDataEntryV50='1';
+    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test dati v50');document.head.appendChild(test);
   }
 
   const core=document.createElement('script');
@@ -34,7 +39,7 @@
   core.onload=()=>{
     const cleanup=document.createElement('script');cleanup.src='workspace-cleanup-v34.js?v=34';document.head.appendChild(cleanup);
     const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=39';document.head.appendChild(billingEntry);
-    loadTestDataEntry();
+    normalizeTestRoute();loadTestDataEntry();
     if(document.readyState==='complete')setTimeout(loadOfferFlow,0);else window.addEventListener('load',loadOfferFlow,{once:true});
   };
   document.head.appendChild(core);

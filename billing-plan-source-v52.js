@@ -1,4 +1,4 @@
-/* v52 - New invoice source switcher: Offer Lines or Billing Plan, shared by manual and Test. */
+/* v53 - New invoice source switcher: Offer Lines or Billing Plan, shared by manual and Test. Reacts when New Invoice becomes visible. */
 (function(){
   const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -30,18 +30,29 @@
   }
 
   function installIntoInvoice(){
-    const page=document.getElementById('newInvoicePageV39');if(!page||page.hidden)return;
-    const section=page.querySelector('.ni39-section.source'),body=section?.querySelector('.ni39-body'),source=body?.querySelector('#ni39Source');if(!body||!source)return;
+    const page=document.getElementById('newInvoicePageV39');if(!page||page.hidden)return false;
+    const section=page.querySelector('.ni39-section.source'),body=section?.querySelector('.ni39-body'),source=body?.querySelector('#ni39Source');if(!body||!source)return false;
     let sw=body.querySelector('.bp52-switch');
     if(!sw){sw=document.createElement('div');sw.className='bp52-switch';sw.innerHTML='<button type="button" data-bp52-mode="lines">Righe Offerta</button><button type="button" data-bp52-mode="plan">Piano di fatturazione</button>';body.insertBefore(sw,source);sw.querySelectorAll('[data-bp52-mode]').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.bp52Mode;applyMode(body);}));}
     let panel=body.querySelector('.bp52-plan-panel');if(!panel){panel=document.createElement('div');panel.className='bp52-plan-panel';source.insertAdjacentElement('afterend',panel);}
-    applyMode(body);
+    applyMode(body);return true;
   }
 
+  function scheduleInstall(){setTimeout(installIntoInvoice,0);setTimeout(installIntoInvoice,40);setTimeout(installIntoInvoice,140);}
+
   function install(){
-    installStyles();observer=new MutationObserver(()=>setTimeout(installIntoInvoice,0));observer.observe(document.documentElement,{childList:true,subtree:true});
-    window.addEventListener('dabster-billing-plan-ready',()=>setTimeout(installIntoInvoice,20));window.addEventListener('dabster-offer-flow-change',()=>setTimeout(installIntoInvoice,40));
-    window.DABSTER_BILLING_PLAN_SOURCE_V52={setMode(next){mode=next==='plan'?'plan':'lines';installIntoInvoice();},refresh:installIntoInvoice};installIntoInvoice();
+    installStyles();
+    observer=new MutationObserver(mutations=>{
+      if(mutations.some(m=>m.type==='childList'||(m.type==='attributes'&&m.attributeName==='hidden')))scheduleInstall();
+    });
+    observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
+    window.addEventListener('hashchange',scheduleInstall);
+    window.addEventListener('dabster-billing-plan-ready',scheduleInstall);
+    window.addEventListener('dabster-offer-flow-change',scheduleInstall);
+    document.addEventListener('click',e=>{if(e.target.closest?.('[data-new-invoice], [data-page="billing"], [data-cancel-invoice]'))scheduleInstall();},true);
+    window.DABSTER_BILLING_PLAN_SOURCE_V52={setMode(next){mode=next==='plan'?'plan':'lines';scheduleInstall();},refresh:scheduleInstall};
+    let tries=0;const timer=setInterval(()=>{if(installIntoInvoice()||++tries>100)clearInterval(timer);},50);
+    scheduleInstall();
   }
   install();
 })();

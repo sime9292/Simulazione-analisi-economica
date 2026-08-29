@@ -16,9 +16,15 @@
     const test=sessionStorage.getItem('dabster.environment.v44')==='test';
     if(test&&location.hash.startsWith('#offerta-'))history.replaceState(null,'','#offerte');
   }
+  function loadPlanInvoiceBridge(){
+    if(document.querySelector('script[data-plan-invoice-v51]'))return;
+    const bridge=document.createElement('script');bridge.src='billing-plan-invoice-v51.js?v=51';bridge.dataset.planInvoiceV51='1';
+    bridge.onerror=()=>console.error('[Dabster] Errore caricamento collegamento Piano → Fattura v51');document.head.appendChild(bridge);
+  }
   function loadBillingPlan(){
-    if(document.querySelector('script[data-billing-plan-v47]'))return;
+    if(document.querySelector('script[data-billing-plan-v47]')){loadPlanInvoiceBridge();return;}
     const plan=document.createElement('script');plan.src='billing-plan-v47.js?v=47';plan.dataset.billingPlanV47='1';
+    plan.onload=loadPlanInvoiceBridge;
     plan.onerror=()=>console.error('[Dabster] Errore caricamento Piano di fatturazione v47');document.head.appendChild(plan);
   }
   function loadOfferFlow(){
@@ -38,7 +44,7 @@
   core.src='app-v13.js?v=46';core.dataset.cleanLegacyUi='1';core.onerror=revealFailsafe;
   core.onload=()=>{
     const cleanup=document.createElement('script');cleanup.src='workspace-cleanup-v34.js?v=34';document.head.appendChild(cleanup);
-    const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=39';document.head.appendChild(billingEntry);
+    const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=41';document.head.appendChild(billingEntry);
     normalizeTestRoute();loadTestDataEntry();
     if(document.readyState==='complete')setTimeout(loadOfferFlow,0);else window.addEventListener('load',loadOfferFlow,{once:true});
   };

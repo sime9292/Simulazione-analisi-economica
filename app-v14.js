@@ -50,7 +50,7 @@
   core.src='app-v13.js?v=46';core.dataset.cleanLegacyUi='1';core.onerror=revealFailsafe;
   core.onload=()=>{
     const cleanup=document.createElement('script');cleanup.src='workspace-cleanup-v34.js?v=34';document.head.appendChild(cleanup);
-    const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=41';document.head.appendChild(billingEntry);
+    const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=42';document.head.appendChild(billingEntry);
     normalizeTestRoute();loadTestDataEntry();
     if(document.readyState==='complete')setTimeout(loadOfferFlow,0);else window.addEventListener('load',loadOfferFlow,{once:true});
   };

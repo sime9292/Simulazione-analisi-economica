@@ -22,13 +22,18 @@
     const test=document.createElement('script');test.src='test-environment-v41.js?v=41';test.dataset.testEnvironmentV41='1';
     test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test v41');document.head.appendChild(test);
   }
+  function loadTestClickVisual(){
+    if(document.querySelector('script[data-test-click-visual-v42]')){loadTestEnvironment();return;}
+    const visual=document.createElement('script');visual.src='test-click-visual-v42.js?v=42';visual.dataset.testClickVisualV42='1';
+    visual.onload=loadTestEnvironment;visual.onerror=()=>{console.error('[Dabster] Errore caricamento cursore Test v42');loadTestEnvironment();};document.head.appendChild(visual);
+  }
 
   const core=document.createElement('script');
   core.src='app-v13.js?v=clean2';core.dataset.cleanLegacyUi='1';core.onerror=revealFailsafe;
   core.onload=()=>{
     const cleanup=document.createElement('script');cleanup.src='workspace-cleanup-v34.js?v=34';document.head.appendChild(cleanup);
     const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=39';document.head.appendChild(billingEntry);
-    loadTestEnvironment();
+    loadTestClickVisual();
     if(document.readyState==='complete')setTimeout(loadOfferFlow,0);else window.addEventListener('load',loadOfferFlow,{once:true});
   };
   document.head.appendChild(core);

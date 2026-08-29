@@ -17,15 +17,10 @@
     const flow=document.createElement('script');flow.src='offer-flow-v38.js?v=38';flow.dataset.offerFlowV38='1';
     flow.onerror=()=>{revealFailsafe();console.error('[Dabster] Errore caricamento flusso offerta v38');};document.head.appendChild(flow);
   }
-  function loadTestEnvironment(){
-    if(document.querySelector('script[data-test-environment-v43]'))return;
-    const test=document.createElement('script');test.src='test-environment-v43.js?v=43';test.dataset.testEnvironmentV43='1';
-    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test v43');document.head.appendChild(test);
-  }
-  function loadTestClickVisual(){
-    if(document.querySelector('script[data-test-click-visual-v43]')){loadTestEnvironment();return;}
-    const visual=document.createElement('script');visual.src='test-click-visual-v43.js?v=43';visual.dataset.testClickVisualV43='1';
-    visual.onload=loadTestEnvironment;visual.onerror=()=>{console.error('[Dabster] Errore caricamento cursore Test v43');loadTestEnvironment();};document.head.appendChild(visual);
+  function loadTestDataEntry(){
+    if(document.querySelector('script[data-test-data-entry-v44]'))return;
+    const test=document.createElement('script');test.src='test-data-entry-v44.js?v=44';test.dataset.testDataEntryV44='1';
+    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test dati v44');document.head.appendChild(test);
   }
 
   const core=document.createElement('script');
@@ -33,7 +28,7 @@
   core.onload=()=>{
     const cleanup=document.createElement('script');cleanup.src='workspace-cleanup-v34.js?v=34';document.head.appendChild(cleanup);
     const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=39';document.head.appendChild(billingEntry);
-    loadTestClickVisual();
+    loadTestDataEntry();
     if(document.readyState==='complete')setTimeout(loadOfferFlow,0);else window.addEventListener('load',loadOfferFlow,{once:true});
   };
   document.head.appendChild(core);

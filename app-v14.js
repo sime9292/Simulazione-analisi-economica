@@ -12,15 +12,21 @@
     const link=document.createElement('link');link.rel='preload';link.as='script';link.href=`${file}?${query}`;link.dataset.cleanPreload=file;document.head.appendChild(link);
   });
 
+  function loadBillingPlan(){
+    if(document.querySelector('script[data-billing-plan-v46]'))return;
+    const plan=document.createElement('script');plan.src='billing-plan-v46.js?v=46';plan.dataset.billingPlanV46='1';
+    plan.onerror=()=>console.error('[Dabster] Errore caricamento Piano di fatturazione v46');document.head.appendChild(plan);
+  }
   function loadOfferFlow(){
     if(document.querySelector('script[data-offer-flow-v38]'))return;
     const flow=document.createElement('script');flow.src='offer-flow-v38.js?v=38';flow.dataset.offerFlowV38='1';
+    flow.onload=loadBillingPlan;
     flow.onerror=()=>{revealFailsafe();console.error('[Dabster] Errore caricamento flusso offerta v38');};document.head.appendChild(flow);
   }
   function loadTestDataEntry(){
-    if(document.querySelector('script[data-test-data-entry-v45]'))return;
-    const test=document.createElement('script');test.src='test-data-entry-v44.js?v=45';test.dataset.testDataEntryV45='1';
-    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test dati v45');document.head.appendChild(test);
+    if(document.querySelector('script[data-test-data-entry-v46]'))return;
+    const test=document.createElement('script');test.src='test-data-entry-v44.js?v=46';test.dataset.testDataEntryV46='1';
+    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test dati v46');document.head.appendChild(test);
   }
 
   const core=document.createElement('script');

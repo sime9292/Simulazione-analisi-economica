@@ -16,9 +16,15 @@
     const test=sessionStorage.getItem('dabster.environment.v44')==='test';
     if(test&&location.hash.startsWith('#offerta-'))history.replaceState(null,'','#offerte');
   }
+  function loadPlanInvoiceSource(){
+    if(document.querySelector('script[data-plan-invoice-source-v52]'))return;
+    const source=document.createElement('script');source.src='billing-plan-source-v52.js?v=52';source.dataset.planInvoiceSourceV52='1';
+    source.onerror=()=>console.error('[Dabster] Errore caricamento origine Piano in Nuova fattura v52');document.head.appendChild(source);
+  }
   function loadPlanInvoiceBridge(){
-    if(document.querySelector('script[data-plan-invoice-v51]'))return;
+    if(document.querySelector('script[data-plan-invoice-v51]')){loadPlanInvoiceSource();return;}
     const bridge=document.createElement('script');bridge.src='billing-plan-invoice-v51.js?v=51';bridge.dataset.planInvoiceV51='1';
+    bridge.onload=loadPlanInvoiceSource;
     bridge.onerror=()=>console.error('[Dabster] Errore caricamento collegamento Piano → Fattura v51');document.head.appendChild(bridge);
   }
   function loadBillingPlan(){

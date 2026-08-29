@@ -23,7 +23,7 @@
     const table=root.querySelector('.bw39-table');
     if(!table||!table.querySelector('.bw39-row.head.bw39-offer'))return false;
     removeKpis(root);
-    table.querySelectorAll('.bw39-total').forEach(x=>x.remove());
+    if(table.querySelector('.bw39-total'))return true;
     const rows=[...table.querySelectorAll('.bw39-row.data.bw39-offer')];
     let amount=0,billed=0,residual=0;
     rows.forEach(r=>{amount+=parseMoney(r.children[2]?.textContent);billed+=parseMoney(r.children[3]?.textContent);residual+=parseMoney(r.children[4]?.textContent);});
@@ -37,7 +37,7 @@
     if(!topPane||!topPane.querySelector('.bw39-row.head.bw39-lines'))return false;
     removeKpis(root);
     const scroll=topPane.querySelector('.bw39-scroll');if(!scroll)return true;
-    scroll.querySelectorAll('.bw39-total').forEach(x=>x.remove());
+    if(scroll.querySelector('.bw39-total'))return true;
     const rows=[...scroll.querySelectorAll('.bw39-row.bw39-lines:not(.head):not(.bw39-total)')];
     let amount=0,billed=0,residual=0;
     rows.forEach(r=>{amount+=parseMoney(r.children[1]?.textContent);billed+=parseMoney(r.children[2]?.textContent);residual+=parseMoney(r.children[3]?.textContent);});
@@ -52,8 +52,7 @@
     installStyles();
     if(offerTotals(root))return;
     if(lineTotals(root))return;
-    // Commessa level: KPIs remain untouched and no total row is injected.
-    root.querySelectorAll('.bw39-total').forEach(x=>x.remove());
+    // Commessa level: KPIs remain untouched.
   }
 
   let queued=false;

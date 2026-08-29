@@ -1,4 +1,4 @@
-/* v16 - Sidebar + Attività Commessa Kanban + sync from confirmed offer */
+/* v46 - Sidebar + Attività Commessa Kanban + sync from confirmed offer, aligned to seven operational phases */
 (function(){
   const core=document.createElement('script');
   core.src='app-v12.js?v=16';
@@ -6,10 +6,12 @@
   document.head.appendChild(core);
 
   const PHASE_TYPES=[
-    {id:'preliminare',label:'Progetto Preliminare'},
-    {id:'definitivo',label:'Progetto Definitivo'},
+    {id:'preliminare',label:'Progetto preliminare e Pratiche'},
+    {id:'definitivo',label:'Progetto PFTE'},
+    {id:'valutazione_vvf',label:'Valutazione Progetto Antincendio'},
     {id:'esecutivo',label:'Progetto Esecutivo'},
     {id:'dl',label:'Direzione Lavori'},
+    {id:'scia_vvf',label:'SCIA Antincendio'},
     {id:'consulenze',label:'Consulenze varie'}
   ];
   const STATUS_COLUMNS=[
@@ -51,8 +53,10 @@
 
   function inferPhaseType(name){
     const n=normalize(name);
-    if(n.includes('prelim'))return 'preliminare';
-    if(n.includes('definit'))return 'definitivo';
+    if((n.includes('valutazione')||n.includes('esame progetto'))&&n.includes('antincend'))return 'valutazione_vvf';
+    if(n.includes('scia')&&n.includes('antincend'))return 'scia_vvf';
+    if(n.includes('prelim')||n.includes('pratiche'))return 'preliminare';
+    if(n.includes('pfte')||n.includes('definit'))return 'definitivo';
     if(n.includes('esecut'))return 'esecutivo';
     if(n.includes('direzione')||n==='dl'||n.includes('lavori'))return 'dl';
     return 'consulenze';

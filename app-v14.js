@@ -18,9 +18,9 @@
     flow.onerror=()=>{revealFailsafe();console.error('[Dabster] Errore caricamento flusso offerta v38');};document.head.appendChild(flow);
   }
   function loadTestDataEntry(){
-    if(document.querySelector('script[data-test-data-entry-v44]'))return;
-    const test=document.createElement('script');test.src='test-data-entry-v44.js?v=44';test.dataset.testDataEntryV44='1';
-    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test dati v44');document.head.appendChild(test);
+    if(document.querySelector('script[data-test-data-entry-v45]'))return;
+    const test=document.createElement('script');test.src='test-data-entry-v44.js?v=45';test.dataset.testDataEntryV45='1';
+    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test dati v45');document.head.appendChild(test);
   }
 
   const core=document.createElement('script');

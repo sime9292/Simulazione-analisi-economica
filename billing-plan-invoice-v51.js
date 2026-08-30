@@ -1,4 +1,4 @@
-/* v53 - Shared bridge: Piano di fatturazione -> precompila Righe Offerta in Nuova fattura. Observer idempotente. */
+/* v54 - Shared bridge: Piano di fatturazione -> precompila Righe Offerta in Nuova fattura. Scrittura atomica degli importi. */
 (function(){
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -16,7 +16,7 @@
   function clearFailure(){const el=document.querySelector('#billingPlanBody .bp51-message');if(el){if(el.textContent)el.textContent='';el.hidden=true;}}
 
   async function ensureBillingWorkspace(){
-    const entry=await waitFor(()=>window.DABSTER_BILLING_ENTRY_V44?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V44||window.DABSTER_BILLING_ENTRY_V43?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V43||window.DABSTER_BILLING_ENTRY_V42?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V42||window.DABSTER_BILLING_ENTRY_V41?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V41);
+    const entry=await waitFor(()=>window.DABSTER_BILLING_ENTRY_V46?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V46||window.DABSTER_BILLING_ENTRY_V45?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V45||window.DABSTER_BILLING_ENTRY_V44?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V44||window.DABSTER_BILLING_ENTRY_V43?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V43||window.DABSTER_BILLING_ENTRY_V42?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V42||window.DABSTER_BILLING_ENTRY_V41?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V41);
     if(!entry)throw new Error('Workspace fatturazione non disponibile.');
     await entry.loadWorkspace('invoice');
     const api=await waitFor(()=>window.DABSTER_BILLING_V39?.showInvoice&&document.getElementById('newInvoicePageV39')&&window.DABSTER_BILLING_V39);
@@ -34,16 +34,34 @@
     document.querySelector('#newInvoicePageV39 [data-src-offer]')?.click();
     return !!document.querySelector('#newInvoicePageV39 [data-src-check]');
   }
-  function findSourceCheck(lineId){return [...document.querySelectorAll('#newInvoicePageV39 [data-src-check]')].find(x=>x.dataset.srcCheck===lineId)||null;}
   function findSourceAmount(lineId){return [...document.querySelectorAll('#newInvoicePageV39 [data-src-amount]')].find(x=>x.dataset.srcAmount===lineId)||null;}
+
+  async function writeSelection(lineId,value){
+    let amount=findSourceAmount(lineId);
+    if(!amount||amount.disabled)throw new Error('Importo Riga Offerta non disponibile.');
+    amount.value=money(value);
+    amount.dispatchEvent(new Event('change',{bubbles:true}));
+    await sleep(12);
+    amount=findSourceAmount(lineId);
+    if(!amount||Math.abs(num(amount.value)-Number(value||0))>.01){
+      if(!amount||amount.disabled)throw new Error('La Riga Offerta non è più disponibile.');
+      amount.value=money(value);
+      amount.dispatchEvent(new Event('input',{bubbles:true}));
+      amount.dispatchEvent(new Event('change',{bubbles:true}));
+      await sleep(12);
+    }
+    const verify=findSourceAmount(lineId);
+    if(!verify||Math.abs(num(verify.value)-Number(value||0))>.01)throw new Error('Impossibile applicare l’importo del Piano alla Riga Offerta.');
+  }
 
   async function applyPlanEvent(rowId){
     if(preparing||applied.has(rowId))return;preparing=true;clearFailure();
     try{
       const row=planRow(rowId);if(!row||!row.valid)throw new Error('Completa la regola del Piano prima di applicarla.');
       if(!row.allocations?.length||Number(row.calculatedAmount||0)<=0)throw new Error('La regola non contiene un importo fatturabile.');
-      const billing=await ensureBillingWorkspace(),metrics=billing.getOfferMetrics?.();
+      const billing=await ensureBillingWorkspace();
       if(!navigateToOfferLines())throw new Error('Righe Offerta non disponibili nella Nuova fattura.');
+      const metrics=billing.getOfferMetrics?.();
 
       const targets=[];
       for(const a of row.allocations){
@@ -51,15 +69,10 @@
         if(!line)throw new Error('Una Riga Offerta collegata al Piano non è più disponibile.');
         const current=num(findSourceAmount(a.lineId)?.value),next=Math.round((current+Number(a.amount||0))*100)/100;
         if(next>Number(line.available||0)+.01)throw new Error(`Residuo insufficiente sulla Riga Offerta “${line.description}”.`);
-        targets.push({lineId:a.lineId,current,next});
+        targets.push({lineId:a.lineId,next});
       }
 
-      for(const t of targets){
-        let cb=findSourceCheck(t.lineId);if(!cb||cb.disabled)throw new Error('Riga Offerta non selezionabile nella fattura.');
-        if(!cb.checked){cb.checked=true;cb.dispatchEvent(new Event('change',{bubbles:true}));await sleep(5);}
-        const amount=findSourceAmount(t.lineId);if(!amount)throw new Error('Importo Riga Offerta non disponibile.');
-        amount.value=money(t.next);amount.dispatchEvent(new Event('change',{bubbles:true}));await sleep(5);
-      }
+      for(const t of targets)await writeSelection(t.lineId,t.next);
 
       applied.add(rowId);
       window.dispatchEvent(new CustomEvent('dabster-plan-applied-to-lines',{detail:{id:row.id,label:row.eventLabel||'Quota Piano di fatturazione',amount:Number(row.calculatedAmount||0),allocations:row.allocations.map(x=>({...x}))}}));
@@ -102,7 +115,7 @@
     window.addEventListener('dabster-billing-plan-ready',()=>setTimeout(queueDecorate,20));window.addEventListener('dabster-offer-flow-change',()=>setTimeout(queueDecorate,40));
     document.addEventListener('click',e=>{if(e.target.closest?.('[data-save-invoice],[data-cancel-invoice]'))setTimeout(clearApplied,0);},true);
     const api={applyPlanEvent,openPlanEvent:applyPlanEvent,isApplied:id=>applied.has(id),getAppliedIds:()=>[...applied],clearApplied};
-    window.DABSTER_PLAN_TO_INVOICE_V53=api;window.DABSTER_PLAN_TO_INVOICE_V52=api;window.DABSTER_PLAN_TO_INVOICE_V51=api;decoratePlan();
+    window.DABSTER_PLAN_TO_INVOICE_V54=api;window.DABSTER_PLAN_TO_INVOICE_V53=api;window.DABSTER_PLAN_TO_INVOICE_V52=api;window.DABSTER_PLAN_TO_INVOICE_V51=api;decoratePlan();
   }
   install();
 })();

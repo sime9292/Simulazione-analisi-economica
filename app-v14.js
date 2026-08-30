@@ -17,15 +17,15 @@
     if(test&&location.hash.startsWith('#offerta-'))history.replaceState(null,'','#offerte');
   }
   function loadPlanInvoiceSource(){
-    if(document.querySelector('script[data-plan-invoice-source-v55]'))return;
-    const source=document.createElement('script');source.src='billing-plan-source-v52.js?v=55';source.dataset.planInvoiceSourceV55='1';
-    source.onerror=()=>console.error('[Dabster] Errore caricamento origine Piano in Nuova fattura v55');document.head.appendChild(source);
+    if(document.querySelector('script[data-plan-invoice-source-v56]'))return;
+    const source=document.createElement('script');source.src='billing-plan-source-v52.js?v=56';source.dataset.planInvoiceSourceV56='1';
+    source.onerror=()=>console.error('[Dabster] Errore caricamento Piano sotto Righe Offerta v56');document.head.appendChild(source);
   }
   function loadPlanInvoiceBridge(){
-    if(document.querySelector('script[data-plan-invoice-v51]')){loadPlanInvoiceSource();return;}
-    const bridge=document.createElement('script');bridge.src='billing-plan-invoice-v51.js?v=51';bridge.dataset.planInvoiceV51='1';
+    if(document.querySelector('script[data-plan-invoice-v52]')){loadPlanInvoiceSource();return;}
+    const bridge=document.createElement('script');bridge.src='billing-plan-invoice-v51.js?v=52';bridge.dataset.planInvoiceV52='1';
     bridge.onload=loadPlanInvoiceSource;
-    bridge.onerror=()=>console.error('[Dabster] Errore caricamento collegamento Piano → Fattura v51');document.head.appendChild(bridge);
+    bridge.onerror=()=>console.error('[Dabster] Errore caricamento precompilazione Piano → Righe Offerta v52');document.head.appendChild(bridge);
   }
   function loadBillingPlan(){
     if(document.querySelector('script[data-billing-plan-v47]')){loadPlanInvoiceBridge();return;}
@@ -50,7 +50,7 @@
   core.src='app-v13.js?v=46';core.dataset.cleanLegacyUi='1';core.onerror=revealFailsafe;
   core.onload=()=>{
     const cleanup=document.createElement('script');cleanup.src='workspace-cleanup-v34.js?v=34';document.head.appendChild(cleanup);
-    const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=43';document.head.appendChild(billingEntry);
+    const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=44';document.head.appendChild(billingEntry);
     normalizeTestRoute();loadTestDataEntry();
     if(document.readyState==='complete')setTimeout(loadOfferFlow,0);else window.addEventListener('load',loadOfferFlow,{once:true});
   };

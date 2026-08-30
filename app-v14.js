@@ -17,9 +17,9 @@
     if(test&&location.hash.startsWith('#offerta-'))history.replaceState(null,'','#offerte');
   }
   function loadKanbanBillingLink(){
-    if(document.querySelector('script[data-kanban-billing-v59]'))return;
-    const link=document.createElement('script');link.src='kanban-billing-link-v59.js?v=59';link.dataset.kanbanBillingV59='1';
-    link.onerror=()=>console.error('[Dabster] Errore collegamento Kanban → Fatturabile v59');document.head.appendChild(link);
+    if(document.querySelector('script[data-kanban-billing-v60]'))return;
+    const link=document.createElement('script');link.src='kanban-billing-link-v60.js?v=60';link.dataset.kanbanBillingV60='1';
+    link.onerror=()=>console.error('[Dabster] Errore collegamento Kanban → Fatturabile v60');document.head.appendChild(link);
   }
   function loadBillingTrigger(){
     if(document.querySelector('script[data-billing-trigger-v58]')){loadKanbanBillingLink();return;}

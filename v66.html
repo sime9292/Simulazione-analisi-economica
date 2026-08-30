@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="it" class="dabster-booting">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dabster | Dettaglio Offerta · v66</title>
+  <meta name="description" content="Prototipo desktop della schermata Dati Offerta e Analisi Economica del gestionale Dabster" />
+  <link rel="stylesheet" href="styles-v2.css?v=38" />
+  <link rel="stylesheet" href="analysis-v5.css?v=38" />
+  <link rel="stylesheet" href="dimension-v4.css?v=38" />
+  <link rel="stylesheet" href="workload-v1.css?v=38" />
+  <link rel="stylesheet" href="workload-v2.css?v=38" />
+  <link rel="stylesheet" href="workload-v3.css?v=38" />
+  <link rel="stylesheet" href="workload-v4.css?v=38" />
+  <link rel="stylesheet" href="layout-v15.css?v=38" />
+  <link rel="stylesheet" href="kanban-v16.css?v=38" />
+  <link rel="stylesheet" href="demo-v19.css?v=38" />
+  <link rel="stylesheet" href="desktop-v20.css?v=38" />
+  <link rel="stylesheet" href="analysis-spacing-v21.css?v=38" />
+  <link rel="stylesheet" href="dimension-spacing-v22.css?v=38" />
+  <link rel="stylesheet" href="economic-colors-v24.css?v=38" />
+  <link rel="stylesheet" href="economic-colors-v25.css?v=38" />
+  <link rel="stylesheet" href="analysis-subtabs-v26.css?v=38" />
+  <link rel="stylesheet" href="demo-controls-v27.css?v=38" />
+  <link rel="stylesheet" href="dimension-readability-v29.css?v=38" />
+  <style>
+    #tab-analisi .analysis-layout{display:grid!important;grid-template-columns:minmax(690px,1fr) 155px!important;gap:7px!important;align-items:start!important;min-width:852px!important}
+    #tab-analisi .economic-kpis{display:flex!important;flex-direction:column!important;gap:4px!important;width:155px!important;min-width:155px!important;height:auto!important}
+    #tab-analisi .economic-kpis .kpi{display:grid!important;grid-template-columns:1fr!important;min-height:43px!important;height:43px!important;padding:4px 6px!important;align-content:center!important}
+    #tab-analisi .economic-kpis .kpi-label{font-size:7.8px!important;line-height:1.02!important;margin-bottom:3px!important;white-space:normal!important}
+    #tab-analisi .economic-kpis .kpi-value{font-size:11px!important;line-height:1!important;text-align:right!important;white-space:nowrap!important}
+    .dabster-booting body > *:not(#dabsterBoot){visibility:hidden!important}
+    #dabsterBoot{display:none}
+    .dabster-booting #dabsterBoot{display:flex;visibility:visible!important;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;background:#f5f7f8;color:#63717a;font:500 12px/1.3 Arial,sans-serif;letter-spacing:.01em}
+    .dabster-booting #dabsterBoot::before{content:'';width:14px;height:14px;margin-right:9px;border:2px solid #d3dadd;border-top-color:#7e9199;border-radius:50%;animation:dabsterSpin .7s linear infinite}
+    @keyframes dabsterSpin{to{transform:rotate(360deg)}}
+  </style>
+  <script>window.DABSTER_EXPLICIT_SAVE_MODE=true;</script>
+</head>
+<body>
+  <div id="dabsterBoot">Caricamento gestionale…</div>
+  <header class="topbar">
+    <button class="top-icon" aria-label="Menu">☰</button>
+    <div class="logo-wrap"><div class="logo">dabster</div><div class="logo-sub">human crafted engineering</div></div>
+    <button class="top-icon" aria-label="Altre opzioni">⋮</button>
+  </header>
+  <main class="page-shell">
+    <div class="page-title">Offerta</div>
+    <div class="breadcrumb"><span>⌂</span><span>›</span><span>Offerte</span><span>›</span><strong>Dettaglio</strong></div>
+    <section class="main-card">
+      <div class="tabs" role="tablist">
+        <button class="tab" data-tab="dati">▣&nbsp;&nbsp;Dati Offerta</button>
+        <button class="tab" data-tab="risorse">♧&nbsp;&nbsp;Risorse Esterne <span class="badge">0</span></button>
+        <button class="tab active" data-tab="analisi">€&nbsp;&nbsp;Analisi Economica</button>
+      </div>
+      <div id="tab-dati" class="tab-panel">
+        <section class="accordion general open"><button class="section-head" type="button"><span>▣&nbsp;&nbsp;Dati Generali</span><span class="chevron">⌄</span></button><div class="section-body"><div class="grid general-grid">
+          <label class="field col-4"><span>Commessa</span><select><option value="">Seleziona un elemento</option><option>26_119 - CONSULENZA ANTINCENDIO GENERALI</option></select></label>
+          <label class="field col-5"><span>Contratto <b class="plus">＋</b></span><div class="inline-control"><select><option>Seleziona un elemento</option></select><button class="square-btn" type="button">↻</button><button class="folder-btn" type="button">↗ Apri cartella</button></div></label>
+          <div class="field important col-3"><span>Importante</span><button id="star" class="star" type="button">★</button></div>
+          <label class="field col-5"><span>Titolo</span><input value="" /></label>
+          <label class="field col-3"><span>Codice *</span><input value="" /></label>
+          <label class="field col-2"><span>Stato</span><select><option>In lavorazione</option><option>Completata</option><option>Inviata</option></select></label>
+          <label class="field col-2"><span>Referente tecnico</span><select><option>Seleziona un elemento</option></select></label>
+          <label class="field col-4"><span>Servizi associati *</span><div class="tag-input"></div></label>
+        </div></div></section>
+        <section class="accordion dates open"><button class="section-head" type="button"><span>▦&nbsp;&nbsp;Date</span><span class="chevron">⌄</span></button><div class="section-body"><div class="grid"><label class="field col-4"><span>Data offerta *</span><div class="date-control"><input value="" /><button type="button" class="square-btn">▦</button></div></label></div></div></section>
+        <section class="accordion amounts open"><button class="section-head" type="button"><span>€&nbsp;&nbsp;Importi Offerta</span><span class="chevron">⌄</span></button><div class="section-body"><div class="grid amounts-top">
+          <label class="field col-5"><span>Importo stimato *</span><div class="money-control"><input class="money" value="0,00" /><span>€</span></div></label>
+          <label class="field col-5"><span>Importo opere</span><div class="money-control"><input class="money" value="0,00" /><span>€</span></div></label>
+          <label class="field col-5"><span>Importo offerta * <em>(calcolato)</em></span><div class="money-control disabled"><input id="totaleOfferta" value="0,00" disabled /><span>€</span></div></label>
+        </div><div class="detail-title">♟&nbsp;&nbsp;DETTAGLIO</div><div class="grid detail-grid">
+          <label class="field col-4"><span>Consulenza</span><div class="money-control"><input value="0,00" /><span>€</span></div></label>
+          <label class="field col-4"><span>Progetti</span><div class="money-control"><input value="0,00" /><span>€</span></div></label>
+          <label class="field col-4"><span>Direzione lavori</span><div class="money-control"><input value="0,00" /><span>€</span></div></label>
+        </div></div></section>
+        <section class="accordion notes open"><button class="section-head" type="button"><span>▰&nbsp;&nbsp;Note</span><span class="chevron">⌄</span></button><div class="section-body"><label class="field"><textarea rows="4" placeholder="Note"></textarea></label></div></section>
+      </div>
+      <div id="tab-risorse" class="tab-panel empty-panel"><div>Nessuna risorsa esterna associata.</div></div>
+      <div id="tab-analisi" class="tab-panel active">
+        <section class="accordion dimensioning open">
+          <button class="section-head" type="button"><span>▦&nbsp;&nbsp;Dimensionamento Opere</span><span class="chevron">⌄</span></button>
+          <div class="section-body">
+            <div class="dim-table">
+              <div class="dim-row dim-head"><div>DESCRIZIONE / ELEMENTO</div><div>MQ</div><div>IMP. MECCANICI<br>€/MQ</div><div>IMP. ELETTRICI<br>€/MQ</div><div>TOT. IMPIANTI<br>MECCANICI</div><div>TOT. IMPIANTI<br>ELETTRICI</div><div>TOTALE RIGA</div><div></div></div>
+              <div id="dimRows"></div>
+              <div class="dim-row dim-total-row"><div>TOTALE</div><div><span id="dimMqTotal">0,00</span></div><div></div><div></div><div class="dim-read"><span id="dimMechGrand">0,00</span>&nbsp;€</div><div class="dim-read elec"><span id="dimElecGrand">0,00</span>&nbsp;€</div><div class="dim-read total"><span id="dimCalcGrand">0,00</span>&nbsp;€</div><div></div></div>
+            </div>
+            <div class="dim-addline"><button id="dimAdd" class="dim-add" type="button">＋ Aggiungi elemento</button></div>
+            <div class="dim-rounded-grid"><div class="dim-rounded-label">Totale opere arrotondato</div><div class="dim-rounded-control"><input id="dimRounded" value="0,00" inputmode="decimal"><span>€</span></div><button id="dimRoundedReset" class="dim-rounded-reset" type="button" title="Ripristina totale calcolato">↺</button></div>
+            <div class="dim-fee-line"><div class="dim-fee-slider"><label>COMPENSO COMPLESSIVO</label><input id="dimFeePct" type="range" min="0" max="15" step="0.1" value="7"><strong id="dimFeePctLabel">7,0%</strong></div><div class="dim-fee-total"><span>COMPENSO TOTALE INDICATIVO</span><strong><span id="dimProposalTotal">0,00</span> €</strong></div><div class="dim-ie-factor"><label>FATTORE COMPLESSITÀ IE</label><input id="dimIeFactor" value="1,00" inputmode="decimal"></div></div>
+            <div class="dim-phases">
+              <div class="dim-phase-head"><div>FASE</div><div>RIPARTIZIONE</div><div>% EFFETTIVA</div><div>IMPORTO INDICATIVO</div></div>
+              <div class="dim-phase-row"><div class="dim-phase-name">Fase Preliminare (PP)</div><div><input class="phase-pct" type="number" min="0" max="100" step="0.5" value="10">&nbsp;%</div><div><span class="phase-effective-value">0,70%</span></div><div class="dim-phase-result"><span class="phase-result-value">0,00</span>&nbsp;€</div></div>
+              <div class="dim-phase-row"><div class="dim-phase-name">Fase Definitiva (PD)</div><div><input class="phase-pct" type="number" min="0" max="100" step="0.5" value="35">&nbsp;%</div><div><span class="phase-effective-value">2,45%</span></div><div class="dim-phase-result"><span class="phase-result-value">0,00</span>&nbsp;€</div></div>
+              <div class="dim-phase-row"><div class="dim-phase-name">Fase Esecutiva (PE)</div><div><input class="phase-pct" type="number" min="0" max="100" step="0.5" value="25">&nbsp;%</div><div><span class="phase-effective-value">1,75%</span></div><div class="dim-phase-result"><span class="phase-result-value">0,00</span>&nbsp;€</div></div>
+              <div class="dim-phase-row"><div class="dim-phase-name">Direzione Lavori (DL)</div><div><input class="phase-pct" type="number" min="0" max="100" step="0.5" value="30">&nbsp;%</div><div><span class="phase-effective-value">2,10%</span></div><div class="dim-phase-result"><span class="phase-result-value">0,00</span>&nbsp;€</div></div>
+            </div>
+            <div class="dim-phase-footer"><div id="phaseTotalCheck" class="phase-total-check">Totale ripartizione fasi: <strong id="phaseTotalPct">100%</strong></div><div class="dim-transfer-wrap"><span id="dimFlash" class="dim-flash">Valori trasferiti ✓</span><button id="dimTransfer" class="dim-transfer" type="button">Usa come proposta economica ↓</button></div></div>
+            <span id="dimCalcBox" style="display:none">0,00</span>
+          </div>
+        </section>
+        <section class="accordion analysis open">
+          <button class="section-head" type="button"><span>€&nbsp;&nbsp;Stato Analisi Economica</span><span class="chevron">⌄</span></button>
+          <div class="section-body analysis-body">
+            <div class="analysis-layout">
+              <div class="economic-table-wrap"><div class="economic-table">
+                <div class="economic-row economic-head"><div>PROPOSTA ECONOMICA DA ANALISI<span class="col-resizer" data-col="1" title="Trascina per ridimensionare"></span></div><div class="numeric">TOT<span class="col-resizer" data-col="2" title="Trascina per ridimensionare"></span></div><div class="trade-head"><div class="trade-inline"><span>TRATTATIVA</span><input id="tradePct" type="range" min="0" max="30" step="1" value="0" /><strong id="tradePctLabel">0%</strong></div><span class="col-resizer" data-col="3" title="Trascina per ridimensionare"></span></div><div class="cost-head">RIEPILOGO COSTI</div></div>
+                <div class="economic-row phase-row"><div>Fase Preliminare</div><div class="money-cell"><input class="ae-proposal" value="0,00"><span>€</span></div><div class="computed-cell"><span class="ae-discount">0,00</span><b>€</b></div><div class="money-cell cost-cell"><input class="ae-cost" value="0,00"><span>€</span></div></div>
+                <div class="economic-row phase-row"><div>Fase Definitiva</div><div class="money-cell"><input class="ae-proposal" value="0,00"><span>€</span></div><div class="computed-cell"><span class="ae-discount">0,00</span><b>€</b></div><div class="money-cell cost-cell"><input class="ae-cost" value="0,00"><span>€</span></div></div>
+                <div class="economic-row phase-row"><div>Fase Esecutiva</div><div class="money-cell"><input class="ae-proposal" value="0,00"><span>€</span></div><div class="computed-cell"><span class="ae-discount">0,00</span><b>€</b></div><div class="money-cell cost-cell"><input class="ae-cost" value="0,00"><span>€</span></div></div>
+                <div class="economic-row phase-row"><div>Direzione Lavori</div><div class="money-cell"><input class="ae-proposal" value="0,00"><span>€</span></div><div class="computed-cell"><span class="ae-discount">0,00</span><b>€</b></div><div class="money-cell cost-cell"><input class="ae-cost" value="0,00"><span>€</span></div></div>
+                <div class="economic-row phase-row external-row"><div>Rimborso Spese + Esterni</div><div class="money-cell"><input class="ae-proposal" value="0,00"><span>€</span></div><div class="computed-cell"><span class="ae-discount">0,00</span><b>€</b></div><div class="money-cell cost-cell"><input class="ae-cost" value="0,00"><span>€</span></div></div>
+                <div class="economic-row total-row"><div>COMPENSO PROGETTO PROPOSTA</div><div class="total-value"><span id="aeGross">0,00</span><b>€</b></div><div class="total-value"><span id="aeDiscountTotal">0,00</span><b>€</b></div><div class="total-value cost-total"><span id="aeCosts">0,00</span><b>€</b></div></div>
+              </div></div>
+              <div class="economic-kpis" style="display:flex;flex-direction:column;width:155px;min-width:155px;gap:4px">
+                <div class="kpi mol"><div class="kpi-label">MARGINE OPERATIVO LORDO</div><div class="kpi-value"><span id="aeMol">0,00</span> € <span class="kpi-sub" id="aeMolPct">0,00%</span></div></div>
+                <div class="kpi expenses"><div class="kpi-label">SPESE GENERALI ORE INT. · 35%</div><div class="kpi-value"><span id="aeGeneralExpenses">0,00</span> €</div></div>
+                <div class="kpi mon"><div class="kpi-label">MARGINE OPERATIVO NETTO</div><div class="kpi-value"><span id="aeMon">0,00</span> €</div></div>
+                <div class="kpi profit"><div class="kpi-label">UTILE COMMESSA</div><div class="kpi-value" id="aeProfitPct">0,00%</div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+  <script src="app-v14.js?v=66"></script>
+  <script src="trade-rounding-v20.js?v=38"></script>
+  <script src="activity-ui-v24.js?v=38"></script>
+  <script src="analysis-subtabs-v26.js?v=38"></script>
+  <script src="demo-controls-v27.js?v=38"></script>
+  <script src="dimension-manual-total-v30.js?v=38"></script>
+  <script>
+    (function revealWhenStable(attempt){
+      attempt=attempt||0;
+      const ready=document.getElementById('analysisSubtabs') && document.getElementById('analysisDemoToolbar') && document.getElementById('phaseWorkloadSection') && document.querySelector('.phase-type-select') && document.getElementById('kanbanPage') && document.querySelectorAll('#dimRows .dim-data').length>=3;
+      if(ready || attempt>180){requestAnimationFrame(()=>requestAnimationFrame(()=>document.documentElement.classList.remove('dabster-booting')));return;}
+      setTimeout(()=>revealWhenStable(attempt+1),40);
+    })();
+  </script>
+</body>
+</html>

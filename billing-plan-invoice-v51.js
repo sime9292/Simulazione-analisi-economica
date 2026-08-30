@@ -1,9 +1,9 @@
-/* v52 - Shared bridge: Piano di fatturazione -> precompila Righe Offerta in Nuova fattura. */
+/* v53 - Shared bridge: Piano di fatturazione -> precompila Righe Offerta in Nuova fattura. Observer idempotente. */
 (function(){
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   const num=v=>Number(String(v??'').replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,''))||0;
-  let preparing=false,testBillingPrepared=false,observer=null;
+  let preparing=false,testBillingPrepared=false,observer=null,decorateQueued=false;
   const applied=new Set();
 
   async function waitFor(fn,loops=260,delay=40){for(let i=0;i<loops;i++){const v=fn();if(v)return v;await sleep(delay);}return null;}
@@ -11,12 +11,12 @@
   function planRow(id){return planApi()?.getSnapshot?.().rows?.find(x=>x.id===id)||null;}
   function showFailure(message){
     const el=document.querySelector('#billingPlanBody .bp51-message');
-    if(el){el.textContent=message;el.hidden=false;}else alert(message);
+    if(el){if(el.textContent!==message)el.textContent=message;el.hidden=false;}else alert(message);
   }
-  function clearFailure(){const el=document.querySelector('#billingPlanBody .bp51-message');if(el){el.textContent='';el.hidden=true;}}
+  function clearFailure(){const el=document.querySelector('#billingPlanBody .bp51-message');if(el){if(el.textContent)el.textContent='';el.hidden=true;}}
 
   async function ensureBillingWorkspace(){
-    const entry=await waitFor(()=>window.DABSTER_BILLING_ENTRY_V42?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V42||window.DABSTER_BILLING_ENTRY_V41?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V41);
+    const entry=await waitFor(()=>window.DABSTER_BILLING_ENTRY_V44?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V44||window.DABSTER_BILLING_ENTRY_V43?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V43||window.DABSTER_BILLING_ENTRY_V42?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V42||window.DABSTER_BILLING_ENTRY_V41?.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V41);
     if(!entry)throw new Error('Workspace fatturazione non disponibile.');
     await entry.loadWorkspace('invoice');
     const api=await waitFor(()=>window.DABSTER_BILLING_V39?.showInvoice&&document.getElementById('newInvoicePageV39')&&window.DABSTER_BILLING_V39);
@@ -73,9 +73,18 @@
     const snap=api.getSnapshot?.();
     body.querySelectorAll('.bp47-row').forEach(el=>{
       const row=snap?.rows?.find(x=>x.id===el.dataset.rowId),slot=el.querySelector('.bp47-remove');if(!row||!slot)return;
-      let btn=slot.querySelector('.bp51-invoice');if(!btn){btn=document.createElement('button');btn.type='button';btn.className='bp51-invoice';btn.textContent='€';slot.insertBefore(btn,slot.firstChild);btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();applyPlanEvent(el.dataset.rowId);});}
-      btn.disabled=preparing||!row.valid||applied.has(row.id);btn.textContent=applied.has(row.id)?'✓':'€';btn.title=applied.has(row.id)?'Quota già applicata alle Righe Offerta':(row.valid?'Precompila le Righe Offerta in Nuova fattura':'Completa la regola prima di fatturare');
+      let btn=slot.querySelector('.bp51-invoice');
+      if(!btn){btn=document.createElement('button');btn.type='button';btn.className='bp51-invoice';btn.textContent='€';slot.insertBefore(btn,slot.firstChild);btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();applyPlanEvent(el.dataset.rowId);});}
+      const done=applied.has(row.id),disabled=preparing||!row.valid||done,text=done?'✓':'€',title=done?'Quota già applicata alle Righe Offerta':(row.valid?'Precompila le Righe Offerta in Nuova fattura':'Completa la regola prima di fatturare');
+      if(btn.disabled!==disabled)btn.disabled=disabled;
+      if(btn.textContent!==text)btn.textContent=text;
+      if(btn.title!==title)btn.title=title;
     });
+  }
+  function queueDecorate(){
+    if(decorateQueued)return;decorateQueued=true;
+    const run=()=>{decorateQueued=false;decoratePlan();};
+    if(typeof requestAnimationFrame==='function')requestAnimationFrame(run);else setTimeout(run,0);
   }
   function installStyles(){if(document.getElementById('billingPlanInvoiceV52Styles'))return;const s=document.createElement('style');s.id='billingPlanInvoiceV52Styles';s.textContent=`
     #billingPlanBody .bp47-head,#billingPlanBody .bp47-row{grid-template-columns:minmax(135px,1.18fr) minmax(120px,1fr) 58px 90px 112px minmax(145px,1.12fr) 56px!important}
@@ -89,11 +98,11 @@
   function clearApplied(){if(!applied.size)return;applied.clear();window.DABSTER_BILLING_PLAN_SOURCE_V56?.refresh?.();decoratePlan();}
   async function install(){
     installStyles();await waitFor(()=>window.DABSTER_BILLING_PLAN_V47&&document.getElementById('billingPlanBody'));
-    const body=document.getElementById('billingPlanBody');if(body){observer=new MutationObserver(()=>decoratePlan());observer.observe(body,{childList:true,subtree:true});}
-    window.addEventListener('dabster-billing-plan-ready',()=>setTimeout(decoratePlan,20));window.addEventListener('dabster-offer-flow-change',()=>setTimeout(decoratePlan,40));
+    const body=document.getElementById('billingPlanBody');if(body){observer=new MutationObserver(queueDecorate);observer.observe(body,{childList:true,subtree:true});}
+    window.addEventListener('dabster-billing-plan-ready',()=>setTimeout(queueDecorate,20));window.addEventListener('dabster-offer-flow-change',()=>setTimeout(queueDecorate,40));
     document.addEventListener('click',e=>{if(e.target.closest?.('[data-save-invoice],[data-cancel-invoice]'))setTimeout(clearApplied,0);},true);
     const api={applyPlanEvent,openPlanEvent:applyPlanEvent,isApplied:id=>applied.has(id),getAppliedIds:()=>[...applied],clearApplied};
-    window.DABSTER_PLAN_TO_INVOICE_V52=api;window.DABSTER_PLAN_TO_INVOICE_V51=api;decoratePlan();
+    window.DABSTER_PLAN_TO_INVOICE_V53=api;window.DABSTER_PLAN_TO_INVOICE_V52=api;window.DABSTER_PLAN_TO_INVOICE_V51=api;decoratePlan();
   }
   install();
 })();

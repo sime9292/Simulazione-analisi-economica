@@ -1,0 +1,40 @@
+name: E2E Manual Dashboard
+on:
+  push:
+    branches: [clean-v3-demo]
+    paths:
+      - 'v89.html'
+      - 'v89-bootstrap.js'
+      - 'app-v89.js'
+      - 'offer-lines-v63.js'
+      - 'offer-flow-v38.js'
+      - 'billing-dashboard-live-v87.js'
+      - 'tests/e2e-dashboard-manual.py'
+      - '.github/workflows/e2e-dashboard-manual.yml'
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: browser-actions/setup-chrome@v1
+      - name: Install Selenium
+        run: pip install selenium
+      - name: Start local app
+        run: |
+          python -m http.server 8000 > /tmp/dabster-http.log 2>&1 &
+          sleep 2
+      - name: Run manual offer -> dashboard E2E
+        run: python tests/e2e-dashboard-manual.py
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-dashboard-failure
+          path: artifacts/
+          if-no-files-found: ignore

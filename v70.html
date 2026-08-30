@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dabster · Test fatturazione v70</title>
+  <style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f5f7f8}#dabsterV70{display:block;width:100%;height:100%;border:0}</style>
+</head>
+<body>
+  <iframe id="dabsterV70" src="v66.html?v70base=5299de73" title="Dabster v70"></iframe>
+  <script>
+    (function(){
+      const frame=document.getElementById('dabsterV70');
+      frame.addEventListener('load',()=>{
+        try{
+          const doc=frame.contentDocument;if(!doc)return;
+          const s=doc.createElement('script');
+          s.src='test-flow-v70.js?v=70-5299de73';
+          s.dataset.testFlowV70='1';
+          s.onload=()=>console.log('[Dabster v70] single-step TEST_FATT_001 loader ready');
+          s.onerror=()=>console.error('[Dabster v70] unable to load test flow');
+          doc.head.appendChild(s);
+        }catch(err){console.error('[Dabster v70] iframe injection failed',err);}
+      });
+    })();
+  </script>
+</body>
+</html>

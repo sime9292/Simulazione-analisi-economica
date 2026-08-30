@@ -1,4 +1,4 @@
-/* v66 compatibility loader: preserve full engine/UI, remove only legacy seeded data. */
+/* v67 compatibility loader: preserve full engine/UI, remove only legacy seeded data. */
 (function(){
   const revealFailsafe=()=>document.documentElement.classList.remove('dabster-booting');
   setTimeout(revealFailsafe,9000);
@@ -66,9 +66,9 @@
     flow.onerror=()=>{revealFailsafe();console.error('[Dabster] Errore caricamento flusso offerta v66');};document.head.appendChild(flow);
   }
   function loadTestDataEntry(){
-    if(document.querySelector('script[data-test-data-entry-v66]'))return;
-    const test=document.createElement('script');test.src='test-data-entry-v50.js?v=66';test.dataset.testDataEntryV66='1';
-    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test v66');document.head.appendChild(test);
+    if(document.querySelector('script[data-test-data-entry-v67]'))return;
+    const test=document.createElement('script');test.src='test-data-entry-v50.js?v=67';test.dataset.testDataEntryV67='1';
+    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test v67');document.head.appendChild(test);
   }
 
   const core=document.createElement('script');

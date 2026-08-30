@@ -1,4 +1,4 @@
-/* v67 compatibility loader: preserve full engine/UI, remove only legacy seeded data. */
+/* v71 compatibility loader: preserve full engine/UI, remove only legacy seeded data. */
 (function(){
   const revealFailsafe=()=>document.documentElement.classList.remove('dabster-booting');
   setTimeout(revealFailsafe,9000);
@@ -30,9 +30,15 @@
     const test=sessionStorage.getItem('dabster.environment.v44')==='test';
     if(test&&location.hash.startsWith('#offerta-'))history.replaceState(null,'','#offerte');
   }
+  function loadKanbanTriggerDirect(){
+    if(document.querySelector('script[data-kanban-trigger-direct-v71]'))return;
+    const direct=document.createElement('script');direct.src='kanban-trigger-direct-v71.js?v=71';direct.dataset.kanbanTriggerDirectV71='1';
+    direct.onerror=()=>console.error('[Dabster] Errore collegamento diretto Attività → Trigger v71');document.head.appendChild(direct);
+  }
   function loadKanbanBillingLink(){
-    if(document.querySelector('script[data-kanban-billing-v60]'))return;
+    if(document.querySelector('script[data-kanban-billing-v60]')){loadKanbanTriggerDirect();return;}
     const link=document.createElement('script');link.src='kanban-billing-link-v60.js?v=60';link.dataset.kanbanBillingV60='1';
+    link.onload=loadKanbanTriggerDirect;
     link.onerror=()=>console.error('[Dabster] Errore collegamento Kanban → Fatturabile v60');document.head.appendChild(link);
   }
   function loadBillingTrigger(){

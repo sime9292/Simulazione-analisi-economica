@@ -1,4 +1,4 @@
-/* v48 entry - Shared lazy loader for dashboard/manual invoice + native Billing Plan prefill. */
+/* v49 entry - Shared lazy loader for dashboard/manual invoice + trigger-aware Billing Plan prefill. */
 (function(){
   let loadingPromise=null;
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -8,7 +8,7 @@
   function anyApi(){return nativeApi()||window.DABSTER_BILLING_V40||window.DABSTER_BILLING_V39||null;}
   async function ensureInvoiceSource(){
     await ensureModule('script[data-plan-invoice-v55]','billing-plan-invoice-v51.js?v=55',()=>window.DABSTER_PLAN_TO_INVOICE_V55,'planInvoiceV55');
-    const source=await ensureModule('script[data-plan-invoice-source-v57]','billing-plan-source-v52.js?v=57',()=>window.DABSTER_BILLING_PLAN_SOURCE_V57,'planInvoiceSourceV57');source?.refresh?.();setTimeout(()=>source?.refresh?.(),60);return source;
+    const source=await ensureModule('script[data-plan-invoice-source-v58]','billing-plan-source-v52.js?v=58',()=>window.DABSTER_BILLING_PLAN_SOURCE_V58,'planInvoiceSourceV58');source?.refresh?.();setTimeout(()=>source?.refresh?.(),60);return source;
   }
   function openTarget(target){const api=anyApi();if(!api)return null;if(target==='invoice'){api.showInvoice?.();setTimeout(()=>ensureInvoiceSource(),0);}else api.showDashboard?.();return api;}
   function loadWorkspace(target='dashboard'){
@@ -25,7 +25,7 @@
     });
     return loadingPromise.then(()=>openTarget(target));
   }
-  const api={loadWorkspace,ensureInvoiceSource};window.DABSTER_BILLING_ENTRY_V48=api;window.DABSTER_BILLING_ENTRY_V47=api;window.DABSTER_BILLING_ENTRY_V46=api;window.DABSTER_BILLING_ENTRY_V45=api;window.DABSTER_BILLING_ENTRY_V44=api;window.DABSTER_BILLING_ENTRY_V43=api;window.DABSTER_BILLING_ENTRY_V42=api;window.DABSTER_BILLING_ENTRY_V41=api;
-  function install(attempt=0){const nav=document.querySelector('#appSidebar .sidebar-nav');if(!nav){if(attempt<220)setTimeout(()=>install(attempt+1),50);return;}let btn=nav.querySelector('[data-page="billing"]');if(!btn){btn=document.createElement('button');btn.type='button';btn.className='sidebar-item';btn.dataset.page='billing';btn.innerHTML='<span class="side-icon">€</span>Dashboard Fatturazione';nav.appendChild(btn);}if(btn.dataset.billingEntryReady!=='48'){btn.dataset.billingEntryReady='48';btn.addEventListener('click',e=>{if(nativeApi())return;e.preventDefault();e.stopImmediatePropagation();loadWorkspace('dashboard');},true);}if(location.hash==='#nuova-fattura')loadWorkspace('invoice');else if(location.hash==='#dashboard-fatturazione')loadWorkspace('dashboard');}
+  const api={loadWorkspace,ensureInvoiceSource};window.DABSTER_BILLING_ENTRY_V49=api;window.DABSTER_BILLING_ENTRY_V48=api;window.DABSTER_BILLING_ENTRY_V47=api;window.DABSTER_BILLING_ENTRY_V46=api;window.DABSTER_BILLING_ENTRY_V45=api;window.DABSTER_BILLING_ENTRY_V44=api;window.DABSTER_BILLING_ENTRY_V43=api;window.DABSTER_BILLING_ENTRY_V42=api;window.DABSTER_BILLING_ENTRY_V41=api;
+  function install(attempt=0){const nav=document.querySelector('#appSidebar .sidebar-nav');if(!nav){if(attempt<220)setTimeout(()=>install(attempt+1),50);return;}let btn=nav.querySelector('[data-page="billing"]');if(!btn){btn=document.createElement('button');btn.type='button';btn.className='sidebar-item';btn.dataset.page='billing';btn.innerHTML='<span class="side-icon">€</span>Dashboard Fatturazione';nav.appendChild(btn);}if(btn.dataset.billingEntryReady!=='49'){btn.dataset.billingEntryReady='49';btn.addEventListener('click',e=>{if(nativeApi())return;e.preventDefault();e.stopImmediatePropagation();loadWorkspace('dashboard');},true);}if(location.hash==='#nuova-fattura')loadWorkspace('invoice');else if(location.hash==='#dashboard-fatturazione')loadWorkspace('dashboard');}
   install();
 })();

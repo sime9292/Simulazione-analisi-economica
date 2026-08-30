@@ -1,4 +1,4 @@
-/* v43 entry - Shared lazy loader for dashboard/manual invoice + guaranteed offer-scoped Billing Plan source injection. */
+/* v44 entry - Shared lazy loader for dashboard/manual invoice + Billing Plan prefill below Offer Lines. */
 (function(){
   let loadingPromise=null,loaded=!!window.DABSTER_BILLING_V39;
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -11,8 +11,8 @@
     return waitFor(apiGetter,180,30);
   }
   async function ensureInvoiceSource(){
-    await ensureModule('script[data-plan-invoice-v51]','billing-plan-invoice-v51.js?v=51',()=>window.DABSTER_PLAN_TO_INVOICE_V51,'planInvoiceV51');
-    const source=await ensureModule('script[data-plan-invoice-source-v55]','billing-plan-source-v52.js?v=55',()=>window.DABSTER_BILLING_PLAN_SOURCE_V55,'planInvoiceSourceV55');
+    await ensureModule('script[data-plan-invoice-v52]','billing-plan-invoice-v51.js?v=52',()=>window.DABSTER_PLAN_TO_INVOICE_V52,'planInvoiceV52');
+    const source=await ensureModule('script[data-plan-invoice-source-v56]','billing-plan-source-v52.js?v=56',()=>window.DABSTER_BILLING_PLAN_SOURCE_V56,'planInvoiceSourceV56');
     source?.refresh?.();setTimeout(()=>source?.refresh?.(),60);return source;
   }
 
@@ -47,6 +47,7 @@
   }
 
   const api={loadWorkspace,ensureInvoiceSource};
+  window.DABSTER_BILLING_ENTRY_V44=api;
   window.DABSTER_BILLING_ENTRY_V43=api;
   window.DABSTER_BILLING_ENTRY_V42=api;
   window.DABSTER_BILLING_ENTRY_V41=api;
@@ -54,8 +55,8 @@
   function install(attempt=0){
     const nav=document.querySelector('#appSidebar .sidebar-nav');if(!nav){if(attempt<220)setTimeout(()=>install(attempt+1),50);return;}
     let btn=nav.querySelector('[data-page="billing"]');if(!btn){btn=document.createElement('button');btn.type='button';btn.className='sidebar-item';btn.dataset.page='billing';btn.innerHTML='<span class="side-icon">€</span>Dashboard Fatturazione';nav.appendChild(btn);}
-    if(btn.dataset.billingEntryReady!=='43'){
-      btn.dataset.billingEntryReady='43';btn.addEventListener('click',e=>{if(window.DABSTER_BILLING_V39)return;e.preventDefault();e.stopImmediatePropagation();loadWorkspace('dashboard');},true);
+    if(btn.dataset.billingEntryReady!=='44'){
+      btn.dataset.billingEntryReady='44';btn.addEventListener('click',e=>{if(window.DABSTER_BILLING_V39)return;e.preventDefault();e.stopImmediatePropagation();loadWorkspace('dashboard');},true);
     }
     if(location.hash==='#nuova-fattura')loadWorkspace('invoice');else if(location.hash==='#dashboard-fatturazione')loadWorkspace('dashboard');
   }

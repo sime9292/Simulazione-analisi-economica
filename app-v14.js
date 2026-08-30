@@ -16,9 +16,15 @@
     const test=sessionStorage.getItem('dabster.environment.v44')==='test';
     if(test&&location.hash.startsWith('#offerta-'))history.replaceState(null,'','#offerte');
   }
+  function loadKanbanBillingLink(){
+    if(document.querySelector('script[data-kanban-billing-v59]'))return;
+    const link=document.createElement('script');link.src='kanban-billing-link-v59.js?v=59';link.dataset.kanbanBillingV59='1';
+    link.onerror=()=>console.error('[Dabster] Errore collegamento Kanban → Fatturabile v59');document.head.appendChild(link);
+  }
   function loadBillingTrigger(){
-    if(document.querySelector('script[data-billing-trigger-v58]'))return;
+    if(document.querySelector('script[data-billing-trigger-v58]')){loadKanbanBillingLink();return;}
     const trigger=document.createElement('script');trigger.src='billing-trigger-v58.js?v=58';trigger.dataset.billingTriggerV58='1';
+    trigger.onload=loadKanbanBillingLink;
     trigger.onerror=()=>console.error('[Dabster] Errore caricamento trigger Fatturabile v58');document.head.appendChild(trigger);
   }
   function loadPlanInvoiceSource(){

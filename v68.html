@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dabster · Test fatturazione v68</title>
+  <style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f5f7f8}#dabsterV68{display:block;width:100%;height:100%;border:0}</style>
+</head>
+<body>
+  <iframe id="dabsterV68" src="v66.html?v68base=92a8172b" title="Dabster v68"></iframe>
+  <script>
+    (function(){
+      const frame=document.getElementById('dabsterV68');
+      frame.addEventListener('load',()=>{
+        try{
+          const doc=frame.contentDocument;
+          if(!doc)return;
+          const controller=doc.createElement('script');
+          controller.src='test-data-entry-v50.js?v=68-92a8172b';
+          controller.dataset.forceTestV68='1';
+          controller.onload=()=>{
+            const plan=doc.createElement('script');
+            plan.src='test-plan-autoload-v68.js?v=68-92a8172b';
+            plan.dataset.testPlanV68='1';
+            plan.onload=()=>console.log('[Dabster v68] TEST_FATT_001 piano auto-loader ready');
+            plan.onerror=()=>console.error('[Dabster v68] unable to load test billing plan');
+            doc.head.appendChild(plan);
+          };
+          controller.onerror=()=>console.error('[Dabster v68] unable to load controlled test controller');
+          doc.head.appendChild(controller);
+        }catch(err){console.error('[Dabster v68] iframe injection failed',err);}
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -16,6 +16,11 @@
     const test=sessionStorage.getItem('dabster.environment.v44')==='test';
     if(test&&location.hash.startsWith('#offerta-'))history.replaceState(null,'','#offerte');
   }
+  function loadTestBillingClean(){
+    if(document.querySelector('script[data-test-billing-v61]'))return;
+    const guard=document.createElement('script');guard.src='test-billing-clean-v61.js?v=61';guard.dataset.testBillingV61='1';
+    guard.onerror=()=>console.error('[Dabster] Errore isolamento residui Test v61');document.head.appendChild(guard);
+  }
   function loadKanbanBillingLink(){
     if(document.querySelector('script[data-kanban-billing-v60]'))return;
     const link=document.createElement('script');link.src='kanban-billing-link-v60.js?v=60';link.dataset.kanbanBillingV60='1';
@@ -61,7 +66,7 @@
   core.src='app-v13.js?v=46';core.dataset.cleanLegacyUi='1';core.onerror=revealFailsafe;
   core.onload=()=>{
     const cleanup=document.createElement('script');cleanup.src='workspace-cleanup-v34.js?v=34';document.head.appendChild(cleanup);
-    const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=49';document.head.appendChild(billingEntry);
+    const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=49';billingEntry.onload=loadTestBillingClean;document.head.appendChild(billingEntry);
     normalizeTestRoute();loadTestDataEntry();loadBillingTrigger();
     if(document.readyState==='complete')setTimeout(loadOfferFlow,0);else window.addEventListener('load',loadOfferFlow,{once:true});
   };

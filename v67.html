@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dabster · Test fatturazione v67</title>
+  <style>
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f5f7f8}
+    #dabsterV67{display:block;width:100%;height:100%;border:0}
+  </style>
+</head>
+<body>
+  <iframe id="dabsterV67" src="v66.html?v67base=62573b77" title="Dabster v67"></iframe>
+  <script>
+    (function(){
+      const frame=document.getElementById('dabsterV67');
+      frame.addEventListener('load',()=>{
+        try{
+          const doc=frame.contentDocument;
+          if(!doc||doc.querySelector('script[data-force-test-v67]'))return;
+          const s=doc.createElement('script');
+          s.src='test-data-entry-v50.js?v=67-62573b77';
+          s.dataset.forceTestV67='1';
+          s.onload=()=>console.log('[Dabster v67] controlled TEST_FATT_001 controller forced');
+          s.onerror=()=>console.error('[Dabster v67] unable to load controlled test controller');
+          doc.head.appendChild(s);
+        }catch(err){console.error('[Dabster v67] iframe injection failed',err);}
+      });
+    })();
+  </script>
+</body>
+</html>

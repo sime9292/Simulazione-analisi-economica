@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dabster · Test trigger fatturazione v71</title>
+  <style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f5f7f8}#dabsterV71{display:block;width:100%;height:100%;border:0}</style>
+</head>
+<body>
+  <iframe id="dabsterV71" src="v66.html?v71base=998ccfb1" title="Dabster v71"></iframe>
+  <script>
+    (function(){
+      const frame=document.getElementById('dabsterV71');
+      frame.addEventListener('load',()=>{
+        try{
+          const doc=frame.contentDocument;if(!doc)return;
+          const test=doc.createElement('script');
+          test.src='test-flow-v70.js?v=71-998ccfb1';test.dataset.testFlowV71='1';
+          test.onload=()=>console.log('[Dabster v71] TEST_FATT_001 loader ready');
+          test.onerror=()=>console.error('[Dabster v71] unable to load test flow');
+          doc.head.appendChild(test);
+          const direct=doc.createElement('script');
+          direct.src='kanban-trigger-direct-v71.js?v=71-998ccfb1';direct.dataset.kanbanTriggerDirectV71='1';
+          direct.onload=()=>console.log('[Dabster v71] direct activity trigger bridge ready');
+          direct.onerror=()=>console.error('[Dabster v71] unable to load direct activity trigger bridge');
+          doc.head.appendChild(direct);
+        }catch(err){console.error('[Dabster v71] iframe injection failed',err);}
+      });
+    })();
+  </script>
+</body>
+</html>

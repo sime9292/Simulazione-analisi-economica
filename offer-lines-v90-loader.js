@@ -21,6 +21,7 @@
     source+='\n//# sourceURL=offer-lines-v90-runtime.js';
     (0,eval)(source);
     window.DABSTER_OFFER_LINES_V90_READY=true;
+    window.dispatchEvent(new CustomEvent('dabster-offer-lines-v90-ready'));
   }catch(err){
     console.error('[Dabster] Errore caricamento Righe Offerta v90',err);
     window.DABSTER_OFFER_LINES_V90_ERROR=String(err?.message||err);

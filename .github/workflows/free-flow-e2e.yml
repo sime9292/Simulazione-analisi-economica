@@ -1,0 +1,37 @@
+name: Free Flow E2E
+
+on:
+  push:
+    branches: [clean-v3-demo]
+    paths:
+      - 'v66.html'
+      - 'app-v14.js'
+      - 'offer-flow-v38.js'
+      - 'offer-lines-v63.js'
+      - 'billing-plan-v47.js'
+      - 'billing-trigger-v58.js'
+      - 'billing-entry-v34.js'
+      - 'billing-workspace-v39.js'
+      - 'kanban-billing-link-v60.js'
+      - 'tests/free-flow-e2e.mjs'
+      - '.github/workflows/free-flow-e2e.yml'
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start local app
+        run: python3 -m http.server 8080 >/tmp/dabster-http.log 2>&1 &
+      - name: Run free environment process test
+        run: node tests/free-flow-e2e.mjs

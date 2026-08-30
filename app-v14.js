@@ -1,10 +1,10 @@
-/* v64 compatibility loader: preserve full engine/UI, remove only legacy seeded data. */
+/* v65 compatibility loader: preserve full engine/UI, remove only legacy seeded data. */
 (function(){
   const revealFailsafe=()=>document.documentElement.classList.remove('dabster-booting');
   setTimeout(revealFailsafe,9000);
 
   function resetLegacyDataOnce(){
-    const KEY='dabster.empty-data-migration.v64';
+    const KEY='dabster.empty-data-migration.v65';
     if(sessionStorage.getItem(KEY)==='1')return;
     const remove=[];
     for(let i=0;i<sessionStorage.length;i++){
@@ -59,16 +59,16 @@
     plan.onerror=()=>console.error('[Dabster] Errore caricamento Piano di fatturazione v47');document.head.appendChild(plan);
   }
   function loadOfferFlow(){
-    if(document.querySelector('script[data-offer-flow-v64]'))return;
+    if(document.querySelector('script[data-offer-flow-v65]'))return;
     normalizeTestRoute();
-    const flow=document.createElement('script');flow.src='offer-flow-v38.js?v=64';flow.dataset.offerFlowV64='1';
+    const flow=document.createElement('script');flow.src='offer-flow-v38.js?v=65';flow.dataset.offerFlowV65='1';
     flow.onload=loadBillingPlan;
-    flow.onerror=()=>{revealFailsafe();console.error('[Dabster] Errore caricamento flusso offerta v64');};document.head.appendChild(flow);
+    flow.onerror=()=>{revealFailsafe();console.error('[Dabster] Errore caricamento flusso offerta v65');};document.head.appendChild(flow);
   }
   function loadTestDataEntry(){
-    if(document.querySelector('script[data-test-data-entry-v64]'))return;
-    const test=document.createElement('script');test.src='test-data-entry-v50.js?v=64';test.dataset.testDataEntryV64='1';
-    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test v64');document.head.appendChild(test);
+    if(document.querySelector('script[data-test-data-entry-v65]'))return;
+    const test=document.createElement('script');test.src='test-data-entry-v50.js?v=65';test.dataset.testDataEntryV65='1';
+    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test v65');document.head.appendChild(test);
   }
 
   const core=document.createElement('script');

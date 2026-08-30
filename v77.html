@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dabster · Trigger autorevole v77</title>
+  <style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f5f7f8}#dabsterV77{display:block;width:100%;height:100%;border:0}</style>
+</head>
+<body>
+  <iframe id="dabsterV77" title="Dabster v77"></iframe>
+  <script>
+    (function(){
+      const frame=document.getElementById('dabsterV77');
+      fetch('v66.html?v77base=direct-trigger',{cache:'no-store'})
+        .then(r=>{if(!r.ok)throw new Error('Base v66 non disponibile');return r.text();})
+        .then(html=>{
+          html=html.replace('<head>','<head><base href="./">');
+          html=html.replace('app-v14.js?v=66','app-v77.js?v=77-direct');
+          frame.addEventListener('load',()=>{
+            try{
+              const doc=frame.contentDocument;if(!doc)return;
+              if(doc.querySelector('script[data-test-flow-v77]'))return;
+              const s=doc.createElement('script');s.src='test-flow-v70.js?v=77-direct';s.dataset.testFlowV77='1';
+              s.onerror=()=>console.error('[Dabster v77] Errore caricamento fixture Test');doc.head.appendChild(s);
+            }catch(err){console.error('[Dabster v77] iframe setup',err);}
+          },{once:true});
+          frame.srcdoc=html;
+        })
+        .catch(err=>{console.error('[Dabster v77] bootstrap',err);document.body.textContent='Errore caricamento v77';});
+    })();
+  </script>
+</body>
+</html>

@@ -15,20 +15,20 @@ on:
 
 jobs:
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - uses: browser-actions/setup-chrome@v1
       - name: Install Selenium
         run: pip install selenium
       - name: Start local app
+        shell: pwsh
         run: |
-          python -m http.server 8000 > /tmp/dabster-http.log 2>&1 &
-          sleep 2
+          Start-Process python -ArgumentList '-m','http.server','8000' -WorkingDirectory '${{ github.workspace }}'
+          Start-Sleep -Seconds 2
       - name: Run manual offer -> dashboard E2E
         run: python tests/e2e-dashboard-manual.py
       - name: Upload failure diagnostics

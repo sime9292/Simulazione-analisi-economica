@@ -3,7 +3,7 @@
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
   const num=v=>Number(String(v??'').replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,''))||0;
   const money=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
   let offersPage=null,emitTimer=null;
   const state={listStatus:'all',listSearch:'',lastSnapshot:null};
 
@@ -36,7 +36,7 @@
   }
   function getSnapshot(){
     const offer=readOffer(),lines=currentLines();
-    const loadedOffer=!!(offer.code||offer.title||offer.commessaLabel||offer.amount>0||lines.length);
+    const loadedOffer=!!(offer.code||offer.title||offer.amount>0||lines.length);
     return {offer,lines,loadedOffer};
   }
   function emit(){

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dabster · Test trigger fatturazione v74</title>
+  <style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f5f7f8}#dabsterV74{display:block;width:100%;height:100%;border:0}</style>
+</head>
+<body>
+  <iframe id="dabsterV74" src="v66.html?v74base=7e775314" title="Dabster v74"></iframe>
+  <script>
+    (function(){
+      const frame=document.getElementById('dabsterV74');
+      frame.addEventListener('load',()=>{
+        try{
+          const doc=frame.contentDocument;if(!doc)return;
+          const load=(src,key)=>new Promise((resolve,reject)=>{const s=doc.createElement('script');s.src=src;s.dataset[key]='1';s.onload=resolve;s.onerror=reject;doc.head.appendChild(s);});
+          load('test-flow-v70.js?v=74-7e775314','testFlowV74')
+            .then(()=>load('kanban-status-source-v72.js?v=74-7e775314','kanbanStatusSourceV74'))
+            .then(()=>load('kanban-trigger-repair-v74.js?v=74-7e775314','kanbanTriggerRepairV74'))
+            .then(()=>console.log('[Dabster v74] TEST + live trigger repair ready'))
+            .catch(err=>console.error('[Dabster v74] loader error',err));
+        }catch(err){console.error('[Dabster v74] iframe injection failed',err);}
+      });
+    })();
+  </script>
+</body>
+</html>

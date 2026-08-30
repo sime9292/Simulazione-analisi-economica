@@ -1,4 +1,4 @@
-/* v64 - Generic offer workflow with no seeded/demo offers. Keeps existing UI and engine contracts. */
+/* v88 - Generic offer workflow with no seeded/demo offers. Manual confirmations expose live Righe Offerta reliably. */
 (function(){
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
   const num=v=>Number(String(v??'').replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,''))||0;
@@ -17,9 +17,21 @@
       direction:num(document.getElementById('confirmationDirection')?.value||0)
     };
   }
+  function domLines(){
+    const code=String(control('Codice')?.value||'offer').trim()||'offer';
+    const rows=[...document.querySelectorAll('#cleanOfferLineRows .clean-line, #offerLineRows .offer-line-row')];
+    return rows.map((row,i)=>{
+      const phase=String(row.dataset.phase||row.querySelector('.clean-line-phase-select,.offer-line-phase-select')?.value||'').trim();
+      const description=String(row.querySelector('.clean-line-desc,.offer-line-desc')?.value||'').trim();
+      const amount=num(row.querySelector('.clean-line-amount,.offer-line-amount')?.value||0);
+      const explicitId=row.dataset.offerLineId||row.dataset.lineId||row.dataset.id||row.querySelector('[data-offer-line-id]')?.dataset?.offerLineId||'';
+      return {id:String(explicitId||`${code}:phase:${phase||i+1}`),phase,description:description||`Riga ${i+1}`,amount};
+    }).filter(x=>x.amount>0.005);
+  }
   function currentLines(){
     const src=window.DABSTER_OFFER_LINES?.lines;
-    return Array.isArray(src)?src.map(x=>({...x,amount:Number(x.amount||0)})).filter(x=>x.amount>0.005):[];
+    const live=Array.isArray(src)?src.map(x=>({...x,amount:Number(x.amount||0)})).filter(x=>x.amount>0.005):[];
+    return live.length?live:domLines();
   }
   function readOffer(){
     const commessaLabel=String(control('Commessa')?.value||'').trim();

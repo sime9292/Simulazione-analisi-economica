@@ -1,7 +1,21 @@
-/* clean-v2 compatibility loader: preload legacy UI modules without patching browser globals. */
+/* v64 compatibility loader: preserve full engine/UI, remove only legacy seeded data. */
 (function(){
   const revealFailsafe=()=>document.documentElement.classList.remove('dabster-booting');
   setTimeout(revealFailsafe,9000);
+
+  function resetLegacyDataOnce(){
+    const KEY='dabster.empty-data-migration.v64';
+    if(sessionStorage.getItem(KEY)==='1')return;
+    const remove=[];
+    for(let i=0;i<sessionStorage.length;i++){
+      const k=sessionStorage.key(i)||'';
+      if(k==='dabster.test.case.v44'||k==='dabster.test.stage.v44'||k.startsWith('dabster.billing.plan.v47.'))remove.push(k);
+    }
+    remove.forEach(k=>sessionStorage.removeItem(k));
+    sessionStorage.setItem('dabster.test.stage.v44','0');
+    sessionStorage.setItem(KEY,'1');
+  }
+  resetLegacyDataOnce();
 
   const preload=[
     ['app-v5.js','v=10'],['app-v6.js','v=11'],['app-v7.js','v=12'],['app-v8.js','v=13'],
@@ -45,16 +59,16 @@
     plan.onerror=()=>console.error('[Dabster] Errore caricamento Piano di fatturazione v47');document.head.appendChild(plan);
   }
   function loadOfferFlow(){
-    if(document.querySelector('script[data-offer-flow-v38]'))return;
+    if(document.querySelector('script[data-offer-flow-v64]'))return;
     normalizeTestRoute();
-    const flow=document.createElement('script');flow.src='offer-flow-v38.js?v=38';flow.dataset.offerFlowV38='1';
+    const flow=document.createElement('script');flow.src='offer-flow-v38.js?v=64';flow.dataset.offerFlowV64='1';
     flow.onload=loadBillingPlan;
-    flow.onerror=()=>{revealFailsafe();console.error('[Dabster] Errore caricamento flusso offerta v38');};document.head.appendChild(flow);
+    flow.onerror=()=>{revealFailsafe();console.error('[Dabster] Errore caricamento flusso offerta v64');};document.head.appendChild(flow);
   }
   function loadTestDataEntry(){
-    if(document.querySelector('script[data-test-data-entry-v50]'))return;
-    const test=document.createElement('script');test.src='test-data-entry-v50.js?v=50';test.dataset.testDataEntryV50='1';
-    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test dati v50');document.head.appendChild(test);
+    if(document.querySelector('script[data-test-data-entry-v64]'))return;
+    const test=document.createElement('script');test.src='test-data-entry-v50.js?v=64';test.dataset.testDataEntryV64='1';
+    test.onerror=()=>console.error('[Dabster] Errore caricamento Ambiente Test v64');document.head.appendChild(test);
   }
 
   const core=document.createElement('script');

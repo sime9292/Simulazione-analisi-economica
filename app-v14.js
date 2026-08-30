@@ -16,6 +16,11 @@
     const test=sessionStorage.getItem('dabster.environment.v44')==='test';
     if(test&&location.hash.startsWith('#offerta-'))history.replaceState(null,'','#offerte');
   }
+  function loadBillingTrigger(){
+    if(document.querySelector('script[data-billing-trigger-v58]'))return;
+    const trigger=document.createElement('script');trigger.src='billing-trigger-v58.js?v=58';trigger.dataset.billingTriggerV58='1';
+    trigger.onerror=()=>console.error('[Dabster] Errore caricamento trigger Fatturabile v58');document.head.appendChild(trigger);
+  }
   function loadPlanInvoiceSource(){
     if(document.querySelector('script[data-plan-invoice-source-v57]'))return;
     const source=document.createElement('script');source.src='billing-plan-source-v52.js?v=57';source.dataset.planInvoiceSourceV57='1';
@@ -51,7 +56,7 @@
   core.onload=()=>{
     const cleanup=document.createElement('script');cleanup.src='workspace-cleanup-v34.js?v=34';document.head.appendChild(cleanup);
     const billingEntry=document.createElement('script');billingEntry.src='billing-entry-v34.js?v=48';document.head.appendChild(billingEntry);
-    normalizeTestRoute();loadTestDataEntry();
+    normalizeTestRoute();loadTestDataEntry();loadBillingTrigger();
     if(document.readyState==='complete')setTimeout(loadOfferFlow,0);else window.addEventListener('load',loadOfferFlow,{once:true});
   };
   document.head.appendChild(core);

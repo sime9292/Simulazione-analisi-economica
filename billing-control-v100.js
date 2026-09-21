@@ -318,7 +318,7 @@
       '<div class="bc100-table"><div class="bc100-row head" style="grid-template-columns:110px minmax(210px,1.4fr) 145px 105px 105px 105px 105px 105px 70px"><div>Commessa</div><div>Descrizione</div><div>Cliente</div><div>Confermato</div><div>Fatturato</div><div>Da fatturare</div><div>Da autorizzare</div><div>Futuro</div><div>% fatt.</div></div>'+
       (rows||'<div class="bc100-empty">Premi “Compila caso completo” nell’ambiente test.</div>')+'</div>';
     bindCommon();
-    var old=page.querySelector('[data-old-dashboard]');if(old)old.addEventListener('click',function(){window.DABSTER_BILLING_ENTRY_V86&&window.DABSTER_BILLING_ENTRY_V86.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V86.loadWorkspace('dashboard');});
+    var old=page.querySelector('[data-old-dashboard]');if(old)old.addEventListener('click',function(){page.hidden=true;window.DABSTER_BILLING_ENTRY_V86&&window.DABSTER_BILLING_ENTRY_V86.loadWorkspace&&window.DABSTER_BILLING_ENTRY_V86.loadWorkspace('dashboard');});
   }
 
   function showCommessa(code,tab){
@@ -462,7 +462,8 @@
   function installSidebar(attempt){
     attempt=attempt||0;var nav=document.querySelector('#appSidebar .sidebar-nav');if(!nav){if(attempt<240)setTimeout(function(){installSidebar(attempt+1);},40);return;}
     var billing=nav.querySelector('[data-page="billing"]');
-    if(billing&&billing.dataset.v100!=='1'){var b=billing.cloneNode(true);billing.replaceWith(b);billing=b;b.dataset.v100='1';b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();showDashboard();},true);}
+    if(!billing){if(attempt<240)setTimeout(function(){installSidebar(attempt+1);},40);return;}
+    if(billing.dataset.v100!=='1'){var b=billing.cloneNode(true);billing.replaceWith(b);billing=b;b.dataset.v100='1';b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();showDashboard();},true);}
     function ensure(key,label,icon,after,fn){
       var b=nav.querySelector('[data-page="'+key+'"]');
       if(!b){b=document.createElement('button');b.type='button';b.className='sidebar-item';b.dataset.page=key;b.innerHTML='<span class="side-icon">'+icon+'</span>'+label;(after||billing).insertAdjacentElement('afterend',b);}
